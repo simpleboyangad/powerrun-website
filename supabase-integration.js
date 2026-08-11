@@ -8,14 +8,12 @@ const PR_WA = '918700307676';
 const { createClient } = window.supabase;
 const sb = createClient(SUPABASE_URL, SUPABASE_PUBLISHABLE_KEY);
 window.PR_SB = sb;
-
 let dbProducts = [];
 let dbCategories = [];
 let dbCart = JSON.parse(localStorage.getItem('pr_cart') || '[]');
 let editingProductId = null;
 let editingExistingImages = [];
 let selectedNewFiles = [];
-
 function esc2(s){return String(s ?? '').replaceAll('&','&amp;').replaceAll('<','&lt;').replaceAll('>','&gt;').replaceAll('"','&quot;').replaceAll("'",'&#39;')}
 function money2(v){return v !== null && v !== undefined && v !== '' ? '₹'+Number(v).toLocaleString('en-IN') : ''}
 function slugify(s){return String(s||'').toLowerCase().trim().replace(/[^a-z0-9]+/g,'-').replace(/^-|-$/g,'')}
@@ -24,14 +22,12 @@ function normalizeProduct(p){
   const specs=p.specifications?.text || (typeof p.specifications==='string'?p.specifications:'');
   return {id:p.id,name:p.name,category:p.categories?.name||'Uncategorized',category_id:p.category_id,price:p.price,sku:p.sku||'',short:p.short_description||'',description:p.description||'',specs,featured:!!p.is_featured,new:!!p.is_new,visible:!!p.is_active,images:images.map(x=>x.url),_images:images};
 }
-
 async function loadCategories(){
   const {data,error}=await sb.from('categories').select('*').eq('is_active',true).order('sort_order');
   if(error){console.error(error);return []}
   dbCategories=data||[];
   return dbCategories;
 }
-
 async function loadProducts(admin=false){
   let q=sb.from('products').select('*, categories(name), product_images(id,image_url,storage_path,sort_order)').order('created_at',{ascending:true});
   if(!admin) q=q.eq('is_active',true);
@@ -41,7 +37,6 @@ async function loadProducts(admin=false){
   products=dbProducts;
   return dbProducts;
 }
-
 async function initProduction(){
   await loadCategories();
   await loadProducts(false);
@@ -50,24 +45,22 @@ async function initProduction(){
   renderProducts2();
   document.getElementById('cartCount').textContent=dbCart.length;
 }
-
 function renderTabs2(){
   const cats=['ALL',...dbCategories.map(c=>c.name)];
   const el=document.getElementById('tabs');
   if(!el)return;
-  el.innerHTML=cats.map(c=>`<button class="tab ${currentCat===c?'active':''}" onclick="filterCat2(${JSON.stringify(c)})">${c==='ALL'?'ALL':esc2(c).toUpperCase()}</button>`).join('');
+  el.innerHTML=cats.map(c=>`<button class="tab ${currentCat===c?'active':''}" onclick='filterCat2(${JSON.stringify(c)})'>${c==='ALL'?'ALL':esc2(c).toUpperCase()}</button>`).join('');
 }
 function filterCat2(c){currentCat=c;renderTabs2();renderProducts2();document.querySelector('#products').scrollIntoView({behavior:'smooth'})}
 function renderProducts2(){
   const list=currentCat==='ALL'?dbProducts:dbProducts.filter(p=>p.category===currentCat);
   const grid=document.getElementById('productGrid');
   if(!grid)return;
-  grid.innerHTML=list.map(p=>`<article class="card"><div class="card-img">${p.images?.[0]?`<img src="${esc2(p.images[0])}" alt="${esc2(p.name)}">`:`<div class="ph">${esc2(initials(p.name))}</div>`}</div>${p.new?'<span class="tag">NEW</span>':''}<div class="card-body"><div class="catname">${esc2(p.category)}</div><h3>${esc2(p.name)}</h3><p>${esc2(p.short)}</p><div class="card-foot"><span class="price">${money2(p.price)}</span><button class="outline" onclick="viewProduct2(${JSON.stringify(p.id)})">Details</button></div><div style="display:flex;gap:6px;margin-top:8px;flex-wrap:wrap"><button class="btn orange" style="padding:8px 10px;font-size:11px" onclick="buyNow2(${JSON.stringify(p.id)})">${p.price?'BUY NOW':'GET QUOTE'}</button><button class="outline" onclick="addCart2(${JSON.stringify(p.id)})">+ CART</button><button class="outline" onclick="wa2(${JSON.stringify(p.id)})">WHATSAPP</button></div></div></article>`).join('') || '<p>No products available in this category.</p>';
+  grid.innerHTML=list.map(p=>`<article class="card"><div class="card-img">${p.images?.[0]?`<img src="${esc2(p.images[0])}" alt="${esc2(p.name)}">`:`<div class="ph">${esc2(initials(p.name))}</div>`}</div>${p.new?'<span class="tag">NEW</span>':''}<div class="card-body"><div class="catname">${esc2(p.category)}</div><h3>${esc2(p.name)}</h3><p>${esc2(p.short)}</p><div class="card-foot"><span class="price">${money2(p.price)}</span><button class="outline" onclick='viewProduct2(${JSON.stringify(p.id)})'>Details</button></div><div style="display:flex;gap:6px;margin-top:8px;flex-wrap:wrap"><button class="btn orange" style="padding:8px 10px;font-size:11px" onclick='buyNow2(${JSON.stringify(p.id)})'>${p.price?'BUY NOW':'GET QUOTE'}</button><button class="outline" onclick='addCart2(${JSON.stringify(p.id)})'>+ CART</button><button class="outline" onclick='wa2(${JSON.stringify(p.id)})'>WHATSAPP</button></div></div></article>`).join('') || '<p>No products available in this category.</p>';
 }
-
 function viewProduct2(id){
  const p=dbProducts.find(x=>x.id===id); if(!p)return;
- document.getElementById('drawer').innerHTML=`<button class="close" onclick="closeOverlay()">×</button><h2>${esc2(p.name)}</h2><div class="catname">${esc2(p.category)} • ${esc2(p.sku)}</div><div class="gallery">${(p.images||[]).map(x=>`<img src="${esc2(x)}" alt="${esc2(p.name)}">`).join('')||'<div class="ph">PR</div>'}</div>${p.price?`<h3>${money2(p.price)}</h3>`:'<h3>Price on request</h3>'}<p>${esc2(p.description)}</p><p><b>Specifications</b><br>${esc2(p.specs)}</p><button class="btn orange" onclick="buyNow2(${JSON.stringify(p.id)})">${p.price?'BUY NOW':'GET QUOTE'}</button> <button class="outline" onclick="addCart2(${JSON.stringify(p.id)})">+ CART</button>`;
+ document.getElementById('drawer').innerHTML=`<button class="close" onclick="closeOverlay()">×</button><h2>${esc2(p.name)}</h2><div class="catname">${esc2(p.category)} • ${esc2(p.sku)}</div><div class="gallery">${(p.images||[]).map(x=>`<img src="${esc2(x)}" alt="${esc2(p.name)}">`).join('')||'<div class="ph">PR</div>'}</div>${p.price?`<h3>${money2(p.price)}</h3>`:'<h3>Price on request</h3>'}<p>${esc2(p.description)}</p><p><b>Specifications</b><br>${esc2(p.specs)}</p><button class="btn orange" onclick='buyNow2(${JSON.stringify(p.id)})'>${p.price?'BUY NOW':'GET QUOTE'}</button> <button class="outline" onclick='addCart2(${JSON.stringify(p.id)})'>+ CART</button>`;
  document.getElementById('overlay').classList.add('show');
 }
 function addCart2(id){if(!dbCart.includes(id))dbCart.push(id);localStorage.setItem('pr_cart',JSON.stringify(dbCart));document.getElementById('cartCount').textContent=dbCart.length;alert('Added to cart.')}
@@ -111,7 +104,6 @@ async function placeOrder2(id){
  if(itemErr){alert('Order item failed: '+itemErr.message);return}
  closeOverlay();alert('Order submitted successfully. Order ID: '+orderNumber);
 }
-
 function adminLoginModal(){
  document.getElementById('overlay').innerHTML=`<div class="drawer" style="max-width:460px"><button class="close" onclick="closeOverlay()">×</button><h2>Admin Login</h2><p>PowerRun Industries secure administration.</p><div class="form"><label>Email<input id="ae" type="email" value="admin@powerrun.in"></label><label>Password<input id="ap" type="password" autocomplete="current-password"></label><button class="btn orange" onclick="doAdminLogin()">LOGIN</button></div></div>`;
  document.getElementById('overlay').classList.add('show');
@@ -131,7 +123,6 @@ async function openAdmin2(){
  adminLoginModal();
 }
 async function adminLogout2(){await sb.auth.signOut();document.getElementById('admin').classList.remove('show');document.getElementById('site').style.display='block';await initProduction()}
-
 async function loadAdminData(){await loadCategories();await loadProducts(true);}
 function adminHeader(){return `<div style="display:flex;justify-content:space-between;align-items:center;gap:10px;flex-wrap:wrap"><h1>Dashboard</h1><button class="admin-btn" onclick="adminLogout2()">Logout</button></div>`}
 async function renderAdmin2(){
@@ -189,12 +180,11 @@ async function adminLeads(){
  document.getElementById('adminContent').innerHTML=`<h1>Leads / Quote Requests</h1><div class="admin-table"><table><tr><th>Customer</th><th>Product</th><th>Mobile</th><th>City</th><th>Status</th><th>Date</th></tr>${(data||[]).map(l=>`<tr><td>${esc2(l.name)}</td><td>${esc2(l.products?.name||'Multiple / General')}</td><td>${esc2(l.mobile)}</td><td>${esc2(l.city||'')}</td><td><select onchange='updateLead2(${JSON.stringify(l.id)},this.value)'><option ${l.status==='new'?'selected':''}>new</option><option ${l.status==='contacted'?'selected':''}>contacted</option><option ${l.status==='quoted'?'selected':''}>quoted</option><option ${l.status==='converted'?'selected':''}>converted</option><option ${l.status==='closed'?'selected':''}>closed</option></select></td><td>${new Date(l.created_at).toLocaleString('en-IN')}</td></tr>`).join('')}</table></div>`;
 }
 async function updateLead2(id,status){const {error}=await sb.from('leads').update({status,updated_at:new Date().toISOString()}).eq('id',id);if(error)alert(error.message)}
-
 // Replace legacy functions with production versions.
 window.openAdmin=openAdmin2; window.openCart=openCart2; window.addCart=addCart2; window.buyNow=buyNow2; window.wa=wa2; window.viewProduct=viewProduct2; window.showProductManager=showProductManager; window.adminOrders=adminOrders; window.adminLeads=adminLeads; window.renderAdmin=renderAdmin2; window.closeAdmin=async()=>{document.getElementById('admin').classList.remove('show');document.getElementById('site').style.display='block';await initProduction()};
 window.filterCat=filterCat2;
-
 // Allow the existing header cart button to use the production cart.
 const cartBtn=document.querySelector('.cart');if(cartBtn)cartBtn.onclick=openCart2;
 
 initProduction();
+
