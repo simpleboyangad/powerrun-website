@@ -287,5 +287,81 @@ function adminSettings(){document.getElementById("adminContent").innerHTML=`<h1>
 
 renderTabs();renderProducts();updateCartCount();
 </script>
+
+<script>
+document.addEventListener('DOMContentLoaded', function () {
+  const normalize = s => String(s || '').toUpperCase().replace(/&AMP;/g,'&')
+    .replace(/[\u2013\u2014]/g,'-').replace(/\s+/g,' ').trim();
+
+  const cats = [
+    'ALL','HYBRID INVERTERS','LITHIUM BATTERIES','SOLAR PANELS',
+    'E-RICKSHAW BATTERIES','HOME ENERGY STORAGE','COMMERCIAL ENERGY STORAGE',
+    'INDUSTRIAL ENERGY SOLUTIONS','EV BATTERIES','UPS & POWER BACKUP',
+    'ACCESSORIES & SPARE PARTS'
+  ];
+
+  const buttons = () => [...document.querySelectorAll('button,a,[role="button"]')]
+    .filter(x => cats.includes(normalize(x.textContent)));
+
+  const cards = () => {
+    const s = new Set();
+    ['.product-card','.product-item','.product','.productCard',
+     '[data-product-id]','[data-product]'].forEach(q =>
+      document.querySelectorAll(q).forEach(x => s.add(x))
+    );
+    return [...s];
+  };
+
+  function cardCat(card) {
+    const explicit = card.getAttribute('data-category') ||
+      card.getAttribute('data-category-name') || card.dataset.category || '';
+    if (explicit) return normalize(explicit);
+
+    const labels = card.querySelectorAll(
+      '.category,.product-category,.badge,.eyebrow,.label,small,[data-category-name]'
+    );
+    for (const el of labels) {
+      const t = normalize(el.textContent);
+      if (cats.includes(t)) return t;
+    }
+
+    const t = normalize(card.textContent);
+    return cats.slice(1).find(c => t.includes(c)) || '';
+  }
+
+  function apply(cat) {
+    cat = normalize(cat);
+    cards().forEach(card => {
+      const show = cat === 'ALL' || cardCat(card) === cat;
+      card.hidden = !show;
+      card.style.display = show ? '' : 'none';
+    });
+    buttons().forEach(btn => {
+      const active = normalize(btn.textContent) === cat;
+      btn.classList.toggle('active', active);
+      btn.setAttribute('aria-pressed', active ? 'true' : 'false');
+    });
+  }
+
+  function bind() {
+    buttons().forEach(btn => {
+      if (btn.dataset.categoryFilterBound) return;
+      btn.dataset.categoryFilterBound = '1';
+      if (btn.tagName === 'BUTTON') btn.type = 'button';
+      btn.addEventListener('click', function(e) {
+        e.preventDefault();
+        e.stopImmediatePropagation();
+        apply(this.textContent);
+      });
+    });
+  }
+
+  bind();
+  apply('ALL');
+
+  new MutationObserver(bind).observe(document.body,{childList:true,subtree:true});
+});
+</script>
+
 </body>
 </html>
