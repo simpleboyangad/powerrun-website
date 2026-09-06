@@ -72,6 +72,50 @@
 .thumb img{width:100%!important;height:100%!important;object-fit:contain!important;display:block}
 @media(max-width:900px){.product-detail-view{grid-template-columns:1fr;min-height:auto}.main-product-image{height:55vh!important;min-height:300px!important}.overlay .drawer{padding:22px 18px!important}.overlay .drawer>.close{right:12px;top:10px}.card-img{height:230px}}
 @media(max-width:520px){.main-product-image{height:48vh!important;min-height:260px!important}.product-info h2{font-size:27px}.card-img{height:220px}}
+
+/* ===== PowerRun premium homepage refresh ===== */
+.hero{position:relative;min-height:570px;padding:72px 6%;background:radial-gradient(circle at 78% 45%,rgba(255,90,0,.18),transparent 30%),linear-gradient(115deg,#050505 0%,#0b0b0b 48%,#171717 100%);isolation:isolate}
+.hero:before{content:"";position:absolute;inset:0;background:linear-gradient(90deg,rgba(0,0,0,.15),transparent 55%,rgba(255,90,0,.06));pointer-events:none}
+.hero>div:first-child{position:relative;z-index:2;max-width:650px}
+.hero h1{font-size:clamp(42px,5.2vw,72px);letter-spacing:-2.5px;margin-bottom:20px}
+.hero h1:after{content:"";display:block;width:74px;height:4px;background:var(--orange);border-radius:9px;margin-top:22px}
+.hero p{font-size:18px;max-width:590px;color:#d7d7d7}
+.hero .checks{gap:10px;margin:30px 0 28px}
+.check{min-width:145px;padding:13px 14px;border:1px solid #ffffff16;background:#ffffff08;border-radius:12px;backdrop-filter:blur(8px);color:#aaa}
+.check b{font-size:13px}
+.hero .btn{min-height:50px;padding:0 23px;border-radius:9px;box-shadow:0 12px 28px #0005}
+.btn.orange{background:linear-gradient(135deg,#ff5a00,#ff7a18)}
+.hero-art{height:420px;overflow:visible}
+.orb{width:430px;height:430px;background:radial-gradient(circle,rgba(255,255,255,.10),rgba(255,90,0,.08) 34%,rgba(0,0,0,0) 67%);box-shadow:0 0 100px rgba(255,90,0,.12)}
+.product-stack{gap:0;transform:rotate(-4deg) scale(1.03);filter:drop-shadow(0 30px 35px rgba(0,0,0,.45))}
+.mock{border:1px solid rgba(255,255,255,.14);position:relative;overflow:hidden}
+.mock:after{content:"";position:absolute;inset:0;background:linear-gradient(135deg,rgba(255,255,255,.20),transparent 35%,rgba(255,90,0,.08));pointer-events:none}
+.inv{width:165px;height:275px;margin-right:-14px;background:linear-gradient(145deg,#f7f7f7,#cfcfcf);font-size:18px}
+.bat{width:255px;height:138px;z-index:2;background:linear-gradient(145deg,#242424,#0b0b0b);font-size:18px;box-shadow:0 30px 60px #0008}
+.box{width:178px;height:188px;margin-left:-14px;background:linear-gradient(145deg,#f8f8f8,#d8d8d8);font-size:17px}
+.section{padding:62px 5%}
+.section-head{margin-bottom:28px}
+.section h2{font-size:29px;letter-spacing:-.5px}
+.categories{gap:20px}
+.cat{min-height:190px;border-radius:14px;padding:22px;box-shadow:0 12px 35px rgba(0,0,0,.06);transition:transform .2s ease,box-shadow .2s ease,border-color .2s ease}
+.cat:hover{transform:translateY(-5px);box-shadow:0 18px 40px rgba(0,0,0,.11);border-color:#ffd2bb}
+.cat .pic{height:92px;border-radius:12px;background:linear-gradient(135deg,#fff4ed,#fff);font-size:42px}
+.trust{padding:28px 5%;background:linear-gradient(90deg,#0b0b0b,#161616)}
+.trust .item{padding:7px 25px}
+.products{gap:20px}
+.card{border-radius:14px;box-shadow:0 10px 28px rgba(0,0,0,.06);transition:transform .2s ease,box-shadow .2s ease}
+.card:hover{transform:translateY(-5px);box-shadow:0 18px 38px rgba(0,0,0,.12)}
+.card-img{height:280px;background:radial-gradient(circle at 50% 45%,#fff,#f3f3f3);padding:16px}
+.card-img img{object-fit:contain;transition:transform .25s ease}
+.card:hover .card-img img{transform:scale(1.04)}
+.card-body{padding:17px}
+.card h3{font-size:16px}
+.price{font-size:18px}
+.banner{margin:10px 5% 55px;border-radius:16px;padding:42px 48px;background:radial-gradient(circle at 85% 50%,rgba(255,90,0,.2),transparent 30%),linear-gradient(100deg,#0b0b0b,#1b1b1b);box-shadow:0 18px 45px #0002}
+.footer{padding-top:55px}
+@media(max-width:900px){.hero{min-height:auto;padding:55px 6%}.hero-art{height:300px}.hero-art .orb{width:320px;height:320px}.product-stack{transform:rotate(-4deg) scale(.82)}.categories,.products{gap:14px}.card-img{height:245px}}
+@media(max-width:520px){.hero{padding:42px 5% 35px}.hero h1{font-size:38px;letter-spacing:-1.5px}.hero p{font-size:15px}.hero .checks{display:grid;grid-template-columns:1fr 1fr}.check{min-width:0}.hero-art{height:235px}.hero-art .orb{width:245px;height:245px}.product-stack{transform:rotate(-4deg) scale(.58)}.section{padding:44px 4%}.section h2{font-size:24px}.card-img{height:250px}.banner{margin:0 4% 42px;padding:30px 24px}}
+
 </style>
 </head>
 <body>
@@ -90,10 +134,11 @@
   <main>
     <section class="hero" id="home">
       <div>
-        <h1>POWERING TODAY<br><span>SUSTAINING</span> TOMORROW</h1>
-        <p>High Performance Lithium Batteries, Hybrid Inverters & Complete Energy Solutions.</p>
-        <div class="checks"><div class="check">◉ <b>High Efficiency</b>Technology</div><div class="check">⬡ <b>Smart BMS</b>Protection</div><div class="check">♧ <b>Long Life</b>& Reliable</div><div class="check">✦ <b>Clean Energy</b>For Better Future</div></div>
-        <button class="btn orange" onclick="document.querySelector('#products').scrollIntoView({behavior:'smooth'})">🛒 EXPLORE PRODUCTS</button><button class="btn dark" onclick="location.href='https://wa.me/918700307676'">◉ WHATSAPP US</button>
+        <div style="display:inline-flex;align-items:center;gap:8px;padding:7px 12px;border:1px solid #ffffff18;border-radius:999px;background:#ffffff08;color:#ddd;font-size:12px;font-weight:800;letter-spacing:.4px">⚡ SMART ENERGY • POWERED BY POWERRUN</div>
+        <h1>POWERING YOUR <span>FUTURE</span></h1>
+        <p>High-performance lithium batteries, hybrid inverters and complete energy solutions engineered for reliable power at home, business and mobility.</p>
+        <div class="checks"><div class="check">◉ <b>High Efficiency</b>Advanced power technology</div><div class="check">⬡ <b>Smart BMS</b>Intelligent protection</div><div class="check">♧ <b>Long Life</b>Built for reliability</div><div class="check">✦ <b>Clean Energy</b>Smarter tomorrow</div></div>
+        <button class="btn orange" onclick="document.querySelector('#products').scrollIntoView({behavior:'smooth'})">SHOP PRODUCTS →</button><button class="btn dark" onclick="location.href='https://wa.me/918700307676'">GET EXPERT HELP</button>
       </div>
       <div class="hero-art"><div class="orb"></div><div class="product-stack"><div class="mock inv">POWER<br><span style="color:#ff5a00">RUN</span><br><small>HYBRID INVERTER</small></div><div class="mock bat">POWER<span style="color:#ff5a00">RUN</span><br>LITHIUM BATTERY</div><div class="mock box">51.2V<br>100Ah<br><small>LiFePO₄</small></div></div></div>
     </section>
