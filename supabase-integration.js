@@ -163,7 +163,43 @@ async function placeOrder2(id){
     dbCategories = data || [];
     return dbCategories;
   }
+function normalizeProduct(p) {
+  const images = (p.product_images || [])
+    .slice()
+    .sort((a,b) => (a.sort_order || 0) - (b.sort_order || 0))
+    .map(x => ({
+      id: x.id,
+      url: x.image_url,
+      path: x.storage_path,
+      sort_order: x.sort_order || 0
+    }));
 
+  const specs = p.specifications?.text ??
+    (typeof p.specifications === 'string' ? p.specifications : '');
+
+  const specRows = Array.isArray(p.specifications?.rows)
+    ? p.specifications.rows
+    : null;
+
+  return {
+    id: p.id,
+    name: p.name,
+    category: p.categories?.name || 'Uncategorized',
+    category_id: p.category_id,
+    price: p.price,
+    mrp: p.mrp ?? null,
+    sku: p.sku || '',
+    short: p.short_description || '',
+    description: p.description || '',
+    specs,
+    specRows,
+    featured: !!p.is_featured,
+    new: !!p.is_new,
+    visible: p.is_active !== false,
+    images: images.map(x => x.url),
+    _images: images
+  };
+}
   async function loadProducts(admin=false) {
     let q = sb.from('products').select('*, categories(name), product_images(id,image_url,storage_path,sort_order)').order('created_at', {ascending:true});
     if (!admin) q = q.eq('is_active', true);
