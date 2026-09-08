@@ -155,10 +155,6 @@ async function placeOrder2(id){
     '\n\nOur team will contact you shortly.'
   );
 }
-      id: p.id, name: p.name, category: p.categories?.name || 'Uncategorized', category_id: p.category_id,
-      price: p.price, mrp: p.mrp ?? null, sku: p.sku || '', short: p.short_description || '', description: p.description || '', specs, specRows,
-      featured: !!p.is_featured, new: !!p.is_new, visible: p.is_active !== false, images: images.map(x=>x.url), _images: images
-    };
   }
 
   async function loadCategories() {
