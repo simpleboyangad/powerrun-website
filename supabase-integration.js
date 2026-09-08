@@ -92,17 +92,69 @@
   function setBusy(button, busy, text='Please wait…') {
     if (!button) return;
     if (busy) { button.dataset.oldText = button.textContent; button.disabled = true; button.textContent = text; }
-    else { button.disabled = false; button.textContent = button.dataset.oldText || button.textContent; }
-  }
-  function openDrawer(html) { const drawer=document.getElementById('drawer'); if(!drawer)return; drawer.innerHTML=html; document.getElementById('overlay').classList.add('show'); }
-  function closeOverlay(){ document.getElementById('overlay')?.classList.remove('show'); }
-  window.closeOverlay = closeOverlay;
+async function placeOrder2(id){
+  const p = dbProducts.find(x => x.id === id);
+  if(!p) return;
 
-  function normalizeProduct(p) {
-    const images = (p.product_images || []).slice().sort((a,b)=>(a.sort_order||0)-(b.sort_order||0)).map(x => ({id:x.id,url:x.image_url,path:x.storage_path,sort_order:x.sort_order||0}));
-    const specs = p.specifications?.text ?? (typeof p.specifications === 'string' ? p.specifications : '');
-    const specRows = Array.isArray(p.specifications?.rows) ? p.specifications.rows : null;
-    return {
+  const name = document.getElementById('bn2').value.trim();
+  const mobile = document.getElementById('bm2').value.trim();
+  const email = document.getElementById('be2').value.trim() || null;
+  const address = document.getElementById('ba2').value.trim() || null;
+  const city = document.getElementById('bc2').value.trim() || null;
+  const state = document.getElementById('bs2').value.trim() || null;
+  const pincode = document.getElementById('bp2').value.trim() || null;
+  const qty = Number(document.getElementById('bq2').value || 1);
+
+  if(!name || !mobile){
+    alert('Name and mobile are required.');
+    return;
+  }
+
+  if(!Number.isInteger(qty) || qty < 1){
+    alert('Please enter a valid quantity.');
+    return;
+  }
+
+  const { data, error } = await sb.rpc('create_website_order', {
+    p_customer: {
+      name,
+      mobile,
+      email,
+      address,
+      city,
+      state,
+      pincode
+    },
+    p_items: [
+      {
+        product_id: p.id,
+        quantity: qty
+      }
+    ]
+  });
+
+  if(error){
+    console.error('Order creation failed:', error);
+    alert('Order failed: ' + error.message);
+    return;
+  }
+
+  const result = Array.isArray(data) ? data[0] : data;
+
+  if(!result || !result.order_number){
+    console.error('Unexpected order response:', data);
+    alert('Order created, but order number could not be received. Please contact PowerRun.');
+    return;
+  }
+
+  closeOverlay();
+
+  alert(
+    'Order submitted successfully!\n\nOrder Number: ' +
+    result.order_number +
+    '\n\nOur team will contact you shortly.'
+  );
+}
       id: p.id, name: p.name, category: p.categories?.name || 'Uncategorized', category_id: p.category_id,
       price: p.price, mrp: p.mrp ?? null, sku: p.sku || '', short: p.short_description || '', description: p.description || '', specs, specRows,
       featured: !!p.is_featured, new: !!p.is_new, visible: p.is_active !== false, images: images.map(x=>x.url), _images: images
