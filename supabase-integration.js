@@ -142,8 +142,7 @@ async function placeOrder2(id){
   const result = Array.isArray(data) ? data[0] : data;
 
   if(!result || !result.order_number){
-    console.error('Unexpected order response:', data);
-    alert('Order created, but order number could not be received. Please contact PowerRun.');
+    alert('Order created, but order number could not be received.');
     return;
   }
 
@@ -155,7 +154,6 @@ async function placeOrder2(id){
     '\n\nOur team will contact you shortly.'
   );
 }
-  }
 
   async function loadCategories() {
     const { data, error } = await sb.from('categories').select('*').eq('is_active', true).order('sort_order', {ascending:true});
