@@ -90,8 +90,17 @@
     setTimeout(() => item.remove(), 3600);
   }
   function setBusy(button, busy, text='Please wait…') {
-    if (!button) return;
-    if (busy) { button.dataset.oldText = button.textContent; button.disabled = true; button.textContent = text; }
+  if (!button) return;
+
+  if (busy) {
+    button.dataset.oldText = button.textContent;
+    button.disabled = true;
+    button.textContent = text;
+  } else {
+    button.disabled = false;
+    button.textContent = button.dataset.oldText || button.textContent;
+  }
+}
 async function placeOrder2(id){
   const p = dbProducts.find(x => x.id === id);
   if(!p) return;
