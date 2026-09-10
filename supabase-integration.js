@@ -179,17 +179,17 @@
 
   function initials(name){ return String(name||'PR').split(/\s+/).filter(Boolean).slice(0,2).map(x=>x[0]).join('').toUpperCase(); }
 
-  let detailQty = 1;
+ window.detailQty = 1;
   function changeDetailQty(delta) {
-    detailQty = Math.max(1, detailQty + delta);
+   window.detailQty = Math.max(1, window.detailQty + delta);
     const el = document.getElementById('detailQtyValue');
-    if (el) el.textContent = detailQty;
+   el.textContent = window.detailQty;
   }
   window.changeDetailQty = changeDetailQty;
   function viewProduct(id) {
     const p=dbProducts.find(x=>String(x.id)===String(id)); if(!p){toast('Product not found.','error');return;}
     const imgs=p.images||[];
-    detailQty = 1;
+    window.detailQty = 1;
     openDrawer(`<button class="close" type="button" aria-label="Close" onclick="closeOverlay()">×</button>
       ${breadcrumb(p)}
       <div class="product-detail-view">
@@ -202,7 +202,7 @@
           ${priceBlock(p)}
           <p>${esc(p.description||'')}</p>
           <div class="qty-stepper"><button type="button" aria-label="Decrease quantity" onclick="changeDetailQty(-1)">−</button><span id="detailQtyValue">1</span><button type="button" aria-label="Increase quantity" onclick="changeDetailQty(1)">+</button></div>
-          <div class="detail-actions"><button class="btn orange" onclick='buyNow(${JSON.stringify(p.id)},detailQty)'>BUY NOW</button><button class="outline" onclick='addCart(${JSON.stringify(p.id)},detailQty)'>ADD TO CART</button><button class="outline" onclick='wa(${JSON.stringify(p.id)})'>WHATSAPP</button></div>
+          <div class="detail-actions"><button class="btn orange"onclick="buyNow(${JSON.stringify(p.id)},window.detailQty)")'>BUY NOW</button><button class="outline" onclick='addCart(${JSON.stringify(p.id)},detailQty)'>ADD TO CART</button><button class="outline" onclick='wa(${JSON.stringify(p.id)})'>WHATSAPP</button></div>
           <div class="trust-badges"><div class="trust-badge"><span class="ic">🛡️</span><div><b>5 Years Warranty</b><small>On Selected Products</small></div></div><div class="trust-badge"><span class="ic">🚚</span><div><b>Pan India Delivery</b><small>Fast &amp; Safe Delivery</small></div></div></div>
           ${specBlock(p)}
         </div>
@@ -263,16 +263,38 @@
     const subtotal=items.reduce((s,x)=>s+(Number(x.product.price)||0)*x.qty,0);
     const orderNumber='PR-'+new Date().toISOString().slice(0,10).replace(/-/g,'')+'-'+Math.random().toString(36).slice(2,7).toUpperCase();
     const itemRows=items.map(x=>({product_id:String(x.product.id),product_name:x.product.name,quantity:x.qty,unit_price:x.product.price===null||x.product.price===''?0:Number(x.product.price),total_price:(Number(x.product.price)||0)*x.qty}));
-    const rpc=await sb.rpc('create_public_order',{payload:{order_number:orderNumber,customer_name:name,customer_mobile:mobile,customer_email:email,address,city,state,pincode,subtotal,total_amount:subtotal,items:itemRows}});
-    let savedOrderNumber=orderNumber;
-    if(!rpc.error){savedOrderNumber=rpc.data?.order_number||orderNumber;}
-    else if(rpc.error.code==='42883' || /create_public_order/i.test(rpc.error.message||'')){
-      const {data:order,error}=await sb.from('orders').insert({order_number:orderNumber,customer_name:name,customer_mobile:mobile,customer_email:email,address,city,state,pincode,subtotal,total_amount:subtotal,payment_status:'pending',order_status:'new',payment_method:'enquiry'}).select('id,order_number').single();
-      if(error){setBusy(button,false);console.error(error);toast('Order could not be saved: '+error.message,'error');return;}
-      savedOrderNumber=order.order_number||orderNumber;
-      const {error:itemError}=await sb.from('order_items').insert(itemRows.map(x=>({...x,order_id:order.id})));
-      if(itemError){console.error(itemError);toast('Order was created but items could not be saved. Please check Admin Orders.','error');setBusy(button,false);return;}
-    } else {setBusy(button,false);console.error(rpc.error);toast('Order could not be saved: '+rpc.error.message,'error');return;}
+ const { data, error } = await sb.rpc('create_website_order', {
+  p_customer: {
+    name,
+    mobile,
+    email,
+    address,
+    city,
+    state,
+    pincode
+  },
+  p_items: items.map(x => ({
+    product_id: x.product.id,
+    quantity: x.qty
+  }))
+});
+
+if (error) {
+  setBusy(button, false);
+  console.error('Order creation failed:', error);
+  toast('Order could not be saved: ' + error.message, 'error');
+  return;
+}
+
+const result = Array.isArray(data) ? data[0] : data;
+const savedOrderNumber = result?.order_number;
+
+if (!savedOrderNumber) {
+  setBusy(button, false);
+  console.error('Unexpected RPC response:', data);
+  toast('Order created, but order number could not be received.', 'error');
+  return;
+}
     if(mode==='cart'){cart=[];saveCart();}
     closeOverlay();toast('Order submitted successfully. Order ID: '+savedOrderNumber,'success');
     const waText=['Hello PowerRun Industries, I placed an order/enquiry.',`Order ID: ${savedOrderNumber}`,`Name: ${name}`,`Mobile: ${mobile}`,...items.map(x=>`Product: ${x.product.name} × ${x.qty}`)].join('\n');
