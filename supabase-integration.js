@@ -101,6 +101,28 @@
     button.textContent = button.dataset.oldText || button.textContent;
   }
 }
+  function openDrawer(html) {
+  const overlay = document.getElementById('overlay');
+  const drawer = document.getElementById('drawer');
+
+  if (!overlay || !drawer) return;
+
+  drawer.innerHTML = html;
+  overlay.classList.add('show');
+  document.body.style.overflow = 'hidden';
+}
+
+function closeOverlay() {
+  const overlay = document.getElementById('overlay');
+  const drawer = document.getElementById('drawer');
+
+  if (drawer) drawer.innerHTML = '';
+  if (overlay) overlay.classList.remove('show');
+
+  document.body.style.overflow = '';
+}
+
+window.closeOverlay = closeOverlay;
 async function placeOrder2(id){
   const p = dbProducts.find(x => x.id === id);
   if(!p) return;
