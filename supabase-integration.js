@@ -94,7 +94,13 @@
     if (busy) { button.dataset.oldText = button.textContent; button.disabled = true; button.textContent = text; }
     else { button.disabled = false; button.textContent = button.dataset.oldText || button.textContent; }
   }
-  function openDrawer(html) { const drawer=document.getElementById('drawer'); if(!drawer)return; drawer.innerHTML=html; document.getElementById('overlay').classList.add('show'); }
+  function openDrawer(html) {
+    const drawer = document.getElementById('drawer');
+    const overlay = document.getElementById('overlay');
+    if (!drawer || !overlay) return;
+    drawer.innerHTML = html;
+    overlay.classList.add('show');
+  }
   function closeOverlay(){ document.getElementById('overlay')?.classList.remove('show'); }
   window.closeOverlay = closeOverlay;
 
@@ -120,9 +126,16 @@
     let q = sb.from('products').select('*, categories(name), product_images(id,image_url,storage_path,sort_order)').order('created_at', {ascending:true});
     if (!admin) q = q.eq('is_active', true);
     const { data, error } = await q;
-    if (error) { console.error('products:', error); if (Array.isArray(window.PR_SEED)) { dbProducts = window.PR_SEED.map(p=>({...p,_images:(p.images||[]).map((url,i)=>({id:'local-'+i,url,path:null,sort_order:i}))})); } else { dbProducts = []; } toast('Live product data could not be loaded; showing the available local fallback.', 'error'); return dbProducts; }
+    if (error) { console.error('products:', error); dbProducts = fallbackProducts(); toast('Live product data could not be loaded; showing the available local fallback.', 'error'); return dbProducts; }
     dbProducts = (data || []).map(normalizeProduct);
+    if (!dbProducts.length && !admin) {
+      dbProducts = fallbackProducts();
+      toast('The live catalogue has not been seeded yet; showing the included catalogue preview.', 'error');
+    }
     return dbProducts;
+  }
+  function fallbackProducts(){
+    return Array.isArray(window.PR_SEED) ? window.PR_SEED.map(p=>({...p,_images:(p.images||[]).map((url,i)=>({id:'local-'+i,url,path:null,sort_order:i}))})) : [];
   }
 
   function allCategoryNames() {
@@ -179,11 +192,11 @@
 
   function initials(name){ return String(name||'PR').split(/\s+/).filter(Boolean).slice(0,2).map(x=>x[0]).join('').toUpperCase(); }
 
- window.detailQty = 1;
+  window.detailQty = 1;
   function changeDetailQty(delta) {
-   window.detailQty = Math.max(1, window.detailQty + delta);
+    window.detailQty = Math.max(1, Number(window.detailQty || 1) + Number(delta || 0));
     const el = document.getElementById('detailQtyValue');
-   el.textContent = window.detailQty;
+    if (el) el.textContent = String(window.detailQty);
   }
   window.changeDetailQty = changeDetailQty;
   function viewProduct(id) {
@@ -202,7 +215,7 @@
           ${priceBlock(p)}
           <p>${esc(p.description||'')}</p>
           <div class="qty-stepper"><button type="button" aria-label="Decrease quantity" onclick="changeDetailQty(-1)">−</button><span id="detailQtyValue">1</span><button type="button" aria-label="Increase quantity" onclick="changeDetailQty(1)">+</button></div>
-          <div class="detail-actions"><button class="btn orange"onclick="buyNow(${JSON.stringify(p.id)},window.detailQty)")'>BUY NOW</button><button class="outline" onclick='addCart(${JSON.stringify(p.id)},detailQty)'>ADD TO CART</button><button class="outline" onclick='wa(${JSON.stringify(p.id)})'>WHATSAPP</button></div>
+          <div class="detail-actions"><button class="btn orange" type="button" onclick='buyNow(${JSON.stringify(p.id)}, window.detailQty)'>BUY NOW</button><button class="outline" type="button" onclick='addCart(${JSON.stringify(p.id)}, window.detailQty)'>ADD TO CART</button><button class="outline" type="button" onclick='wa(${JSON.stringify(p.id)})'>WHATSAPP</button></div>
           <div class="trust-badges"><div class="trust-badge"><span class="ic">🛡️</span><div><b>5 Years Warranty</b><small>On Selected Products</small></div></div><div class="trust-badge"><span class="ic">🚚</span><div><b>Pan India Delivery</b><small>Fast &amp; Safe Delivery</small></div></div></div>
           ${specBlock(p)}
         </div>
@@ -232,6 +245,7 @@
   window.openCart=openCart;
   function cartCheckout(){if(!cart.length){toast('Cart is empty.','error');return}customerForm('cart');}
   function cartWhatsApp(){const text=cart.map(x=>{const p=dbProducts.find(p=>String(p.id)===String(x.id));return p?`${p.name} × ${x.qty}`:''}).filter(Boolean).join('\n');if(text)location.href='https://wa.me/'+PR_WA+'?text='+encodeURIComponent('Hello PowerRun Industries, I want to order/enquire about:\n'+text);}
+  window.cartWhatsApp=cartWhatsApp;
 
   function wa(id){const p=dbProducts.find(x=>String(x.id)===String(id));if(!p)return;location.href='https://wa.me/'+PR_WA+'?text='+encodeURIComponent('Hello PowerRun Industries, I am interested in '+p.name+' ('+p.sku+'). Please share details and pricing.');}
   window.wa=wa;
@@ -260,41 +274,29 @@
     if(mode==='single'){const p=dbProducts.find(x=>String(x.id)===String(id));if(!p){setBusy(button,false);toast('Product not found.','error');return}items=[{product:p,qty:Math.max(1,Number(document.getElementById('cust_qty')?.value||1))}];}
     else items=cart.map(x=>({product:dbProducts.find(p=>String(p.id)===String(x.id)),qty:Number(x.qty||1)})).filter(x=>x.product);
     if(!items.length){setBusy(button,false);toast('No products selected.','error');return;}
-    const subtotal=items.reduce((s,x)=>s+(Number(x.product.price)||0)*x.qty,0);
-    const orderNumber='PR-'+new Date().toISOString().slice(0,10).replace(/-/g,'')+'-'+Math.random().toString(36).slice(2,7).toUpperCase();
-    const itemRows=items.map(x=>({product_id:String(x.product.id),product_name:x.product.name,quantity:x.qty,unit_price:x.product.price===null||x.product.price===''?0:Number(x.product.price),total_price:(Number(x.product.price)||0)*x.qty}));
- const { data, error } = await sb.rpc('create_website_order', {
-  p_customer: {
-    name,
-    mobile,
-    email,
-    address,
-    city,
-    state,
-    pincode
-  },
-  p_items: items.map(x => ({
-    product_id: x.product.id,
-    quantity: x.qty
-  }))
-});
-
-if (error) {
-  setBusy(button, false);
-  console.error('Order creation failed:', error);
-  toast('Order could not be saved: ' + error.message, 'error');
-  return;
-}
-
-const result = Array.isArray(data) ? data[0] : data;
-const savedOrderNumber = result?.order_number;
-
-if (!savedOrderNumber) {
-  setBusy(button, false);
-  console.error('Unexpected RPC response:', data);
-  toast('Order created, but order number could not be received.', 'error');
-  return;
-}
+    if (items.some(x => !Number.isFinite(Number(x.product.price)) || Number(x.product.price) <= 0)) {
+      setBusy(button, false);
+      toast('One or more selected products are available on request. Please use WhatsApp for a quote.', 'error');
+      return;
+    }
+    const { data, error } = await sb.rpc('create_website_order', {
+      p_customer: { name, mobile, email, address, city, state, pincode },
+      p_items: items.map(x => ({ product_id: x.product.id, quantity: x.qty }))
+    });
+    if (error) {
+      setBusy(button, false);
+      console.error('Order creation failed:', error);
+      toast('Order could not be saved: ' + error.message, 'error');
+      return;
+    }
+    const result = Array.isArray(data) ? data[0] : data;
+    const savedOrderNumber = result?.order_number;
+    if (!savedOrderNumber) {
+      setBusy(button, false);
+      console.error('Unexpected RPC response:', data);
+      toast('Order created, but order number could not be received.', 'error');
+      return;
+    }
     if(mode==='cart'){cart=[];saveCart();}
     closeOverlay();toast('Order submitted successfully. Order ID: '+savedOrderNumber,'success');
     const waText=['Hello PowerRun Industries, I placed an order/enquiry.',`Order ID: ${savedOrderNumber}`,`Name: ${name}`,`Mobile: ${mobile}`,...items.map(x=>`Product: ${x.product.name} × ${x.qty}`)].join('\n');
@@ -309,6 +311,21 @@ if (!savedOrderNumber) {
   function openLeadForm(){openDrawer(`<button class="close" onclick="closeOverlay()">×</button><h2>Customer Enquiry</h2><p class="small-note">Tell us what energy product or solution you need.</p><form class="form" onsubmit="submitLead(event)"><label>Name *<input id="ln" required></label><label>Mobile *<input id="lm" required inputmode="tel" pattern="[6-9][0-9]{9}"></label><label>Email<input id="le" type="email"></label><label>City<input id="lc"></label><label>Message<textarea id="lmsg" placeholder="Product, quantity or requirement"></textarea></label><button class="btn orange" id="leadBtn" type="submit">SUBMIT ENQUIRY</button></form>`);}
   async function submitLead(event){event.preventDefault();const btn=document.getElementById('leadBtn');setBusy(btn,true,'SUBMITTING…');const name=document.getElementById('ln').value.trim(),mobile=document.getElementById('lm').value.trim();if(!/^[6-9]\d{9}$/.test(mobile)){setBusy(btn,false);toast('Enter a valid 10-digit mobile number.','error');return}const {error}=await sb.from('leads').insert({product_id:null,name,mobile,email:document.getElementById('le').value.trim()||null,city:document.getElementById('lc').value.trim()||null,message:document.getElementById('lmsg').value.trim()||null,source:'website',status:'new'});if(error){setBusy(btn,false);toast('Enquiry could not be submitted: '+error.message,'error');return}closeOverlay();toast('Enquiry submitted successfully.','success');}
   window.openLeadForm=openLeadForm;window.submitLead=submitLead;
+
+  async function openAccount(){
+    const { data: { session } } = await sb.auth.getSession();
+    if (!session) {
+      openDrawer(`<button class="close" type="button" onclick="closeOverlay()">×</button><h2>My Account</h2><p class="small-note">Sign in to view orders associated with your account.</p><form class="form" onsubmit="accountLogin(event)"><label>Email<input id="accountEmail" type="email" autocomplete="username" required></label><label>Password<input id="accountPassword" type="password" autocomplete="current-password" required></label><button class="btn orange" id="accountLoginBtn" type="submit">SIGN IN</button></form>`);
+      return;
+    }
+    const { data: orders, error } = await sb.from('orders').select('order_number,total_amount,order_status,payment_status,created_at').order('created_at',{ascending:false});
+    if (error) { toast('Your orders could not be loaded: ' + error.message, 'error'); return; }
+    const rows = (orders || []).map(o => `<tr><td><b>${esc(o.order_number)}</b></td><td>${money(o.total_amount)}</td><td>${esc(o.order_status || 'new')}</td><td>${new Date(o.created_at).toLocaleDateString('en-IN')}</td></tr>`).join('');
+    openDrawer(`<button class="close" type="button" onclick="closeOverlay()">×</button><h2>My Orders</h2><p class="small-note">Signed in as ${esc(session.user.email || '')}</p><div class="table-scroll"><table><thead><tr><th>Order</th><th>Total</th><th>Status</th><th>Date</th></tr></thead><tbody>${rows || '<tr><td colspan="4">No orders are associated with this account yet.</td></tr>'}</tbody></table></div><button class="outline" type="button" onclick="accountLogout()">SIGN OUT</button>`);
+  }
+  async function accountLogin(event){ event.preventDefault(); const btn=document.getElementById('accountLoginBtn'); setBusy(btn,true,'SIGNING IN…'); const {error}=await sb.auth.signInWithPassword({email:document.getElementById('accountEmail').value.trim(),password:document.getElementById('accountPassword').value}); if(error){setBusy(btn,false);toast('Sign in failed: '+error.message,'error');return;} await openAccount(); }
+  async function accountLogout(){ await sb.auth.signOut(); closeOverlay(); toast('Signed out.','success'); }
+  window.openAccount=openAccount; window.accountLogin=accountLogin; window.accountLogout=accountLogout;
 
   function focusSearch(){openDrawer(`<button class="close" onclick="closeOverlay()">×</button><h2>Search Products</h2><div class="form"><label>Product, SKU, category or description<input id="drawerSearch" autofocus placeholder="e.g. 51.2V 600Ah" oninput="runDrawerSearch(this.value)"></label></div><div id="drawerSearchResults"><p>Start typing to search.</p></div>`);setTimeout(()=>document.getElementById('drawerSearch')?.focus(),50);}
   function runDrawerSearch(q){const box=document.getElementById('drawerSearchResults');if(!box)return;const value=String(q||'').trim().toLowerCase();if(!value){box.innerHTML='<p>Start typing to search.</p>';return}const found=dbProducts.filter(p=>p.visible&&productMatches(p,value)).slice(0,20);box.innerHTML=found.length?found.map(p=>`<button class="search-result" onclick='viewProduct(${JSON.stringify(p.id)})'><span>${esc(p.name)}</span><small>${esc(p.category)} • ${money(p.price)}</small></button>`).join(''):'<div class="empty-state"><p>No matching product found.</p></div>';}
