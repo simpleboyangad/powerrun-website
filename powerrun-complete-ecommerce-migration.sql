@@ -505,8 +505,91 @@ for each row
 execute function set_ticket_number();
 
 -- ============================================================================
+-- 16. SECURE PUBLIC ORDER TRACKING FUNCTION
+-- ============================================================================
+-- This function provides secure public order tracking without exposing sensitive data
+-- It requires BOTH order number AND customer mobile for dual verification
+-- Uses SECURITY DEFINER to run as database owner
+-- Read-only function - no INSERT/UPDATE/DELETE capability
+-- Returns only 7 safe fields - no PII, address, payment info, or internal notes
+
+-- Revoke EXECUTE from PUBLIC first (security best practice)
+revoke execute on function public.track_order_public(text, text) from public cascade;
+
+-- Create secure tracking function
+create or replace function public.track_order_public(
+  p_order_number text,
+  p_customer_mobile text
+)
+returns table (
+  order_number text,
+  order_status text,
+  payment_status text,
+  created_at timestamp,
+  tracking_number text,
+  courier_partner text,
+  estimated_delivery_date date
+)
+language plpgsql
+security definer
+set search_path = ''
+as $$
+declare
+  v_found boolean := false;
+begin
+  -- Input validation: order_number must not be null or empty
+  if p_order_number is null or trim(p_order_number) = '' then
+    raise exception 'Invalid order number';
+  end if;
+
+  -- Input validation: customer_mobile must not be null or empty
+  if p_customer_mobile is null or trim(p_customer_mobile) = '' then
+    raise exception 'Invalid mobile number';
+  end if;
+
+  -- Normalize and validate order_number format
+  -- Format: PR-YYMMDDHH24MISSMS-NNN (e.g., PR-26091313123456-789)
+  p_order_number := trim(p_order_number);
+  if not (p_order_number ~ '^PR-\d{14}-\d{3}$') then
+    raise exception 'Invalid order number format';
+  end if;
+
+  -- Normalize customer mobile (remove whitespace)
+  p_customer_mobile := trim(p_customer_mobile);
+  -- Validate mobile: exactly 10 digits (Indian format)
+  if not (p_customer_mobile ~ '^\d{10}$') then
+    raise exception 'Invalid mobile number format';
+  end if;
+
+  -- Execute tracking query with strict dual verification
+  -- LEFT JOIN shipments so tracking data is optional
+  -- All table/function references are explicitly qualified
+  return query
+  select
+    public.orders.order_number,
+    public.orders.order_status,
+    public.orders.payment_status,
+    public.orders.created_at,
+    public.shipments.tracking_number,
+    public.shipments.courier_name,
+    public.shipments.estimated_delivery_date
+  from public.orders
+  left join public.shipments on public.orders.id = public.shipments.order_id
+  where public.orders.order_number = p_order_number
+    and public.orders.customer_mobile = p_customer_mobile
+  limit 1;
+
+exception when others then
+  -- Generic error - do not expose database details
+  raise exception 'Order tracking information not available';
+end;
+$$;
+
+-- ============================================================================
 -- GRANTS
 -- ============================================================================
 
 grant execute on function public.get_order_details(uuid) to authenticated;
 grant execute on function public.generate_ticket_number() to authenticated;
+-- Grant public tracking function to anon and authenticated only (never PUBLIC)
+grant execute on function public.track_order_public(text, text) to anon, authenticated;

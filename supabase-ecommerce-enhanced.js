@@ -675,9 +675,59 @@
     const orderId = document.getElementById('track_order').value.trim();
     const mobile = document.getElementById('track_mobile').value.trim();
 
-    const { data, error } = await sb.from('orders').select('*').eq('order_number', orderId).eq('customer_mobile', mobile).maybeSingle();
-    if (error || !data) { toast('Order not found. Please check your order ID and mobile number.', 'error'); return; }
-    await viewOrderDetail(data.id);
+    // Call secure RPC function for public order tracking
+    // This function requires both order_number AND customer_mobile for dual verification
+    const { data, error } = await sb.rpc('track_order_public', {
+      p_order_number: orderId,
+      p_customer_mobile: mobile
+    });
+
+    if (error || !data || data.length === 0) {
+      toast('Order not found. Please check your order ID and mobile number.', 'error');
+      return;
+    }
+
+    // Display public tracking information (no sensitive data)
+    const trackingInfo = data[0];
+    openDrawer(`
+      <button class="close" type="button" onclick="closeOverlay()">×</button>
+      <h2>Track Your Order</h2>
+
+      <div class="order-summary">
+        <div style="margin-bottom:12px">
+          <div style="font-size:12px;color:#777">ORDER ID</div>
+          <div style="font-size:18px;font-weight:900">${esc(trackingInfo.order_number)}</div>
+        </div>
+        <div style="font-size:12px;color:#666">Placed on ${new Date(trackingInfo.created_at).toLocaleString('en-IN')}</div>
+      </div>
+
+      <h3>Order Status</h3>
+      <div class="order-summary">
+        <div style="padding:12px;background:#f7f7f7;border-radius:8px;border-left:4px solid var(--orange)">
+          <div style="font-weight:800;color:var(--orange);text-transform:uppercase">${esc(trackingInfo.order_status)}</div>
+          <div style="font-size:12px;color:#666;margin-top:4px">Payment: ${esc(trackingInfo.payment_status)}</div>
+        </div>
+      </div>
+
+      ${trackingInfo.tracking_number ? `
+        <h3>Shipment Tracking</h3>
+        <div class="order-summary">
+          <div style="font-size:13px;line-height:1.6">
+            <b>Tracking Number:</b> ${esc(trackingInfo.tracking_number)}<br>
+            ${trackingInfo.courier_partner ? `<b>Courier:</b> ${esc(trackingInfo.courier_partner)}<br>` : ''}
+            ${trackingInfo.estimated_delivery_date ? `<b>Expected Delivery:</b> ${new Date(trackingInfo.estimated_delivery_date).toLocaleDateString('en-IN')}` : ''}
+          </div>
+        </div>
+      ` : `
+        <div class="order-summary">
+          <p style="color:#666;font-size:13px">📦 Your order is being processed. Tracking information will be available once it ships.</p>
+        </div>
+      `}
+
+      <div style="margin-top:20px">
+        <button class="outline" type="button" onclick='contactSupport("${esc(trackingInfo.order_number)}")'>CONTACT SUPPORT</button>
+      </div>
+    `);
   }
   window.submitTrackOrder = submitTrackOrder;
 
