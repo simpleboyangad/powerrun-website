@@ -320,12 +320,12 @@ function toggleMobileMenu(){document.getElementById('mobileNav')?.classList.togg
 <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2.48.0/dist/umd/supabase.js" onerror="window.PR_LOAD_FAILED=true"></script>
 <script src="./supabase-integration.js" onerror="window.PR_LOAD_FAILED=true"></script>
 <script>
-/* Production safety net: if the real Supabase integration did not load
-   (network failure, blocked CDN, etc.), disable admin access and warn
-   the visitor instead of silently running the local demo/fallback layer. */
+/* Production safety net: if there's a critical error (not just Supabase offline),
+   disable admin access. Fallback mode allows product browsing with seed data. */
 (function(){
   function lockDownIfOffline(){
-    if (window.PR_LOAD_FAILED || typeof window.PR_SB === 'undefined') {
+    // Only lock down if explicitly marked as failed (not just Supabase unavailable)
+    if (window.PR_LOAD_FAILED === true) {
       document.querySelectorAll('.icon').forEach(function(el){
         if ((el.getAttribute('onclick')||'').indexOf('openAdmin') !== -1) {
           el.setAttribute('aria-disabled','true');
