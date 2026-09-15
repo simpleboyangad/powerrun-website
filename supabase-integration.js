@@ -13,11 +13,17 @@
     'EV Batteries','UPS & Power Backup','Accessories & Spare Parts'
   ];
 
-  const { createClient } = window.supabase;
-  const sb = createClient(SUPABASE_URL, SUPABASE_PUBLISHABLE_KEY, {
-    auth: { persistSession: true, autoRefreshToken: true, detectSessionInUrl: true }
-  });
-  window.PR_SB = sb;
+  // Initialize Supabase if library loaded, otherwise use fallback mode
+  let sb = null;
+  if (window.supabase && window.supabase.createClient) {
+    const { createClient } = window.supabase;
+    sb = createClient(SUPABASE_URL, SUPABASE_PUBLISHABLE_KEY, {
+      auth: { persistSession: true, autoRefreshToken: true, detectSessionInUrl: true }
+    });
+    window.PR_SB = sb;
+  } else {
+    console.warn('Supabase library not available - using fallback mode with seed products only');
+  }
 
   let dbProducts = [];
   let dbCategories = [];
@@ -116,6 +122,12 @@
   }
 
   async function loadCategories() {
+    // Use fallback if Supabase is not available
+    if (!sb) {
+      dbCategories = REQUIRED_CATEGORIES.map((name,i)=>({id:'local-'+i,name,is_active:true,sort_order:i}));
+      return dbCategories;
+    }
+
     const { data, error } = await sb.from('categories').select('*').eq('is_active', true).order('sort_order', {ascending:true});
     if (error) { console.error('categories:', error); dbCategories = dbCategories.length ? dbCategories : REQUIRED_CATEGORIES.map((name,i)=>({id:'local-'+i,name,is_active:true,sort_order:i})); return dbCategories; }
     dbCategories = data || [];
@@ -123,6 +135,15 @@
   }
 
   async function loadProducts(admin=false) {
+    // Use fallback if Supabase is not available
+    if (!sb) {
+      dbProducts = fallbackProducts();
+      if (!admin && dbProducts.length) {
+        toast('Using local product catalog (Supabase not available)', 'info');
+      }
+      return dbProducts;
+    }
+
     let q = sb.from('products').select('*, categories(name), product_images(id,image_url,storage_path,sort_order)').order('created_at', {ascending:true});
     if (!admin) q = q.eq('is_active', true);
     const { data, error } = await q;
@@ -266,7 +287,12 @@
 
   async function submitCustomer(event,mode,id){
     event.preventDefault();
-    const button=document.getElementById('placeOrderBtn'); setBusy(button,true,'SUBMITTING…');
+    const button=document.getElementById('placeOrderBtn');
+    if (!sb) {
+      toast('Order system is currently unavailable. Please contact us via WhatsApp or email to place your order.', 'error');
+      return;
+    }
+    setBusy(button,true,'SUBMITTING…');
     const name=document.getElementById('cust_name').value.trim(), mobile=document.getElementById('cust_mobile').value.trim();
     if(!/^[6-9]\d{9}$/.test(mobile)){setBusy(button,false);toast('Please enter a valid 10-digit Indian mobile number.','error');return;}
     const email=document.getElementById('cust_email').value.trim()||null, address=document.getElementById('cust_address').value.trim()||null, city=document.getElementById('cust_city').value.trim()||null, state=document.getElementById('cust_state').value.trim()||null, pincode=document.getElementById('cust_pin').value.trim()||null;
@@ -340,7 +366,7 @@
 
   async function adminLoginModal(){openDrawer(`<button class="close" onclick="closeOverlay()">×</button><h2>Admin Login</h2><p>Secure PowerRun Industries administration.</p><form class="form" onsubmit="doAdminLogin(event)"><label>Email<input id="ae" type="email" autocomplete="username" required></label><label>Password<input id="ap" type="password" autocomplete="current-password" required></label><button class="btn orange" id="loginBtn" type="submit">LOGIN</button></form>`);}
   async function doAdminLogin(event){event.preventDefault();const btn=document.getElementById('loginBtn');setBusy(btn,true,'LOGIN…');const email=document.getElementById('ae').value.trim(),password=document.getElementById('ap').value;const {error}=await sb.auth.signInWithPassword({email,password});if(error){setBusy(btn,false);toast('Login failed: '+error.message,'error');return}const {data:{user}}=await sb.auth.getUser();const {data:admin,error:adminErr}=await sb.from('admin_users').select('user_id,name').eq('user_id',user.id).maybeSingle();if(adminErr||!admin){await sb.auth.signOut();setBusy(btn,false);toast('This account is not an authorized PowerRun admin.','error');return}closeOverlay();document.getElementById('site').style.display='none';document.getElementById('admin').classList.add('show');await renderAdmin();}
-  async function openAdmin(){const {data:{session}}=await sb.auth.getSession();if(session){const {data:admin}=await sb.from('admin_users').select('user_id').eq('user_id',session.user.id).maybeSingle();if(admin){document.getElementById('site').style.display='none';document.getElementById('admin').classList.add('show');await renderAdmin();return}}adminLoginModal();}
+  async function openAdmin(){if(!sb){toast('Admin system not available (Supabase offline)','error');return;}const {data:{session}}=await sb.auth.getSession();if(session){const {data:admin}=await sb.from('admin_users').select('user_id').eq('user_id',session.user.id).maybeSingle();if(admin){document.getElementById('site').style.display='none';document.getElementById('admin').classList.add('show');await renderAdmin();return}}adminLoginModal();}
   async function closeAdmin(){await sb.auth.signOut();document.getElementById('admin').classList.remove('show');document.getElementById('site').style.display='block';await initProduction();}
   window.openAdmin=openAdmin;window.closeAdmin=closeAdmin;window.doAdminLogin=doAdminLogin;
 
