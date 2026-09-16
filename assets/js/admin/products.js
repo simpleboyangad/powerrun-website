@@ -220,6 +220,19 @@
             PR.esc(p.stock === null || p.stock === undefined ? 0 : p.stock) + '"></label>' +
         '</div>' +
 
+        '<div class="form-grid three">' +
+          '<label>GST Rate (%)<select id="pf_gst_rate">' +
+            [0, 5, 12, 18, 28].map(function (rate) {
+              return '<option value="' + rate + '"' +
+                (Number(p.gst_rate || 0) === rate ? ' selected' : '') + '>' + rate + '%</option>';
+            }).join('') +
+            '</select><span class="hint">0% means no GST line on the invoice.</span></label>' +
+          '<label>HSN Code<input id="pf_hsn" maxlength="20" value="' + PR.esc(p.hsn_code || '') +
+            '"><span class="hint">Required on a GST invoice.</span></label>' +
+          '<label class="inline" style="align-self:end"><input id="pf_gst_incl" type="checkbox"' +
+            (p.price_includes_gst === false ? '' : ' checked') + '> Price already includes GST</label>' +
+        '</div>' +
+
         '<div class="form-grid">' +
           '<label>Availability<select id="pf_availability">' +
             ['in_stock', 'out_of_stock', 'preorder', 'discontinued'].map(function (value) {
@@ -492,6 +505,9 @@
       compare_price: mrp,
       stock: stock,
       availability: document.getElementById('pf_availability').value,
+      gst_rate: Number(document.getElementById('pf_gst_rate').value) || 0,
+      hsn_code: document.getElementById('pf_hsn').value.trim() || null,
+      price_includes_gst: document.getElementById('pf_gst_incl').checked,
       warranty: document.getElementById('pf_warranty').value.trim() || null,
       specifications: collectSpecs(),
       features: featuresText.split('\n').map(function (line) { return line.trim(); }).filter(Boolean),

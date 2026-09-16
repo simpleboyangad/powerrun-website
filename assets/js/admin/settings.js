@@ -24,6 +24,7 @@
     var shipping = settings.shipping || { flat_rate: 0, free_above: 0 };
     var payments = settings.payments || { razorpay_enabled: false, cod_enabled: true };
     var store = settings.store || {};
+    var company = settings.company || {};
     var razorpayConfigured = !!PR.config.RAZORPAY_KEY_ID;
 
     host.innerHTML =
@@ -87,6 +88,35 @@
             'from <code>/assets/js/config.js</code>.</p>' +
           '<div class="page-actions" style="justify-content:flex-end">' +
             '<button class="btn" type="submit" id="saveStoreBtn">SAVE CONTACT DETAILS</button></div>' +
+        '</form>' +
+      '</div>' +
+
+      '<div class="panel">' +
+        '<h2>Company &amp; GST (shown on invoices)</h2>' +
+        '<form class="form" id="companyForm">' +
+          '<div id="companyMessage"></div>' +
+          '<div class="form-grid">' +
+            '<label>Legal Name<input id="co_legal" maxlength="160" value="' +
+              PR.esc(company.legal_name || 'PowerRun Industries') + '"></label>' +
+            '<label>GSTIN<input id="co_gstin" maxlength="20" value="' + PR.esc(company.gstin || '') +
+              '"><span class="hint">15 characters. Leave blank if not GST registered.</span></label>' +
+          '</div>' +
+          '<div class="form-grid">' +
+            '<label>Address Line 1<input id="co_addr1" maxlength="160" value="' +
+              PR.esc(company.address_line1 || '') + '"></label>' +
+            '<label>Address Line 2<input id="co_addr2" maxlength="160" value="' +
+              PR.esc(company.address_line2 || '') + '"></label>' +
+          '</div>' +
+          '<div class="form-grid three">' +
+            '<label>City<input id="co_city" maxlength="80" value="' + PR.esc(company.city || '') + '"></label>' +
+            '<label>State<select id="co_state"></select>' +
+              '<span class="hint">Decides CGST+SGST vs IGST on each invoice.</span></label>' +
+            '<label>Pincode<input id="co_pincode" maxlength="6" value="' + PR.esc(company.pincode || '') + '"></label>' +
+          '</div>' +
+          '<p class="hint">GST only appears on an invoice when the product carries a GST rate. ' +
+            'Set that per product in Products &rarr; Edit.</p>' +
+          '<div class="page-actions" style="justify-content:flex-end">' +
+            '<button class="btn" type="submit" id="saveCompanyBtn">SAVE COMPANY DETAILS</button></div>' +
         '</form>' +
       '</div>' +
 
@@ -177,6 +207,23 @@
         whatsapp: document.getElementById('st_whatsapp').value.trim(),
         email: document.getElementById('st_email').value.trim()
       }, document.getElementById('saveStoreBtn'), 'storeMessage');
+    });
+
+    PR.fillStates(document.getElementById('co_state'));
+    var companyState = (settings.company || {}).state;
+    if (companyState) document.getElementById('co_state').value = companyState;
+
+    document.getElementById('companyForm').addEventListener('submit', function (event) {
+      event.preventDefault();
+      saveSetting('company', {
+        legal_name: document.getElementById('co_legal').value.trim(),
+        gstin: document.getElementById('co_gstin').value.trim().toUpperCase(),
+        address_line1: document.getElementById('co_addr1').value.trim(),
+        address_line2: document.getElementById('co_addr2').value.trim(),
+        city: document.getElementById('co_city').value.trim(),
+        state: document.getElementById('co_state').value,
+        pincode: document.getElementById('co_pincode').value.trim()
+      }, document.getElementById('saveCompanyBtn'), 'companyMessage');
     });
 
     document.getElementById('settingsLogout').addEventListener('click', function () {
