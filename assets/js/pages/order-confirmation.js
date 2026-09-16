@@ -68,6 +68,13 @@
           : 'Our team will call you within 24 hours to confirm payment and delivery.') +
         ' Please keep your Order ID for reference.</p>' +
 
+      '<div class="order-summary" style="margin-top:20px">' +
+        '<b>Keep track of this order</b>' +
+        '<p class="small-note" style="margin:6px 0 10px">Create a free account to see this order, ' +
+        'its invoice and anything you order later — all in one place.</p>' +
+        '<a class="outline" href="/account/">CREATE AN ACCOUNT</a>' +
+      '</div>' +
+
       '<div style="display:flex;gap:8px;flex-wrap:wrap;margin-top:16px">' +
         '<a class="btn orange" href="/products/">CONTINUE SHOPPING</a>' +
         '<a class="outline" href="/track-order/?order=' + encodeURIComponent(order.order_number) + '">VIEW ORDER</a>' +

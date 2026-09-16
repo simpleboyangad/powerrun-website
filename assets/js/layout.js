@@ -47,6 +47,7 @@
         '<div class="actions">' +
           '<a class="icon" href="/products/" aria-label="Search products" title="Search products">⌕</a>' +
           '<a class="icon" href="/track-order/" aria-label="Track your order" title="Track your order">◴</a>' +
+          '<a class="icon" href="/account/" aria-label="My account" title="My account">👤</a>' +
           '<a class="icon cart" href="/cart/" aria-label="View cart" title="View cart">' +
             '🛒<i class="badge" id="cartCount">0</i>' +
           '</a>' +
@@ -93,6 +94,7 @@
             '<li><a href="/warranty/">Warranty Registration</a></li>' +
             '<li><a href="/service/">Service Request</a></li>' +
             '<li><a href="/track-order/">Track Order</a></li>' +
+            '<li><a href="/account/">My Account</a></li>' +
             '<li><a href="https://wa.me/' + PR.esc(cfg.WHATSAPP) + '" target="_blank" rel="noopener">WhatsApp Support</a></li>' +
           '</ul></div>' +
         '</div>' +

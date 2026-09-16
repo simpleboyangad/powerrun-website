@@ -23,8 +23,8 @@
   (function forwardPasswordRecovery() {
     var hash = window.location.hash || '';
     if (hash.indexOf('type=recovery') === -1) return;
-    if (window.location.pathname.indexOf('/admin/reset-password') === 0) return;
-    window.location.replace('/admin/reset-password/' + hash);
+    if (window.location.pathname.indexOf('/set-password') === 0) return;
+    window.location.replace('/set-password/' + hash);
   })();
 
   /* ---------------------------------------------------------------- client */

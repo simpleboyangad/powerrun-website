@@ -1,0 +1,64 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>My Details | PowerRun Industries</title>
+<meta name="description" content="Your saved PowerRun Industries delivery details.">
+<meta name="robots" content="noindex,nofollow">
+<meta name="theme-color" content="#ff5a00">
+<link rel="icon" href="/assets/powerrun-logo.png">
+<link rel="stylesheet" href="/assets/css/site.css?v=1756c023">
+</head>
+<body>
+<a class="skip-link" href="#main">Skip to content</a>
+<div id="pr-header"></div>
+<main id="main">
+    <section class="page-head">
+      <nav class="breadcrumb" aria-label="Breadcrumb" style="color:#999"><a href="/">Home</a> / <a href="/account/">My Account</a> / <span aria-current="page" style="color:#fff">My Details</span></nav>
+      <h1>My Details</h1>
+      <p>Saved here so checkout fills itself in next time.</p>
+    </section>
+    <section class="section">
+      <div id="accountNav"></div>
+      <div class="cart-layout">
+        <div class="panel">
+          <h2>Delivery Details</h2>
+          <form class="form" id="profileForm" novalidate>
+            <div class="form-grid">
+              <label>Full Name <span class="req">*</span><input id="pf_name" required maxlength="120" autocomplete="name"></label>
+              <label>Mobile Number<input id="pf_mobile" inputmode="numeric" maxlength="10" autocomplete="tel-national"></label>
+            </div>
+            <label>Email Address<input id="pf_email" type="email" maxlength="160" readonly></label>
+            <label>Address<textarea id="pf_address" maxlength="400" autocomplete="street-address"></textarea></label>
+            <div class="form-grid">
+              <label>City<input id="pf_city" maxlength="80"></label>
+              <label>State<select id="pf_state"></select></label>
+            </div>
+            <label>Pincode<input id="pf_pincode" inputmode="numeric" maxlength="6" style="max-width:220px"></label>
+            <button class="btn orange" id="profileBtn" type="submit">SAVE MY DETAILS</button>
+          </form>
+        </div>
+        <aside>
+          <div class="panel">
+            <h2>Account</h2>
+            <p class="small-note" id="profileWho"></p>
+            <button class="outline block" type="button" id="changePasswordBtn" style="margin-top:10px">CHANGE PASSWORD</button>
+            <button class="outline block" type="button" id="signOutBtn" style="margin-top:8px">SIGN OUT</button>
+          </div>
+        </aside>
+      </div>
+    </section>
+
+</main>
+<div id="pr-footer"></div>
+<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2.48.0/dist/umd/supabase.js"></script>
+<script src="/assets/js/config.js?v=1756c023"></script>
+<script src="/assets/js/core.js?v=1756c023"></script>
+<script src="/assets/js/cart.js?v=1756c023"></script>
+<script src="/assets/js/layout.js?v=1756c023"></script>
+<script src="/assets/js/catalog.js?v=1756c023"></script>
+<script src="/assets/js/account.js?v=1756c023"></script>
+<script src="/assets/js/pages/account-profile.js?v=1756c023"></script>
+</body>
+</html>

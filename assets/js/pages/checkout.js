@@ -216,6 +216,29 @@
     }
   }
 
+  /* A signed-in customer should not have to retype what they already saved. */
+  async function prefillFromProfile() {
+    if (!PR.account) return;
+    try {
+      var profile = await PR.account.loadProfile();
+      if (!profile) return;
+      var map = { ck_name: 'name', ck_mobile: 'mobile', ck_email: 'email',
+                  ck_address: 'address', ck_city: 'city', ck_state: 'state', ck_pincode: 'pincode' };
+      Object.keys(map).forEach(function (id) {
+        var el = document.getElementById(id);
+        if (el && !el.value && profile[map[id]]) el.value = profile[map[id]];
+      });
+      var form = document.getElementById('checkoutForm');
+      var note = document.createElement('p');
+      note.className = 'small-note';
+      note.innerHTML = 'Filled in from your saved details. ' +
+        '<a href="/account/profile/" style="color:var(--orange);font-weight:800">Edit them</a>';
+      form.prepend(note);
+    } catch (err) {
+      console.warn('[PowerRun] could not prefill from the profile:', err.message);
+    }
+  }
+
   async function init() {
     PR.mountLayout('products');
     PR.fillStates(document.getElementById('ck_state'));
@@ -245,6 +268,7 @@
       }
 
       document.getElementById('checkoutForm').addEventListener('submit', submit);
+      prefillFromProfile();
     } catch (err) {
       PR.toast(err.message, 'error');
     }

@@ -116,6 +116,7 @@
         '<h2>Session</h2>' +
         '<p class="hint" style="margin-top:0">Signed in as <b>' +
           PR.esc((PRA.session && PRA.session.user && PRA.session.user.email) || '') + '</b></p>' +
+        '<a class="btn gray" href="/set-password/" style="margin-right:8px">CHANGE PASSWORD</a>' +
         '<button class="btn danger" type="button" id="settingsLogout">SIGN OUT</button>' +
       '</div>';
 

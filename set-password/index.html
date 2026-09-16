@@ -1,0 +1,56 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>Set a New Password | PowerRun Industries</title>
+<meta name="robots" content="noindex,nofollow,noarchive">
+<meta name="referrer" content="no-referrer">
+<meta name="theme-color" content="#141414">
+<link rel="icon" href="/assets/powerrun-logo.png">
+<link rel="stylesheet" href="/assets/css/admin.css?v=1756c023">
+</head>
+<body>
+<div class="login-wrap">
+  <div class="login-card">
+    <img src="/assets/powerrun-logo.png" alt="PowerRun Industries">
+    <h1>Set a New Password</h1>
+    <p class="sub">Choose a new password for your PowerRun account.</p>
+
+    <div id="resetNotice"></div>
+
+    <p id="resetLoading" class="hint">Checking your reset link&hellip;</p>
+
+    <form class="form" id="resetForm" novalidate hidden>
+      <p class="hint" style="margin-top:0">Signed in as <b id="resetWho"></b></p>
+      <label>New Password <span class="req">*</span>
+        <input id="rp_password" type="password" required autocomplete="new-password" minlength="8">
+        <span class="hint">At least 8 characters, with a capital, a lower-case letter, a number and a symbol.</span>
+      </label>
+      <label>Confirm New Password <span class="req">*</span>
+        <input id="rp_confirm" type="password" required autocomplete="new-password" minlength="8">
+      </label>
+      <button class="btn block" id="resetBtn" type="submit">SAVE NEW PASSWORD</button>
+    </form>
+
+    <div id="resetBlocked" hidden>
+      <div class="form-message error" role="alert">
+        This page needs a valid password-reset link.
+      </div>
+      <p class="hint">
+        Open the most recent <b>&ldquo;Reset your password&rdquo;</b> email from Supabase and click the
+        link inside it. Those links expire, so if it has been a while, send yourself a new one from
+        Supabase &rarr; Authentication &rarr; Users.
+      </p>
+      <a class="btn block gray" href="/account/" style="margin-top:12px">BACK TO SIGN IN</a>
+    </div>
+
+    <a class="back" href="/">&larr; Back to powerrun.in</a>
+  </div>
+</div>
+<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2.48.0/dist/umd/supabase.js"></script>
+<script src="/assets/js/config.js?v=1756c023"></script>
+<script src="/assets/js/core.js?v=1756c023"></script>
+<script src="/assets/js/admin/reset-password.js?v=1756c023"></script>
+</body>
+</html>
