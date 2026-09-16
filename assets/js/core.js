@@ -12,6 +12,21 @@
 
   PR.config = cfg;
 
+  /* ------------------------------------------------- password-reset landing
+   * Supabase sends "Reset your password" links to the project's Site URL, which
+   * is the storefront home page. That page has no way to handle a recovery
+   * token, so the visitor just lands on the shop and nothing happens.
+   *
+   * Catch that here, BEFORE the Supabase client is created (it would otherwise
+   * consume and clear the fragment), and forward to the page that can act on it.
+   */
+  (function forwardPasswordRecovery() {
+    var hash = window.location.hash || '';
+    if (hash.indexOf('type=recovery') === -1) return;
+    if (window.location.pathname.indexOf('/admin/reset-password') === 0) return;
+    window.location.replace('/admin/reset-password/' + hash);
+  })();
+
   /* ---------------------------------------------------------------- client */
   PR.sb = null;
   PR.clientError = null;
