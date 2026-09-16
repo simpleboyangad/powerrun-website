@@ -1,0 +1,11 @@
+# Never commit credentials
+*.token
+*.env
+.env
+.env.*
+secrets/
+.powerrun/
+
+# Local tooling
+.claude/settings.local.json
+__pycache__/

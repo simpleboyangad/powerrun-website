@@ -1,4 +1,36 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">
-  <url><loc>https://powerrun.in/</loc></url>
+  <url><loc>https://powerrun.in/</loc><lastmod>2026-09-15</lastmod><changefreq>weekly</changefreq><priority>1.0</priority></url>
+  <url><loc>https://powerrun.in/about/</loc><lastmod>2026-09-15</lastmod><changefreq>weekly</changefreq><priority>0.8</priority></url>
+  <url><loc>https://powerrun.in/products/</loc><lastmod>2026-09-15</lastmod><changefreq>weekly</changefreq><priority>0.8</priority></url>
+  <url><loc>https://powerrun.in/warranty/</loc><lastmod>2026-09-15</lastmod><changefreq>weekly</changefreq><priority>0.8</priority></url>
+  <url><loc>https://powerrun.in/service/</loc><lastmod>2026-09-15</lastmod><changefreq>weekly</changefreq><priority>0.8</priority></url>
+  <url><loc>https://powerrun.in/dealer/</loc><lastmod>2026-09-15</lastmod><changefreq>weekly</changefreq><priority>0.8</priority></url>
+  <url><loc>https://powerrun.in/contact/</loc><lastmod>2026-09-15</lastmod><changefreq>weekly</changefreq><priority>0.8</priority></url>
+  <url><loc>https://powerrun.in/track-order/</loc><lastmod>2026-09-15</lastmod><changefreq>weekly</changefreq><priority>0.8</priority></url>
+  <url><loc>https://powerrun.in/product/?slug=pr-hybrid-inverter-8-2kw</loc><lastmod>2026-09-15</lastmod><changefreq>weekly</changefreq><priority>0.7</priority></url>
+  <url><loc>https://powerrun.in/product/?slug=pr-hybrid-inverter-10-2kw</loc><lastmod>2026-09-15</lastmod><changefreq>weekly</changefreq><priority>0.7</priority></url>
+  <url><loc>https://powerrun.in/product/?slug=pr-hybrid-inverter-12kw</loc><lastmod>2026-09-15</lastmod><changefreq>weekly</changefreq><priority>0.7</priority></url>
+  <url><loc>https://powerrun.in/product/?slug=pr-lfp-battery-25-6v-100ah</loc><lastmod>2026-09-15</lastmod><changefreq>weekly</changefreq><priority>0.7</priority></url>
+  <url><loc>https://powerrun.in/product/?slug=pr-lfp-battery-25-6v-200ah</loc><lastmod>2026-09-15</lastmod><changefreq>weekly</changefreq><priority>0.7</priority></url>
+  <url><loc>https://powerrun.in/product/?slug=pr-lfp-battery-25-6v-280ah</loc><lastmod>2026-09-15</lastmod><changefreq>weekly</changefreq><priority>0.7</priority></url>
+  <url><loc>https://powerrun.in/product/?slug=pr-lfp-battery-25-6v-550ah</loc><lastmod>2026-09-15</lastmod><changefreq>weekly</changefreq><priority>0.7</priority></url>
+  <url><loc>https://powerrun.in/product/?slug=pr-lfp-battery-51-2v-100ah</loc><lastmod>2026-09-15</lastmod><changefreq>weekly</changefreq><priority>0.7</priority></url>
+  <url><loc>https://powerrun.in/product/?slug=pr-lfp-battery-51-2v-200ah</loc><lastmod>2026-09-15</lastmod><changefreq>weekly</changefreq><priority>0.7</priority></url>
+  <url><loc>https://powerrun.in/product/?slug=pr-lfp-battery-51-2v-280ah</loc><lastmod>2026-09-15</lastmod><changefreq>weekly</changefreq><priority>0.7</priority></url>
+  <url><loc>https://powerrun.in/product/?slug=pr-lfp-battery-51-2v-400ah</loc><lastmod>2026-09-15</lastmod><changefreq>weekly</changefreq><priority>0.7</priority></url>
+  <url><loc>https://powerrun.in/product/?slug=pr-lfp-battery-51-2v-600ah</loc><lastmod>2026-09-15</lastmod><changefreq>weekly</changefreq><priority>0.7</priority></url>
+  <url><loc>https://powerrun.in/product/?slug=pr-lfp-battery-51-2v-800ah</loc><lastmod>2026-09-15</lastmod><changefreq>weekly</changefreq><priority>0.7</priority></url>
+  <url><loc>https://powerrun.in/product/?slug=pr-solar-panel-450w</loc><lastmod>2026-09-15</lastmod><changefreq>weekly</changefreq><priority>0.7</priority></url>
+  <url><loc>https://powerrun.in/product/?slug=pr-hybrid-inverter-4-2kw-pr-002</loc><lastmod>2026-09-15</lastmod><changefreq>weekly</changefreq><priority>0.7</priority></url>
+  <url><loc>https://powerrun.in/product/?slug=pr-hybrid-inverter-6-2kw-pr-003</loc><lastmod>2026-09-15</lastmod><changefreq>weekly</changefreq><priority>0.7</priority></url>
+  <url><loc>https://powerrun.in/product/?slug=pr-solar-panel-535w</loc><lastmod>2026-09-15</lastmod><changefreq>weekly</changefreq><priority>0.7</priority></url>
+  <url><loc>https://powerrun.in/product/?slug=pr-solar-panel-550w</loc><lastmod>2026-09-15</lastmod><changefreq>weekly</changefreq><priority>0.7</priority></url>
+  <url><loc>https://powerrun.in/product/?slug=pr-solar-panel-580w</loc><lastmod>2026-09-15</lastmod><changefreq>weekly</changefreq><priority>0.7</priority></url>
+  <url><loc>https://powerrun.in/product/?slug=pr-solar-panel-600w</loc><lastmod>2026-09-15</lastmod><changefreq>weekly</changefreq><priority>0.7</priority></url>
+  <url><loc>https://powerrun.in/product/?slug=pr-e-rickshaw-battery-48v-100ah</loc><lastmod>2026-09-15</lastmod><changefreq>weekly</changefreq><priority>0.7</priority></url>
+  <url><loc>https://powerrun.in/product/?slug=pr-e-rickshaw-battery-51-2v-100ah</loc><lastmod>2026-09-15</lastmod><changefreq>weekly</changefreq><priority>0.7</priority></url>
+  <url><loc>https://powerrun.in/product/?slug=pr-e-rickshaw-battery-72v-100ah</loc><lastmod>2026-09-15</lastmod><changefreq>weekly</changefreq><priority>0.7</priority></url>
+  <url><loc>https://powerrun.in/product/?slug=pr-e-rickshaw-battery-72v-150ah</loc><lastmod>2026-09-15</lastmod><changefreq>weekly</changefreq><priority>0.7</priority></url>
+  <url><loc>https://powerrun.in/product/?slug=pr-hybrid-inverter-3-6kw-pr-001</loc><lastmod>2026-09-15</lastmod><changefreq>weekly</changefreq><priority>0.7</priority></url>
 </urlset>

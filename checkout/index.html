@@ -1,0 +1,93 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>Checkout | PowerRun Industries</title>
+<meta name="description" content="Complete your PowerRun Industries order.">
+<meta name="robots" content="noindex,nofollow">
+<meta name="theme-color" content="#ff5a00">
+<link rel="canonical" href="https://powerrun.in/checkout/">
+<link rel="icon" href="/assets/powerrun-logo.png">
+<meta property="og:type" content="website">
+<meta property="og:site_name" content="PowerRun Industries">
+<meta property="og:title" content="Checkout | PowerRun Industries">
+<meta property="og:description" content="Complete your PowerRun Industries order.">
+<meta property="og:url" content="https://powerrun.in/checkout/">
+<meta property="og:image" content="https://powerrun.in/assets/powerrun-logo.png">
+<meta name="twitter:card" content="summary_large_image">
+<meta name="twitter:title" content="Checkout | PowerRun Industries">
+<meta name="twitter:description" content="Complete your PowerRun Industries order.">
+<meta name="twitter:image" content="https://powerrun.in/assets/powerrun-logo.png">
+<link rel="preconnect" href="https://nnkopxkyxcmtiunftlgr.supabase.co" crossorigin>
+<link rel="stylesheet" href="/assets/css/site.css?v=a0cd10af">
+
+</head>
+<body>
+<a class="skip-link" href="#main">Skip to content</a>
+<div id="pr-header"></div>
+<main id="main">
+    <section class="page-head">
+      <nav class="breadcrumb" aria-label="Breadcrumb" style="color:#999"><a href="/">Home</a> / <a href="/cart/">Cart</a> / <span aria-current="page" style="color:#fff">Checkout</span></nav>
+      <h1>Checkout</h1>
+      <p>Enter your delivery details. Your order total is calculated on our servers from live prices.</p>
+    </section>
+    <section class="section">
+      <div class="cart-layout">
+        <div>
+          <div class="panel">
+            <h2>Delivery Details</h2>
+            <form class="form" id="checkoutForm" novalidate>
+              <div class="form-grid">
+                <label>Full Name <span class="req">*</span>
+                  <input id="ck_name" name="name" required autocomplete="name" maxlength="120">
+                </label>
+                <label>Mobile Number <span class="req">*</span>
+                  <input id="ck_mobile" name="mobile" required inputmode="numeric" autocomplete="tel-national"
+                         maxlength="10" placeholder="10-digit mobile number">
+                </label>
+              </div>
+              <label>Email Address
+                <input id="ck_email" name="email" type="email" autocomplete="email" maxlength="160">
+              </label>
+              <label>Address <span class="req">*</span>
+                <textarea id="ck_address" name="address" required autocomplete="street-address"
+                          placeholder="House / flat no., street, area, landmark" maxlength="400"></textarea>
+              </label>
+              <div class="form-grid">
+                <label>City <span class="req">*</span>
+                  <input id="ck_city" name="city" required autocomplete="address-level2" maxlength="80">
+                </label>
+                <label>State <span class="req">*</span>
+                  <select id="ck_state" name="state" required autocomplete="address-level1"></select>
+                </label>
+              </div>
+              <label>Pincode <span class="req">*</span>
+                <input id="ck_pincode" name="pincode" required inputmode="numeric" autocomplete="postal-code"
+                       maxlength="6" placeholder="6-digit pincode" style="max-width:220px">
+              </label>
+
+              <h2 style="margin-top:14px;font-size:18px">Payment Method</h2>
+              <div class="radio-row" id="paymentMethods"></div>
+
+              <button class="btn orange block" id="placeOrderBtn" type="submit">PLACE ORDER</button>
+              <p class="small-note">By placing this order you agree to be contacted by PowerRun Industries on the mobile number provided.</p>
+            </form>
+          </div>
+        </div>
+        <aside id="checkoutSummary"></aside>
+      </div>
+    </section>
+
+</main>
+<div id="pr-footer"></div>
+<script type="application/ld+json">{"@context":"https://schema.org","@type":"Organization","name":"PowerRun Industries","url":"https://powerrun.in/","logo":"https://powerrun.in/assets/powerrun-logo.png","email":"info@powerrun.in","telephone":"+91 87003 07676","address":{"@type":"PostalAddress","addressCountry":"IN"}}</script>
+<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2.48.0/dist/umd/supabase.js"></script>
+<script src="/assets/js/config.js?v=a0cd10af"></script>
+<script src="/assets/js/core.js?v=a0cd10af"></script>
+<script src="/assets/js/cart.js?v=a0cd10af"></script>
+<script src="/assets/js/layout.js?v=a0cd10af"></script>
+<script src="/assets/js/catalog.js?v=a0cd10af"></script>
+<script src="/assets/js/pages/checkout.js?v=a0cd10af"></script>
+</body>
+</html>
