@@ -1,0 +1,45 @@
+PowerRun Industries - PRICE LIST
+==============================================================
+
+Har line me PRICE, MRP aur STOCK bhar dein.
+MRP = kati hui keemat (price se zyada honi chahiye).
+Agar MRP nahi rakhna to wahan 0 likh dein.
+
+Format:  SKU | PRICE | MRP | STOCK
+Misal :  PR-002 | 45000 | 52000 | 10
+
+
+--- HYBRID INVERTERS ---
+PR-001 | PR Hybrid Inverter 3.6kW         |  abhi Rs  29,650  ->  PRICE=______  MRP=______  STOCK=____
+PR-002 | PR Hybrid Inverter 4.2kW         |  abhi Rs 200,000  ->  PRICE=______  MRP=______  STOCK=____
+PR-003 | PR Hybrid Inverter 6.2kW         |  abhi Rs 250,000  ->  PRICE=______  MRP=______  STOCK=____
+PR-004 | PR Hybrid Inverter 8.2kW         |  abhi Rs 280,000  ->  PRICE=______  MRP=______  STOCK=____
+PR-005 | PR Hybrid Inverter 10.2kW        |  abhi Rs 320,000  ->  PRICE=______  MRP=______  STOCK=____
+PR-006 | PR Hybrid Inverter 12kW          |  abhi Rs 350,000  ->  PRICE=______  MRP=______  STOCK=____
+
+--- LITHIUM BATTERIES ---
+PR-007 | PR LFP Battery 25.6V 100Ah       |  abhi Rs 120,000  ->  PRICE=______  MRP=______  STOCK=____
+PR-008 | PR LFP Battery 25.6V 200Ah       |  abhi Rs 180,000  ->  PRICE=______  MRP=______  STOCK=____
+PR-009 | PR LFP Battery 25.6V 280Ah       |  abhi Rs 220,000  ->  PRICE=______  MRP=______  STOCK=____
+PR-010 | PR LFP Battery 25.6V 550Ah       |  abhi Rs 280,000  ->  PRICE=______  MRP=______  STOCK=____
+PR-011 | PR LFP Battery 51.2V 100Ah       |  abhi Rs 150,000  ->  PRICE=______  MRP=______  STOCK=____
+PR-012 | PR LFP Battery 51.2V 200Ah       |  abhi Rs 200,000  ->  PRICE=______  MRP=______  STOCK=____
+PR-013 | PR LFP Battery 51.2V 280Ah       |  abhi Rs 250,000  ->  PRICE=______  MRP=______  STOCK=____
+PR-014 | PR LFP Battery 51.2V 400Ah       |  abhi Rs 320,000  ->  PRICE=______  MRP=______  STOCK=____
+PR-015 | PR LFP Battery 51.2V 600Ah       |  abhi Rs 400,000  ->  PRICE=______  MRP=______  STOCK=____
+PR-016 | PR LFP Battery 51.2V 800Ah       |  abhi Rs 500,000  ->  PRICE=______  MRP=______  STOCK=____
+
+--- SOLAR PANELS ---
+PR-017 | PR Solar Panel 450W              |  abhi Rs  35,000  ->  PRICE=______  MRP=______  STOCK=____
+PR-018 | PR Solar Panel 535W              |  abhi Rs  45,000  ->  PRICE=______  MRP=______  STOCK=____
+PR-019 | PR Solar Panel 550W              |  abhi Rs  50,000  ->  PRICE=______  MRP=______  STOCK=____
+PR-020 | PR Solar Panel 580W              |  abhi Rs  55,000  ->  PRICE=______  MRP=______  STOCK=____
+PR-021 | PR Solar Panel 600W              |  abhi Rs  60,000  ->  PRICE=______  MRP=______  STOCK=____
+
+--- E-RICKSHAW BATTERIES ---
+PR-022 | PR E-Rickshaw Battery 48V 100Ah  |  abhi Rs  95,000  ->  PRICE=______  MRP=______  STOCK=____
+PR-023 | PR E-Rickshaw Battery 51.2V 100A |  abhi Rs 110,000  ->  PRICE=______  MRP=______  STOCK=____
+PR-024 | PR E-Rickshaw Battery 72V 100Ah  |  abhi Rs 125,000  ->  PRICE=______  MRP=______  STOCK=____
+PR-025 | PR E-Rickshaw Battery 72V 150Ah  |  abhi Rs 140,000  ->  PRICE=______  MRP=______  STOCK=____
+
+==============================================================
