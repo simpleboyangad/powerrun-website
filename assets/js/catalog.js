@@ -172,6 +172,31 @@
     return html + '</div>';
   };
 
+  /* Price block for a product card: price, struck-through MRP, discount and
+     the rupee amount saved. Kept separate from priceBlock(), which is the
+     larger layout used on the product detail page. */
+  PR.cardPriceBlock = function (product) {
+    var price = Number(product.price);
+    var mrp = Number(product.mrp);
+    var hasPrice = Number.isFinite(price) && price > 0;
+
+    if (!hasPrice) {
+      return '<div class="card-price"><span class="price">Price on request</span></div>';
+    }
+
+    var hasMrp = Number.isFinite(mrp) && mrp > 0 && mrp > price;
+    var html = '<div class="card-price"><span class="price">' + PR.money(price) + '</span>';
+    if (hasMrp) {
+      html += '<span class="card-mrp">' + PR.money(mrp) + '</span>' +
+              '<span class="card-off">' + Math.round((1 - price / mrp) * 100) + '% OFF</span>';
+    }
+    html += '</div>';
+    if (hasMrp) {
+      html += '<div class="card-save">You save ' + PR.money(mrp - price) + '</div>';
+    }
+    return html;
+  };
+
   PR.stockLine = function (product) {
     if (product.availability === 'discontinued') return '<div class="stock-line out">Discontinued</div>';
     if (product.availability === 'preorder') return '<div class="stock-line low">Available on pre-order</div>';
@@ -212,9 +237,8 @@
           '<span class="catname">' + PR.esc(product.category || 'PowerRun') + '</span>' +
           '<h3><a href="' + url + '">' + PR.esc(product.name) + '</a></h3>' +
           '<p>' + PR.esc(product.shortDescription) + '</p>' +
-          '<div class="card-foot"><span class="price">' + PR.money(product.price) + '</span>' +
-            (product.sku ? '<small class="sku">' + PR.esc(product.sku) + '</small>' : '') +
-          '</div>' +
+          PR.cardPriceBlock(product) +
+          (product.sku ? '<div class="card-sku">' + PR.esc(product.sku) + '</div>' : '') +
           '<div class="card-actions">' +
             '<a class="outline" href="' + url + '">VIEW</a>' +
             (product.orderable

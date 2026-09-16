@@ -242,6 +242,18 @@ img { max-width: 100%; }
   display: flex; justify-content: space-between; align-items: center; margin-top: 13px; gap: 8px;
 }
 .price { font-weight: 900; font-size: 18px; }
+
+/* Card price line: price, struck-through MRP and the discount */
+.card-price {
+  display: flex; align-items: baseline; gap: 8px; flex-wrap: wrap; margin-top: 13px;
+}
+.card-mrp { font-size: 13px; color: #999; text-decoration: line-through; }
+.card-off {
+  background: #fff1e6; color: var(--orange); font-weight: 800; font-size: 11px;
+  padding: 2px 7px; border-radius: 5px; white-space: nowrap;
+}
+.card-save { font-size: 12px; color: var(--green); font-weight: 700; margin-top: 4px; }
+.card-sku { font-size: 11px; color: #999; margin-top: 6px; }
 .card-actions { display: flex; gap: 6px; flex-wrap: wrap; margin-top: 12px; }
 .card-actions .btn, .card-actions .outline { min-height: 40px; padding: 10px 14px; font-size: 13px; flex: 1; }
 .tag {
