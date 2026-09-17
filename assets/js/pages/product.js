@@ -57,21 +57,168 @@
     document.head.appendChild(script);
   }
 
-  function gallery(p) {
-    if (!p.images.length) {
-      return '<div class="main-product-image"><div class="ph large">' +
-             PR.esc(PR.initials(p.name)) + '</div></div>';
+  /* ------------------------------------------------------------- wishlist */
+  // Kept in this browser only; a missing or blocked localStorage just means
+  // the heart does not stay filled after a reload.
+  var WISHLIST_KEY = 'pr_wishlist';
+
+  function wishlist() {
+    try {
+      var list = JSON.parse(localStorage.getItem(WISHLIST_KEY) || '[]');
+      return Array.isArray(list) ? list : [];
+    } catch (err) {
+      return [];
     }
-    var thumbs = p.images.length > 1
-      ? '<div class="product-thumbs">' + p.images.map(function (img, i) {
-          return '<button class="thumb' + (i === 0 ? ' active' : '') + '" type="button" ' +
-                 'data-img="' + PR.esc(img.url) + '" aria-label="View image ' + (i + 1) + '">' +
-                 '<img src="' + PR.esc(img.url) + '" alt="' + PR.esc(p.name) + ' image ' + (i + 1) + '" loading="lazy"></button>';
+  }
+
+  function isLiked(p) {
+    return wishlist().indexOf(String(p.id)) !== -1;
+  }
+
+  function toggleLike(p) {
+    var list = wishlist();
+    var id = String(p.id);
+    var at = list.indexOf(id);
+    if (at === -1) list.push(id); else list.splice(at, 1);
+    try { localStorage.setItem(WISHLIST_KEY, JSON.stringify(list)); } catch (err) { /* private mode */ }
+    return at === -1;
+  }
+
+  /* ---------------------------------------------------------------- share */
+  function productUrl(p) {
+    return PR.config.SITE_URL + '/product/?slug=' + encodeURIComponent(p.slug);
+  }
+
+  async function shareProduct(p) {
+    var url = productUrl(p);
+    var text = p.name + (Number.isFinite(p.price) && p.price > 0 ? ' – ' + PR.money(p.price) : '') +
+               ' | PowerRun Industries';
+    if (navigator.share) {
+      try {
+        await navigator.share({ title: p.name, text: text, url: url });
+        return;
+      } catch (err) {
+        if (err && err.name === 'AbortError') return;   // user closed the share sheet
+      }
+    }
+    try {
+      await navigator.clipboard.writeText(url);
+      PR.toast('Product link copied.', 'success');
+    } catch (err) {
+      window.open('https://wa.me/?text=' + encodeURIComponent(text + ' ' + url), '_blank', 'noopener');
+    }
+  }
+
+  /* -------------------------------------------------------------- gallery */
+  var ICON_SHARE = '<svg viewBox="0 0 24 24" width="22" height="22" aria-hidden="true"><g fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><circle cx="18" cy="5" r="3"/><circle cx="6" cy="12" r="3"/><circle cx="18" cy="19" r="3"/><path d="M8.6 13.5l6.8 4M15.4 6.5l-6.8 4"/></g></svg>';
+  var ICON_HEART = '<svg viewBox="0 0 24 24" width="22" height="22" aria-hidden="true"><path d="M12 20.5s-7.5-4.6-9.3-9.2C1.5 8 3.6 4.5 7.1 4.5c2 0 3.6 1.1 4.9 2.9 1.3-1.8 2.9-2.9 4.9-2.9 3.5 0 5.6 3.5 4.4 6.8-1.8 4.6-9.3 9.2-9.3 9.2z" fill="none" stroke="currentColor" stroke-width="2" stroke-linejoin="round"/></svg>';
+  var ICON_PREV = '<svg viewBox="0 0 24 24" width="20" height="20" aria-hidden="true"><path d="M15 5l-7 7 7 7" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"/></svg>';
+  var ICON_NEXT = '<svg viewBox="0 0 24 24" width="20" height="20" aria-hidden="true"><path d="M9 5l7 7-7 7" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"/></svg>';
+
+  function gallery(p) {
+    var liked = isLiked(p);
+    var tools =
+      '<button class="g-icon g-share" type="button" aria-label="Share this product">' + ICON_SHARE + '</button>' +
+      '<button class="g-icon g-like' + (liked ? ' liked' : '') + '" type="button" aria-pressed="' + liked + '" ' +
+        'aria-label="Save to wishlist">' + ICON_HEART + '</button>';
+
+    if (!p.images.length) {
+      return '<div class="gallery-stage"><div class="main-product-image"><div class="ph large">' +
+             PR.esc(PR.initials(p.name)) + '</div></div>' + tools + '</div>';
+    }
+
+    var many = p.images.length > 1;
+    var slides = p.images.map(function (img, i) {
+      return '<div class="gallery-slide" role="group" aria-label="Image ' + (i + 1) + ' of ' + p.images.length + '">' +
+               '<img src="' + PR.esc(img.url) + '" alt="' + PR.esc(p.name) + (i ? ' image ' + (i + 1) : '') + '"' +
+               (i ? ' loading="lazy"' : '') + ' width="700" height="560" draggable="false">' +
+             '</div>';
+    }).join('');
+    var controls = many
+      ? '<button class="g-arrow g-prev" type="button" aria-label="Previous image" disabled>' + ICON_PREV + '</button>' +
+        '<button class="g-arrow g-next" type="button" aria-label="Next image">' + ICON_NEXT + '</button>' +
+        '<div class="g-dots">' + p.images.map(function (img, i) {
+          return '<button class="g-dot' + (i === 0 ? ' active' : '') + '" type="button" data-go="' + i + '" ' +
+                 'aria-label="Show image ' + (i + 1) + '"></button>';
         }).join('') + '</div>'
       : '';
-    return '<div class="main-product-image">' +
-             '<img id="mainProductImage" src="' + PR.esc(p.images[0].url) + '" alt="' + PR.esc(p.name) + '" width="700" height="560">' +
+    var thumbs = many
+      ? '<div class="product-thumbs">' + p.images.map(function (img, i) {
+          return '<button class="thumb' + (i === 0 ? ' active' : '') + '" type="button" data-go="' + i + '" ' +
+                 'aria-label="View image ' + (i + 1) + '">' +
+                 '<img src="' + PR.esc(img.url) + '" alt="" loading="lazy"></button>';
+        }).join('') + '</div>'
+      : '';
+
+    return '<div class="gallery-stage">' +
+             '<div class="gallery-track" id="galleryTrack" tabindex="0" aria-label="Product images">' + slides + '</div>' +
+             controls + tools +
            '</div>' + thumbs;
+  }
+
+  function bindGallery(host, p) {
+    var track = document.getElementById('galleryTrack');
+    var likeBtn = host.querySelector('.g-like');
+    var shareBtn = host.querySelector('.g-share');
+
+    if (shareBtn) shareBtn.addEventListener('click', function () { shareProduct(p); });
+    if (likeBtn) {
+      likeBtn.addEventListener('click', function () {
+        var nowLiked = toggleLike(p);
+        likeBtn.classList.toggle('liked', nowLiked);
+        likeBtn.setAttribute('aria-pressed', String(nowLiked));
+        PR.toast(nowLiked ? 'Saved to your wishlist.' : 'Removed from your wishlist.', 'success');
+      });
+    }
+    if (!track) return;
+
+    var count = track.children.length;
+    var prev = host.querySelector('.g-prev');
+    var next = host.querySelector('.g-next');
+
+    function current() {
+      return Math.round(track.scrollLeft / Math.max(1, track.clientWidth));
+    }
+    function go(index) {
+      var i = Math.max(0, Math.min(count - 1, index));
+      var target = i * track.clientWidth;
+      var start = track.scrollLeft;
+      track.scrollTo({ left: target, behavior: 'smooth' });
+      // browsers that ignore smooth scrolling on a snap container never move;
+      // jump instead so the arrows and dots always work
+      setTimeout(function () {
+        if (track.scrollLeft === start && Math.abs(start - target) > 2) {
+          track.scrollLeft = target;
+          sync();
+        }
+      }, 450);
+    }
+    var shown = 0;
+    function sync() {
+      var i = current();
+      shown = i;
+      host.querySelectorAll('.g-dot, .thumb').forEach(function (el) {
+        el.classList.toggle('active', Number(el.getAttribute('data-go')) === i);
+      });
+      if (prev) prev.disabled = i <= 0;
+      if (next) next.disabled = i >= count - 1;
+    }
+
+    // sync touches at most a dozen buttons, so it runs on every scroll event
+    track.addEventListener('scroll', sync, { passive: true });
+    if (prev) prev.addEventListener('click', function () { go(current() - 1); });
+    if (next) next.addEventListener('click', function () { go(current() + 1); });
+    host.querySelectorAll('[data-go]').forEach(function (el) {
+      el.addEventListener('click', function () { go(Number(el.getAttribute('data-go'))); });
+    });
+    track.addEventListener('keydown', function (event) {
+      if (event.key === 'ArrowLeft') { event.preventDefault(); go(current() - 1); }
+      if (event.key === 'ArrowRight') { event.preventDefault(); go(current() + 1); }
+    });
+    // keep the same image in view when the window is resized or rotated
+    window.addEventListener('resize', function () {
+      track.scrollLeft = shown * track.clientWidth;
+    });
   }
 
   function specs(p) {
@@ -144,15 +291,7 @@
         '</div>' +
       '</div>';
 
-    host.addEventListener('click', function (event) {
-      var thumb = event.target.closest('.thumb');
-      if (thumb) {
-        var main = document.getElementById('mainProductImage');
-        if (main) main.src = thumb.getAttribute('data-img');
-        host.querySelectorAll('.thumb').forEach(function (t) { t.classList.remove('active'); });
-        thumb.classList.add('active');
-      }
-    });
+    bindGallery(host, p);
 
     function setQty(next) {
       qty = Math.min(max, Math.max(1, next));
