@@ -4,7 +4,10 @@
     {
       "name": "powerrun-static",
       "runtimeExecutable": "python",
-      "runtimeArgs": ["-m", "http.server", "8123"],
+      "runtimeArgs": [
+        "scripts/devserver.py",
+        "8123"
+      ],
       "port": 8123
     }
   ]

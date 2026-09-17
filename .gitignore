@@ -9,3 +9,6 @@ secrets/
 # Local tooling
 .claude/settings.local.json
 __pycache__/
+
+# Supplier source photos (edited listing images live in photos/listing/)
+photos/original/
