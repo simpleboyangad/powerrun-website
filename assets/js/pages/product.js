@@ -281,6 +281,13 @@
                 '<a class="outline" href="/contact/">CONTACT US</a>' +
               '</div>') +
           (p.warranty ? '<p class="small-note" style="margin-top:14px">🛡️ ' + PR.esc(p.warranty) + '</p>' : '') +
+          (p.datasheetUrl
+            ? '<a class="datasheet-btn" href="' + PR.esc(p.datasheetUrl) + '" target="_blank" rel="noopener" ' +
+                'title="' + PR.esc(p.datasheetName || 'Datasheet') + '">' +
+                '<svg viewBox="0 0 24 24" width="20" height="20" aria-hidden="true"><g fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">' +
+                '<path d="M14 3H6a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V9z"/><path d="M14 3v6h6"/><path d="M12 12v6M9 15l3 3 3-3"/></g></svg>' +
+                'DOWNLOAD DATASHEET <small>PDF</small></a>'
+            : '') +
           '<div class="trust-badges">' +
             '<div class="trust-badge"><span class="ic">🚚</span><div><b>Pan India Delivery</b><small>Safely packed and insured</small></div></div>' +
             '<div class="trust-badge"><span class="ic">🛡️</span><div><b>Manufacturer Warranty</b><small>Register online after delivery</small></div></div>' +

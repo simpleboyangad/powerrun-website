@@ -230,6 +230,12 @@ table.grid td small { color: var(--muted); display: block; margin-top: 3px; }
 
 /* ------------------------------------------------------------------ images */
 .image-grid { display: flex; gap: 10px; flex-wrap: wrap; margin-top: 10px; }
+.datasheet-row {
+  display: flex; align-items: center; gap: 10px; flex-wrap: wrap;
+  padding: 10px 12px; border: 1px solid var(--line); border-radius: 8px; background: #fafafa; font-size: 13px;
+}
+.datasheet-row a { color: #c44400; font-weight: 700; word-break: break-all; }
+.datasheet-row .btn { margin-left: auto; }
 .image-tile { position: relative; width: 92px; height: 92px; border: 1px solid var(--line); border-radius: 8px; overflow: hidden; background: #fafafa; }
 .image-tile img { width: 100%; height: 100%; object-fit: contain; }
 .image-tile button {

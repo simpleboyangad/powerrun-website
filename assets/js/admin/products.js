@@ -11,6 +11,10 @@
   var editing = null;          // product row being edited, or null for a new one
   var existingImages = [];     // [{id, image_url, storage_path}]
   var pendingFiles = [];       // File[] queued for upload
+  var DATASHEET_BUCKET = 'product-datasheets';
+  var MAX_DATASHEET_MB = 20;
+  var pendingDatasheet = null; // File queued to replace the current datasheet
+  var removeDatasheet = false; // true when the admin clicked "Remove"
 
   /* ------------------------------------------------------------------ data */
   async function loadAll() {
@@ -168,6 +172,8 @@
       ? (product.product_images || []).slice().sort(function (a, b) { return (a.sort_order || 0) - (b.sort_order || 0); })
       : [];
     pendingFiles = [];
+    pendingDatasheet = null;
+    removeDatasheet = false;
 
     var p = product || {};
     var specs = specRowsFrom(p.specifications);
@@ -265,6 +271,16 @@
           '<div class="image-grid" id="pendingImages"></div>' +
         '</div>' +
 
+        '<div>' +
+          '<label style="margin-bottom:6px">Datasheet (PDF)</label>' +
+          '<div id="datasheetCurrent"></div>' +
+          '<div class="drop" style="margin-top:10px">' +
+            '<input id="pf_datasheet" type="file" accept="application/pdf,.pdf" style="display:block;margin:0 auto">' +
+            '<span class="hint">PDF only · up to ' + MAX_DATASHEET_MB + ' MB · customers can download it from the product page. ' +
+              'Choosing a new file replaces the current one on save.</span>' +
+          '</div>' +
+        '</div>' +
+
         '<div class="form-grid three">' +
           '<label class="inline"><input id="pf_active" type="checkbox"' +
             (p.is_active === false ? '' : ' checked') + '> Active (visible on website)</label>' +
@@ -293,6 +309,7 @@
 
     renderSubcategories(p.subcategory_id);
     renderExistingImages();
+    renderDatasheet();
     bindForm(body);
   }
 
@@ -316,6 +333,64 @@
         '<button type="button" data-remove-image="' + index + '" aria-label="Delete image">×</button>' +
       '</div>';
     }).join('');
+  }
+
+  function renderDatasheet() {
+    var host = document.getElementById('datasheetCurrent');
+    if (!host) return;
+    var current = editing && editing.datasheet_url && !removeDatasheet;
+    if (pendingDatasheet) {
+      host.innerHTML = '<div class="datasheet-row">📄 <b>' + PR.esc(pendingDatasheet.name) + '</b>' +
+        '<span class="hint">(' + (pendingDatasheet.size / 1048576).toFixed(1) + ' MB · uploads on save' +
+        (current ? ', replaces the current datasheet' : '') + ')</span>' +
+        '<button class="btn gray small" type="button" data-datasheet="cancel">Cancel</button></div>';
+    } else if (current) {
+      host.innerHTML = '<div class="datasheet-row">📄 <a href="' + PR.esc(editing.datasheet_url) + '" target="_blank" rel="noopener">' +
+        PR.esc(editing.datasheet_name || 'Datasheet.pdf') + '</a>' +
+        '<button class="btn danger small" type="button" data-datasheet="remove">Remove</button></div>';
+    } else {
+      host.innerHTML = '<div class="hint">' +
+        (removeDatasheet ? 'The datasheet will be removed when you save. ' +
+          '<button class="btn gray small" type="button" data-datasheet="undo">Undo</button>'
+          : 'No datasheet yet.') + '</div>';
+    }
+  }
+
+  async function saveDatasheet(productId) {
+    var previousPath = editing ? editing.datasheet_path : null;
+
+    if (pendingDatasheet) {
+      var file = pendingDatasheet;
+      var safe = file.name.toLowerCase().replace(/[^a-z0-9.]+/g, '-').slice(-60);
+      var path = productId + '/' + Date.now() + '-' + safe;
+      var upload = await PR.sb.storage.from(DATASHEET_BUCKET).upload(path, file, {
+        cacheControl: '3600', upsert: false, contentType: 'application/pdf'
+      });
+      if (upload.error) {
+        console.error('[PowerRun] datasheet upload failed:', upload.error);
+        throw new Error('Datasheet "' + file.name + '" could not be uploaded: ' + upload.error.message);
+      }
+      var url = PR.sb.storage.from(DATASHEET_BUCKET).getPublicUrl(path).data.publicUrl;
+      await PR.call('save datasheet', function (sb) {
+        return sb.from('products').update({
+          datasheet_url: url, datasheet_path: path, datasheet_name: file.name
+        }).eq('id', productId);
+      });
+    } else if (removeDatasheet && editing && editing.datasheet_url) {
+      await PR.call('remove datasheet', function (sb) {
+        return sb.from('products').update({
+          datasheet_url: null, datasheet_path: null, datasheet_name: null
+        }).eq('id', productId);
+      });
+    } else {
+      return;
+    }
+
+    // the product row no longer points at the old file, so it can go
+    if (previousPath) {
+      var removal = await PR.sb.storage.from(DATASHEET_BUCKET).remove([previousPath]);
+      if (removal.error) console.error('[PowerRun] old datasheet delete failed:', removal.error);
+    }
   }
 
   function renderPendingImages() {
@@ -357,6 +432,30 @@
         pendingFiles.splice(Number(removePending.getAttribute('data-remove-pending')), 1);
         renderPendingImages();
       }
+    });
+
+    document.getElementById('pf_datasheet').addEventListener('change', function (event) {
+      var file = (event.target.files || [])[0];
+      event.target.value = '';
+      if (!file) return;
+      if (file.type !== 'application/pdf' && !/\.pdf$/i.test(file.name)) {
+        PR.toast(file.name + ' is not a PDF file.', 'error');
+        return;
+      }
+      if (file.size > MAX_DATASHEET_MB * 1024 * 1024) {
+        PR.toast(file.name + ' is larger than ' + MAX_DATASHEET_MB + ' MB.', 'error');
+        return;
+      }
+      pendingDatasheet = file;
+      renderDatasheet();
+    });
+
+    document.getElementById('datasheetCurrent').addEventListener('click', function (event) {
+      var action = event.target.getAttribute('data-datasheet');
+      if (action === 'cancel') pendingDatasheet = null;
+      if (action === 'remove') removeDatasheet = true;
+      if (action === 'undo') removeDatasheet = false;
+      if (action) renderDatasheet();
     });
 
     document.getElementById('pf_images').addEventListener('change', function (event) {
@@ -538,6 +637,10 @@
       if (pendingFiles.length) {
         PR.setBusy(button, true, 'UPLOADING IMAGES…');
         await uploadImages(productId, existingImages.length);
+      }
+      if (pendingDatasheet || removeDatasheet) {
+        PR.setBusy(button, true, pendingDatasheet ? 'UPLOADING DATASHEET…' : 'SAVING…');
+        await saveDatasheet(productId);
       }
 
       PRA.closeDrawer();

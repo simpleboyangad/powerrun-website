@@ -84,6 +84,8 @@
       availability: availability,
       orderable: orderable,
       warranty: row.warranty || '',
+      datasheetUrl: row.datasheet_url || '',
+      datasheetName: row.datasheet_name || '',
       specRows: specRows,
       specText: specText || '',
       features: features,
