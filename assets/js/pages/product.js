@@ -6,55 +6,35 @@
   var product = null;
   var qty = 1;
 
+  /* SEO for this product: stored values first, then sensible fallbacks built
+     from real product data. The clean /products/<slug>/ URL is the canonical
+     one, so the older /product/?slug=... address points at it. */
   function setMeta(p) {
-    var title = p.metaTitle || (p.name + ' | PowerRun Industries');
-    var desc = p.metaDescription || p.shortDescription ||
-      (p.name + ' from PowerRun Industries.');
-    document.title = title;
+    var canonical = p.raw && p.raw.canonical_url ? p.raw.canonical_url : PR.seo.productUrl(p.slug);
+    var title = p.metaTitle || (p.name + ' | ' + PR.config.COMPANY);
+    var desc = p.metaDescription || p.shortDescription || (p.name + ' from ' + PR.config.COMPANY + '.');
+    var raw = p.raw || {};
+    var image = raw.og_image || (p.images.length ? p.images[0].url : '');
 
-    function meta(selector, value) {
-      var el = document.querySelector(selector);
-      if (el) el.setAttribute('content', value);
-    }
-    meta('meta[name="description"]', desc);
-    meta('meta[property="og:title"]', title);
-    meta('meta[property="og:description"]', desc);
-    meta('meta[name="twitter:title"]', title);
-    meta('meta[name="twitter:description"]', desc);
-
-    var url = PR.config.SITE_URL + '/product/?slug=' + encodeURIComponent(p.slug);
-    var canonical = document.querySelector('link[rel="canonical"]');
-    if (canonical) canonical.setAttribute('href', url);
-    meta('meta[property="og:url"]', url);
-    if (p.images.length) {
-      meta('meta[property="og:image"]', p.images[0].url);
-      meta('meta[name="twitter:image"]', p.images[0].url);
-    }
-
-    var ld = {
-      '@context': 'https://schema.org',
-      '@type': 'Product',
-      name: p.name,
+    PR.seo.apply({
+      key: 'product',
+      title: title,
       description: desc,
-      sku: p.sku || undefined,
-      brand: { '@type': 'Brand', name: 'PowerRun Industries' },
-      image: p.images.map(function (i) { return i.url; })
-    };
-    if (Number.isFinite(p.price) && p.price > 0) {
-      ld.offers = {
-        '@type': 'Offer',
-        priceCurrency: 'INR',
-        price: p.price,
-        url: url,
-        availability: p.orderable
-          ? 'https://schema.org/InStock'
-          : 'https://schema.org/OutOfStock'
-      };
-    }
-    var script = document.createElement('script');
-    script.type = 'application/ld+json';
-    script.textContent = JSON.stringify(ld);
-    document.head.appendChild(script);
+      keywords: [raw.focus_keyword, raw.secondary_keywords].filter(Boolean).join(', '),
+      canonical: canonical,
+      image: image,
+      ogTitle: raw.og_title || title,
+      ogDescription: raw.og_description || desc,
+      type: 'product',
+      index: raw.seo_index !== false,
+      follow: raw.seo_follow !== false,
+      product: p,
+      breadcrumbs: [
+        { name: 'Home', url: '/' },
+        { name: 'Products', url: '/products/' }
+      ].concat(p.categorySlug ? [{ name: p.category, url: '/products/?category=' + encodeURIComponent(p.categorySlug) }] : [])
+       .concat([{ name: p.name, url: canonical }])
+    });
   }
 
   /* ------------------------------------------------------------- wishlist */
@@ -86,7 +66,7 @@
 
   /* ---------------------------------------------------------------- share */
   function productUrl(p) {
-    return PR.config.SITE_URL + '/product/?slug=' + encodeURIComponent(p.slug);
+    return (p.raw && p.raw.canonical_url) || PR.seo.productUrl(p.slug);
   }
 
   async function shareProduct(p) {
@@ -115,6 +95,12 @@
   var ICON_PREV = '<svg viewBox="0 0 24 24" width="20" height="20" aria-hidden="true"><path d="M15 5l-7 7 7 7" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"/></svg>';
   var ICON_NEXT = '<svg viewBox="0 0 24 24" width="20" height="20" aria-hidden="true"><path d="M9 5l7 7-7 7" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"/></svg>';
 
+  /* ALT text: the image's own text, then the product-wide ALT set in the
+     admin SEO section, then the product name. */
+  function imageAlt(p, img, index) {
+    return img.alt || (p.raw && p.raw.image_alt) || (p.name + (index ? ' - image ' + (index + 1) : ''));
+  }
+
   function gallery(p) {
     var liked = isLiked(p);
     var tools =
@@ -130,7 +116,7 @@
     var many = p.images.length > 1;
     var slides = p.images.map(function (img, i) {
       return '<div class="gallery-slide" role="group" aria-label="Image ' + (i + 1) + ' of ' + p.images.length + '">' +
-               '<img src="' + PR.esc(img.url) + '" alt="' + PR.esc(p.name) + (i ? ' image ' + (i + 1) : '') + '"' +
+               '<img src="' + PR.esc(img.url) + '" alt="' + PR.esc(imageAlt(p, img, i)) + '"' +
                (i ? ' loading="lazy"' : '') + ' width="700" height="560" draggable="false">' +
              '</div>';
     }).join('');
@@ -146,7 +132,7 @@
       ? '<div class="product-thumbs">' + p.images.map(function (img, i) {
           return '<button class="thumb' + (i === 0 ? ' active' : '') + '" type="button" data-go="' + i + '" ' +
                  'aria-label="View image ' + (i + 1) + '">' +
-                 '<img src="' + PR.esc(img.url) + '" alt="" loading="lazy"></button>';
+                 '<img src="' + PR.esc(img.url) + '" alt="" loading="lazy" width="86" height="72"></button>';
         }).join('') + '</div>'
       : '';
 
@@ -219,6 +205,55 @@
     window.addEventListener('resize', function () {
       track.scrollLeft = shown * track.clientWidth;
     });
+  }
+
+  /* Internal linking: the product's own category plus the categories that go
+     with it (an inverter needs batteries and panels, and the other way round).
+     Everything is taken from the live category list - nothing hard-coded. */
+  var COMPANION_WORDS = {
+    inverter: ['batter', 'panel'],
+    batter: ['inverter', 'panel'],
+    panel: ['inverter', 'batter'],
+    rickshaw: ['batter', 'charger'],
+    scooty: ['batter', 'charger']
+  };
+
+  function companionCategories(p) {
+    var cats = (PR.catalog.categories || []).filter(function (c) { return !c.parent_id && c.is_active !== false; });
+    var name = ((p.category || '') + ' ' + p.name).toLowerCase();
+    var wanted = [];
+    Object.keys(COMPANION_WORDS).forEach(function (key) {
+      if (name.indexOf(key) !== -1) wanted = wanted.concat(COMPANION_WORDS[key]);
+    });
+    var picked = cats.filter(function (c) {
+      if (c.slug === p.categorySlug) return false;
+      var label = c.name.toLowerCase();
+      return wanted.some(function (word) { return label.indexOf(word) !== -1; });
+    });
+    // fall back to the other top categories so the block is never empty
+    if (!picked.length) {
+      picked = cats.filter(function (c) { return c.slug !== p.categorySlug; });
+    }
+    return picked.slice(0, 3);
+  }
+
+  function internalLinks(p) {
+    var companions = companionCategories(p);
+    if (!p.categorySlug && !companions.length) return '';
+    return '<div class="internal-links">' +
+      '<b>Explore more</b>' +
+      '<div class="link-chips">' +
+        (p.categorySlug
+          ? '<a href="/products/?category=' + encodeURIComponent(p.categorySlug) + '">All ' + PR.esc(p.category) + '</a>'
+          : '') +
+        companions.map(function (c) {
+          return '<a href="/products/?category=' + PR.esc(c.slug) + '">' + PR.esc(c.name) + '</a>';
+        }).join('') +
+        '<a href="/products/">All products</a>' +
+        '<a href="/warranty/">Warranty registration</a>' +
+        '<a href="/service/">Service request</a>' +
+      '</div>' +
+    '</div>';
   }
 
   function specs(p) {
@@ -295,6 +330,7 @@
             '<div class="trust-badge"><span class="ic">✅</span><div><b>Tested &amp; Certified</b><small>Quality checked before dispatch</small></div></div>' +
           '</div>' +
           specs(p) +
+          internalLinks(p) +
         '</div>' +
       '</div>';
 
@@ -342,10 +378,24 @@
     }
   }
 
+  /* The clean URL is /products/<slug>/. The older /product/?slug=... address
+     stays alive for links that are already out there and forwards here. */
+  function slugFromPath() {
+    var match = window.location.pathname.match(/^\/products\/([^\/]+)\/?$/);
+    return match ? decodeURIComponent(match[1]) : '';
+  }
+
   async function init() {
-    PR.mountLayout('products');
+    var pathSlug = slugFromPath();
+    var querySlug = PR.param('slug');
+    if (!pathSlug && querySlug && /^\/product\/?$/.test(window.location.pathname)) {
+      window.location.replace('/products/' + encodeURIComponent(querySlug) + '/');
+      return;
+    }
+
+    PR.mountLayout('products', false);
     var host = document.getElementById('productContent');
-    var slug = PR.param('slug');
+    var slug = pathSlug || querySlug;
     var id = PR.param('id');
 
     if (!slug && !id) {

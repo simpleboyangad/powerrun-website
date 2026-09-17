@@ -11,7 +11,7 @@
      categories list, because `products` has two foreign keys into
      `categories` and the embedded-select disambiguation hint is not
      supported by this project's PostgREST version. */
-  var SELECT = '*, product_images(id,image_url,storage_path,sort_order)';
+  var SELECT = '*, product_images(id,image_url,storage_path,sort_order,alt_text)';
 
   function queryProducts(label, build) {
     return PR.call(label, function (sb) { return build(sb, SELECT); });
@@ -32,7 +32,7 @@
       .slice()
       .sort(function (a, b) { return (a.sort_order || 0) - (b.sort_order || 0); })
       .map(function (img) {
-        return { id: img.id, url: img.image_url, path: img.storage_path, sort_order: img.sort_order || 0 };
+        return { id: img.id, url: img.image_url, path: img.storage_path, alt: img.alt_text || '', sort_order: img.sort_order || 0 };
       });
 
     // Specifications are stored as an ORDERED array [{label, value}] so the
@@ -157,8 +157,11 @@
   };
 
   /* --------------------------------------------------------------- display */
+  /* Clean, indexable product URL. scripts/seo_build.py writes a real page at
+     this address for every product; /product/?slug=... still works and points
+     its canonical here. */
   PR.productUrl = function (product) {
-    return '/product/?slug=' + encodeURIComponent(product.slug);
+    return '/products/' + encodeURIComponent(product.slug) + '/';
   };
 
   PR.priceBlock = function (product) {

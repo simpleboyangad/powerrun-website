@@ -1,0 +1,176 @@
+<!doctype html>
+<html lang="hi"><head><meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>PowerRun - Guide</title>
+<style>
+body{font-family:'Segoe UI',Arial,sans-serif;max-width:860px;margin:0 auto;padding:22px;
+     line-height:1.75;color:#171717;background:#f7f7f7}
+h1{color:#ff5a00;border-bottom:3px solid #ff5a00;padding-bottom:10px;font-size:26px}
+h2{margin-top:34px;background:#171717;color:#fff;padding:11px 16px;border-radius:8px;font-size:18px}
+h3{color:#ff5a00;margin-top:26px;font-size:16px}
+table{width:100%;border-collapse:collapse;margin:14px 0;background:#fff;
+      box-shadow:0 2px 10px #0000000d;border-radius:8px;overflow:hidden;font-size:14px}
+th{background:#ff5a00;color:#fff;padding:10px;text-align:left}
+td{padding:10px;border-bottom:1px solid #eee;vertical-align:top}
+tr:last-child td{border-bottom:0}
+code{background:#fff0e8;color:#c24400;padding:2px 7px;border-radius:4px;
+     font-family:Consolas,monospace;font-size:13.5px;word-break:break-all}
+pre{background:#171717;color:#7CFC9B;padding:14px 16px;border-radius:8px;overflow-x:auto;font-size:14px}
+blockquote{border-left:4px solid #ff5a00;background:#fff8f4;margin:14px 0;padding:11px 16px;border-radius:0 8px 8px 0}
+hr{border:0;border-top:1px solid #ddd;margin:30px 0}
+a{color:#c24400}
+li{margin:5px 0}
+p.num{margin:7px 0}
+@media print{body{background:#fff}h2{background:#171717 !important;-webkit-print-color-adjust:exact}}
+</style></head><body>
+<h1>PowerRun — आपकी website की पूरी जानकारी</h1>
+
+<blockquote>इस file को खोलकर आप सब कुछ खुद कर सकते हैं। किसी की मदद की ज़रूरत नहीं।</blockquote>
+<blockquote><b>Password इस file में नहीं हैं</b> — वो सुरक्षित नहीं होता।</blockquote>
+
+<hr>
+
+<h2>1. सारे पते (URL) — याद रखने लायक</h2>
+
+<h3>ग्राहक की website</h3>
+<table>
+<tr><th>पता</th><th>क्या है</th></tr>
+<tr><td><code>powerrun.in</code></td><td>Home page</td></tr>
+<tr><td><code>powerrun.in/products/</code></td><td>सारे products</td></tr>
+<tr><td><code>powerrun.in/cart/</code></td><td>ग्राहक का cart</td></tr>
+<tr><td><code>powerrun.in/checkout/</code></td><td>Order देने की जगह</td></tr>
+<tr><td><code>powerrun.in/warranty/</code></td><td>Warranty registration</td></tr>
+<tr><td><code>powerrun.in/service/</code></td><td>Service request</td></tr>
+<tr><td><code>powerrun.in/dealer/</code></td><td>Dealer enquiry</td></tr>
+<tr><td><code>powerrun.in/contact/</code></td><td>Contact form</td></tr>
+<tr><td><code>powerrun.in/about/</code></td><td>About us</td></tr>
+<tr><td><code>powerrun.in/track-order/</code></td><td>Order ID से tracking</td></tr>
+<tr><td><code>powerrun.in/account/</code></td><td>ग्राहक का account</td></tr>
+</table>
+
+<h3>🔐 आपका Admin Panel</h3>
+<table>
+<tr><th>पता</th><th>क्या है</th></tr>
+<tr><td><b><code>powerrun.in/admin/</code></b></td><td><b>यही खोलिए — बाकी सब अंदर है</b></td></tr>
+<tr><td><code>powerrun.in/admin/login/</code></td><td>Login page</td></tr>
+<tr><td><code>powerrun.in/admin/dashboard/</code></td><td>आँकड़े</td></tr>
+<tr><td><code>powerrun.in/admin/products/</code></td><td>Products — दाम, stock, तस्वीरें</td></tr>
+<tr><td><code>powerrun.in/admin/orders/</code></td><td>सारे orders</td></tr>
+<tr><td><code>powerrun.in/admin/customers/</code></td><td>ग्राहक</td></tr>
+<tr><td><code>powerrun.in/admin/warranty/</code></td><td>Warranty registrations</td></tr>
+<tr><td><code>powerrun.in/admin/service/</code></td><td>Service requests</td></tr>
+<tr><td><code>powerrun.in/admin/dealers/</code></td><td>Dealer enquiries</td></tr>
+<tr><td><code>powerrun.in/admin/settings/</code></td><td>GSTIN, shipping, payment</td></tr>
+<tr><td><code>powerrun.in/set-password/</code></td><td>Password बदलना</td></tr>
+</table>
+
+<blockquote><b>सिर्फ़ <code>powerrun.in/admin/</code> याद रखें।</b> बाकी सब बाईं तरफ़ के menu में मिल जाएगा।</blockquote>
+<blockquote>ये link किसी को न दें। Google पर भी नहीं दिखता।</blockquote>
+
+<p><b>Login email:</b> <code>angadsingh12911@gmail.com</code></p>
+
+<h3>Product का पता कैसा होता है</h3>
+<pre>
+powerrun.in/product/?slug=pr-hybrid-inverter-3-6kw-pr-001
+</pre>
+<p>हर product का अपना पता है। Admin → Products → Edit में &quot;URL Slug&quot; में दिखता है।</p>
+<p><b>इसे बदलेंगे तो पुराने link टूट जाएँगे।</b></p>
+
+<hr>
+
+<h2>2. रोज़ के काम — कैसे करें</h2>
+
+<h3>दाम या stock बदलना</h3>
+<p><code>powerrun.in/admin/products/</code> → product के आगे <b>Edit</b> → Price / MRP / Stock बदलें → <b>SAVE CHANGES</b></p>
+<p>→ website पर तुरंत बदल जाता है</p>
+
+<h3>तस्वीर डालना</h3>
+<p>वही Edit वाली window → नीचे <b>&quot;Product Images&quot;</b> → file चुनें → <b>SAVE CHANGES</b></p>
+<p>→ एक product में 5 तक तस्वीरें</p>
+
+<h3>नया order देखना</h3>
+<p><code>powerrun.in/admin/orders/</code> → <b>Open</b> दबाएँ → पूरा detail</p>
+<p>Status बदलें (Pending → Confirmed → Processing → Shipped → Delivered) → <b>SAVE ORDER</b></p>
+<p>→ ग्राहक को tracking page पर तुरंत दिखता है</p>
+
+<h3>Product website से हटाना</h3>
+<p>Edit → <b>&quot;Active (visible on website)&quot;</b> का टिक हटाएँ → SAVE</p>
+<p>(Delete मत कीजिए अगर उस product का कोई order आ चुका है)</p>
+
+<h3>Stock खत्म हो जाए</h3>
+<p>Stock में <code>0</code> डालें → अपने आप &quot;Out of stock&quot; हो जाएगा, order नहीं लिया जाएगा</p>
+
+<h3>Password बदलना</h3>
+<p><code>powerrun.in/set-password/</code> (admin में login रहते हुए)</p>
+
+<hr>
+
+<h2>3. Supabase — आपका database</h2>
+
+<table>
+<tr><th>Dashboard</th><th><a href="https://supabase.com/dashboard/project/nnkopxkyxcmtiunftlgr" target="_blank">https://supabase.com/dashboard/project/nnkopxkyxcmtiunftlgr</a></th></tr>
+<tr><td>Project नाम</td><td><code>powerrun-website</code></td></tr>
+<tr><td>Project ID</td><td><code>nnkopxkyxcmtiunftlgr</code></td></tr>
+</table>
+
+<p><b>कब खोलना पड़ता है:</b> बहुत कम। आम काम admin panel से हो जाते हैं।</p>
+<p>ज़रूरत पड़े तो:</p>
+<li><b>Authentication → Users</b> — कौन-कौन login कर सकता है</li>
+<li><b>Table Editor</b> — सारा data</li>
+<li><b>Advisors → Security</b> — security की जाँच (यहाँ <b>0 errors</b> दिखना चाहिए)</li>
+
+<hr>
+
+<h2>4. Website का code कहाँ है</h2>
+
+<table>
+<tr><th>आपके computer में</th><th><code>C:\Users\angad\Projects\powerrun-website</code></th></tr>
+<tr><td>Internet पर</td><td><a href="https://github.com/simpleboyangad/powerrun-website" target="_blank">https://github.com/simpleboyangad/powerrun-website</a></td></tr>
+<tr><td>Hosting</td><td>GitHub Pages (मुफ़्त)</td></tr>
+</table>
+
+<p><b>बदलाव कैसे live होता है:</b> code में बदलाव → GitHub पर push → 1-2 मिनट में <a href="https://powerrun.in" target="_blank">powerrun.in</a> पर।</p>
+
+<blockquote>⚠️ <b>दाम/stock/तस्वीर के लिए code छूने की ज़रूरत नहीं</b> — वो admin panel से होता है।</blockquote>
+<blockquote>Code तब बदलता है जब नया feature या design चाहिए।</blockquote>
+
+<hr>
+
+<h2>5. ज़रूरी बातें</h2>
+
+<li><b>दाम हमेशा GST सहित हैं</b> — ग्राहक वही देता है जो लिखा है</li>
+<li><b>Order का total website तय करती है</b>, browser नहीं — कोई घटा-बढ़ा नहीं सकता</li>
+<li><b>Admin सिर्फ़ वही खोल सकता है</b> जिसका नाम database की <code>admin_users</code> list में है</li>
+<li><b>Order नंबर:</b> <code>PR-2026-00001</code> · Warranty: <code>PRW-…</code> · Service: <code>PRS-…</code> · Dealer: <code>PRD-…</code></li>
+<li><b>Razorpay अभी बंद है</b> — &quot;Pay on Confirmation&quot; चल रहा है। Keys डालते ही चालू हो जाएगा</li>
+
+<hr>
+
+<h2>6. कुछ टूट जाए तो</h2>
+
+<table>
+<tr><th>दिक्कत</th><th>पहले ये करें</th></tr>
+<tr><td>पुराना version दिख रहा है</td><td><code>Ctrl + Shift + R</code></td></tr>
+<tr><td>Admin नहीं खुल रहा</td><td><code>powerrun.in/admin/login/</code> से दोबारा login</td></tr>
+<tr><td>Password भूल गए</td><td><code>powerrun.in/set-password/</code> या Supabase → Authentication → Users</td></tr>
+<tr><td>दाम बदला पर दिख नहीं रहा</td><td><code>Ctrl + Shift + R</code>, फिर admin में जाँचें कि SAVE हुआ था</td></tr>
+<tr><td>Order नहीं बन रहा</td><td>product का stock 0 तो नहीं? दाम डला है?</td></tr>
+</table>
+
+<hr>
+
+<h2>7. अभी बचे हुए काम</h2>
+
+<p class="num">1. <b>GSTIN + State</b> भरें — Admin → Settings → &quot;Company &amp; GST&quot;</p>
+<p class="num">2. <b>तस्वीरें</b> — 25 में से 23 में नहीं हैं</p>
+<p class="num">3. <b>Solar के 5 दाम</b> — अभी &quot;Out of stock&quot; हैं</p>
+<p class="num">4. <b>Google Business Profile</b> बनाएँ — मुफ़्त, सबसे तेज़ फ़ायदा</p>
+<p class="num">5. Resend SMTP (email) · Razorpay keys — जब चाहें</p>
+
+<hr>
+
+<p>*तकनीकी जानकारी <code>README.md</code> में है। Database की सारी फ़ाइलें <code>sql/</code> folder में।*</p>
+
+<hr><p style="text-align:center;color:#888;font-size:13px">
+इस page को bookmark कर लें &middot; छापने के लिए Ctrl+P</p>
+</body></html>

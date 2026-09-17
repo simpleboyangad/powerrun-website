@@ -13,6 +13,9 @@
   var pendingFiles = [];       // File[] queued for upload
   var DATASHEET_BUCKET = 'product-datasheets';
   var MAX_DATASHEET_MB = 20;
+  var SEO_TITLE_MIN = 50, SEO_TITLE_MAX = 60;
+  var SEO_DESC_MIN = 140, SEO_DESC_MAX = 160;
+
   var pendingDatasheet = null; // File queued to replace the current datasheet
   var removeDatasheet = false; // true when the admin clicked "Remove"
 
@@ -24,7 +27,7 @@
       }),
       PR.call('load products', function (sb) {
         return sb.from('products')
-          .select('*, product_images(id,image_url,storage_path,sort_order)')
+          .select('*, product_images(id,image_url,storage_path,sort_order,alt_text)')
           .order('sort_order').order('created_at');
       })
     ]);
@@ -166,10 +169,77 @@
     '</div>';
   }
 
+  /* ------------------------------------------------------------------- SEO */
+  function seoCounter(len, min, max) {
+    var cls = len === 0 ? '' : (len < min ? ' warn' : (len > max ? ' over' : ' good'));
+    return '<span class="seo-counter' + cls + '">Characters: <b>' + len + '</b> / ' + max +
+           ' \u00b7 Recommended: ' + min + '\u2013' + max + '</span>';
+  }
+
+  /* What is filled in for this product, and what is still missing. */
+  function seoChecklist(p) {
+    var images = p.product_images || [];
+    var checks = [
+      ['SEO Title', !!p.meta_title],
+      ['Meta Description', !!p.meta_description],
+      ['SEO Slug', !!p.slug],
+      ['Canonical', !!p.canonical_url || !!p.slug],
+      ['OG Image', !!p.og_image || images.length > 0],
+      ['Image ALT', !!p.image_alt || images.some(function (i) { return !!i.alt_text; })],
+      ['Focus Keyword', !!p.focus_keyword]
+    ];
+    return '<div class="seo-checklist">' + checks.map(function (c) {
+      return '<span class="seo-check ' + (c[1] ? 'done' : 'todo') + '">' +
+        (c[1] ? '\u2713 ' : '\u26a0 ') + PR.esc(c[0]) + (c[1] ? '' : ' missing') + '</span>';
+    }).join('') + '</div>';
+  }
+
+  function seoPreviewBox(p) {
+    var url = PR.config.SITE_URL + '/products/' + (p.slug || 'product-slug') + '/';
+    return '<div class="seo-preview" id="productSeoPreview">' +
+      '<div class="seo-preview-head">Google search preview</div>' +
+      '<div class="seo-preview-url" data-role="url">' + PR.esc(url) + '</div>' +
+      '<div class="seo-preview-title" data-role="title"></div>' +
+      '<div class="seo-preview-desc" data-role="desc"></div>' +
+    '</div>';
+  }
+
+  function bindSeo(body) {
+    body.querySelectorAll('[data-counter]').forEach(function (el) {
+      var bounds = el.getAttribute('data-counter').split(',');
+      el.addEventListener('input', function () {
+        var out = el.parentElement.querySelector('.seo-counter');
+        if (out) out.outerHTML = seoCounter(el.value.length, Number(bounds[0]), Number(bounds[1]));
+      });
+    });
+
+    var box = document.getElementById('productSeoPreview');
+    if (!box) return;
+    function paint() {
+      var name = (document.getElementById('pf_name') || {}).value || '';
+      var title = (document.getElementById('pf_meta_title') || {}).value ||
+                  (name ? name + ' | ' + PR.config.COMPANY : '');
+      var desc = (document.getElementById('pf_meta_description') || {}).value ||
+                 (document.getElementById('pf_short') || {}).value || '';
+      var slug = (document.getElementById('pf_slug') || {}).value || (name ? PR.slugify(name) : 'product-slug');
+      box.querySelector('[data-role="title"]').textContent = title.slice(0, 70);
+      box.querySelector('[data-role="desc"]').textContent = desc.slice(0, 200);
+      box.querySelector('[data-role="url"]').textContent =
+        (document.getElementById('pf_canonical') || {}).value || (PR.config.SITE_URL + '/products/' + slug + '/');
+    }
+    ['pf_name', 'pf_slug', 'pf_meta_title', 'pf_meta_description', 'pf_short', 'pf_canonical'].forEach(function (id) {
+      var el = document.getElementById(id);
+      if (el) el.addEventListener('input', paint);
+    });
+    paint();
+  }
+
   function openForm(product) {
     editing = product;
     existingImages = product
-      ? (product.product_images || []).slice().sort(function (a, b) { return (a.sort_order || 0) - (b.sort_order || 0); })
+      ? (product.product_images || []).slice()
+          .sort(function (a, b) { return (a.sort_order || 0) - (b.sort_order || 0); })
+          .map(function (img) { return Object.assign({}, img, { alt_text_saved: img.alt_text || '' }); })
       : [];
     pendingFiles = [];
     pendingDatasheet = null;
@@ -290,13 +360,50 @@
             (p.is_new ? ' checked' : '') + '> Show "New" badge</label>' +
         '</div>' +
 
-        '<details><summary style="cursor:pointer;font-weight:800;font-size:12px">SEO (optional)</summary>' +
+        '<details open><summary style="cursor:pointer;font-weight:800;font-size:12px">SEO</summary>' +
           '<div style="margin-top:12px;display:grid;gap:14px">' +
-            '<label>Meta Title<input id="pf_meta_title" maxlength="160" value="' + PR.esc(p.meta_title || '') + '"></label>' +
-            '<label>Meta Description<textarea id="pf_meta_description" maxlength="320">' +
-              PR.esc(p.meta_description || '') + '</textarea></label>' +
-            '<label>Sort Order<input id="pf_sort" type="number" step="1" value="' +
-              PR.esc(p.sort_order === null || p.sort_order === undefined ? 0 : p.sort_order) + '"></label>' +
+            seoChecklist(p) +
+            '<label>SEO Title' +
+              '<input id="pf_meta_title" maxlength="160" value="' + PR.esc(p.meta_title || '') + '" ' +
+                'data-counter="' + SEO_TITLE_MIN + ',' + SEO_TITLE_MAX + '" ' +
+                'placeholder="' + PR.esc((p.name || 'Product') + ' | PowerRun Industries') + '">' +
+              seoCounter((p.meta_title || '').length, SEO_TITLE_MIN, SEO_TITLE_MAX) +
+              '<span class="hint">Shown as the blue line in Google results.</span></label>' +
+            '<label>Meta Description' +
+              '<textarea id="pf_meta_description" maxlength="320" rows="3" ' +
+                'data-counter="' + SEO_DESC_MIN + ',' + SEO_DESC_MAX + '">' +
+              PR.esc(p.meta_description || '') + '</textarea>' +
+              seoCounter((p.meta_description || '').length, SEO_DESC_MIN, SEO_DESC_MAX) +
+              '<span class="hint">The grey text under the title in Google results.</span></label>' +
+            seoPreviewBox(p) +
+            '<div class="form-grid">' +
+              '<label>Focus Keyword<input id="pf_focus_kw" maxlength="120" value="' + PR.esc(p.focus_keyword || '') +
+                '" placeholder="e.g. 6.2kw hybrid solar inverter"></label>' +
+              '<label>Secondary Keywords<input id="pf_secondary_kw" maxlength="300" value="' +
+                PR.esc(p.secondary_keywords || '') + '" placeholder="comma separated"></label>' +
+            '</div>' +
+            '<label>Canonical URL<input id="pf_canonical" maxlength="300" value="' + PR.esc(p.canonical_url || '') +
+              '" placeholder="' + PR.esc(PR.config.SITE_URL + '/products/' + (p.slug || '') + '/') + '">' +
+              '<span class="hint">Leave empty to use the product URL shown in the preview.</span></label>' +
+            '<div class="form-grid">' +
+              '<label>OG Title<input id="pf_og_title" maxlength="200" value="' + PR.esc(p.og_title || '') + '"></label>' +
+              '<label>OG Image URL<input id="pf_og_image" maxlength="400" value="' + PR.esc(p.og_image || '') +
+                '"><span class="hint">Empty uses the first product photo.</span></label>' +
+            '</div>' +
+            '<label>OG Description<textarea id="pf_og_description" maxlength="320" rows="2">' +
+              PR.esc(p.og_description || '') + '</textarea></label>' +
+            '<label>Image ALT Text<input id="pf_image_alt" maxlength="200" value="' + PR.esc(p.image_alt || '') +
+              '" placeholder="' + PR.esc(p.name || 'PowerRun product') + '">' +
+              '<span class="hint">Describes the product photos for search engines and screen readers. ' +
+                'A single photo can override this with its own ALT above.</span></label>' +
+            '<div class="form-grid three">' +
+              '<label class="inline"><input id="pf_seo_index" type="checkbox"' +
+                (p.seo_index === false ? '' : ' checked') + '> Index (allow in search results)</label>' +
+              '<label class="inline"><input id="pf_seo_follow" type="checkbox"' +
+                (p.seo_follow === false ? '' : ' checked') + '> Follow links</label>' +
+              '<label>Sort Order<input id="pf_sort" type="number" step="1" value="' +
+                PR.esc(p.sort_order === null || p.sort_order === undefined ? 0 : p.sort_order) + '"></label>' +
+            '</div>' +
           '</div>' +
         '</details>' +
 
@@ -311,6 +418,7 @@
     renderExistingImages();
     renderDatasheet();
     bindForm(body);
+    bindSeo(body);
   }
 
   function renderSubcategories(selected) {
@@ -328,9 +436,13 @@
     var host = document.getElementById('existingImages');
     if (!host) return;
     host.innerHTML = existingImages.map(function (img, index) {
-      return '<div class="image-tile">' +
-        '<img src="' + PR.esc(img.image_url) + '" alt="Product image ' + (index + 1) + '">' +
-        '<button type="button" data-remove-image="' + index + '" aria-label="Delete image">×</button>' +
+      return '<div class="image-item">' +
+        '<div class="image-tile">' +
+          '<img src="' + PR.esc(img.image_url) + '" alt="' + PR.esc(img.alt_text || ('Product image ' + (index + 1))) + '">' +
+          '<button type="button" data-remove-image="' + index + '" aria-label="Delete image">\u00d7</button>' +
+        '</div>' +
+        '<input class="image-alt" type="text" maxlength="200" data-alt-index="' + index + '" ' +
+          'value="' + PR.esc(img.alt_text || '') + '" placeholder="ALT text for image ' + (index + 1) + '">' +
       '</div>';
     }).join('');
   }
@@ -432,6 +544,13 @@
         pendingFiles.splice(Number(removePending.getAttribute('data-remove-pending')), 1);
         renderPendingImages();
       }
+    });
+
+    body.addEventListener('input', function (event) {
+      var alt = event.target.closest('[data-alt-index]');
+      if (!alt) return;
+      var image = existingImages[Number(alt.getAttribute('data-alt-index'))];
+      if (image) image.alt_text = alt.value;
     });
 
     document.getElementById('pf_datasheet').addEventListener('change', function (event) {
@@ -615,6 +734,15 @@
       is_new: document.getElementById('pf_new').checked,
       meta_title: document.getElementById('pf_meta_title').value.trim() || null,
       meta_description: document.getElementById('pf_meta_description').value.trim() || null,
+      focus_keyword: document.getElementById('pf_focus_kw').value.trim() || null,
+      secondary_keywords: document.getElementById('pf_secondary_kw').value.trim() || null,
+      canonical_url: document.getElementById('pf_canonical').value.trim() || null,
+      og_title: document.getElementById('pf_og_title').value.trim() || null,
+      og_description: document.getElementById('pf_og_description').value.trim() || null,
+      og_image: document.getElementById('pf_og_image').value.trim() || null,
+      image_alt: document.getElementById('pf_image_alt').value.trim() || null,
+      seo_index: document.getElementById('pf_seo_index').checked,
+      seo_follow: document.getElementById('pf_seo_follow').checked,
       sort_order: Number(document.getElementById('pf_sort').value) || 0
     };
 
@@ -637,6 +765,16 @@
       if (pendingFiles.length) {
         PR.setBusy(button, true, 'UPLOADING IMAGES…');
         await uploadImages(productId, existingImages.length);
+      }
+      var altChanges = existingImages.filter(function (img) {
+        return img.id && (img.alt_text || '') !== (img.alt_text_saved || '');
+      });
+      if (altChanges.length) {
+        await Promise.all(altChanges.map(function (img) {
+          return PR.call('save image ALT text', function (sb) {
+            return sb.from('product_images').update({ alt_text: img.alt_text || null }).eq('id', img.id);
+          });
+        }));
       }
       if (pendingDatasheet || removeDatasheet) {
         PR.setBusy(button, true, pendingDatasheet ? 'UPLOADING DATASHEET…' : 'SAVING…');

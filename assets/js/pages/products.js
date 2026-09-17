@@ -83,12 +83,43 @@
           state.category = ''; state.subcategory = ''; state.search = '';
           var s = document.getElementById('productSearch');
           if (s) s.value = '';
-          syncUrl(); renderTabs(); renderSubcategories(); render();
+          syncUrl(); renderTabs(); renderSubcategories(); render(); applySeo();
         });
       }
       return;
     }
     grid.innerHTML = list.map(PR.productCard).join('');
+  }
+
+  /* SEO for this listing. With ?category=… it becomes a category landing page
+     and uses the SEO fields stored on that category; the canonical always
+     drops the sort/search parameters so filtered views do not create
+     duplicate URLs. */
+  function applySeo() {
+    var cat = currentCategory();
+    if (!cat) {
+      PR.seo.apply({ key: 'products', canonical: PR.seo.canonicalFor('/products/'),
+        breadcrumbs: [{ name: 'Home', url: '/' }, { name: 'Products', url: '/products/' }] });
+      return;
+    }
+    var title = cat.meta_title || (cat.name + ' | ' + PR.config.COMPANY);
+    var desc = cat.meta_description || cat.description ||
+      ('Buy ' + cat.name + ' from ' + PR.config.COMPANY + '. Pan-India delivery and technical support.');
+    PR.seo.apply({
+      key: 'products',
+      title: title,
+      description: desc,
+      keywords: cat.focus_keyword || '',
+      canonical: cat.canonical_url || PR.seo.categoryUrl(cat.slug),
+      image: cat.og_image || cat.image_url || '',
+      index: cat.seo_index !== false,
+      follow: cat.seo_follow !== false,
+      breadcrumbs: [
+        { name: 'Home', url: '/' },
+        { name: 'Products', url: '/products/' },
+        { name: cat.name, url: PR.seo.categoryUrl(cat.slug) }
+      ]
+    });
   }
 
   function syncUrl() {
@@ -125,13 +156,13 @@
         if (!btn) return;
         state.category = btn.getAttribute('data-cat');
         state.subcategory = '';
-        syncUrl(); renderTabs(); renderSubcategories(); render();
+        syncUrl(); renderTabs(); renderSubcategories(); render(); applySeo();
       });
     }
   }
 
   async function init() {
-    PR.mountLayout('products');
+    PR.mountLayout('products', false);
     state.category = PR.param('category') || '';
     state.subcategory = PR.param('subcategory') || '';
     state.search = PR.param('q') || '';
@@ -148,6 +179,7 @@
       renderTabs();
       renderSubcategories();
       render();
+      applySeo();
     } catch (err) {
       PR.toast(err.message, 'error');
       if (grid) {

@@ -319,3 +319,55 @@ table.grid td small { color: var(--muted); display: block; margin-top: 3px; }
   .drawer-overlay { padding: 12px; }
   .toast-host { right: 12px; left: 12px; max-width: none; }
 }
+
+/* --------------------------------------------------------------- SEO manager */
+.tabs-row { display: flex; gap: 8px; flex-wrap: wrap; margin-bottom: 16px; }
+.tab-btn {
+  border: 1px solid var(--line); background: #fff; border-radius: 999px; padding: 9px 16px;
+  font-weight: 800; font-size: 13px; cursor: pointer; color: #444;
+}
+.tab-btn.active { background: var(--orange); border-color: var(--orange); color: #fff; }
+
+.seo-counter { display: block; font-size: 11px; font-weight: 700; color: var(--muted); margin-top: 4px; }
+.seo-counter.good { color: #14663a; }
+.seo-counter.warn { color: #96590a; }
+.seo-counter.over { color: #8c1d18; }
+
+.seo-preview {
+  border: 1px solid var(--line); border-radius: 10px; padding: 14px 16px; background: #fff;
+  margin: 4px 0 6px;
+}
+.seo-preview-head {
+  font-size: 11px; font-weight: 800; text-transform: uppercase; letter-spacing: .05em;
+  color: var(--muted); margin-bottom: 8px;
+}
+.seo-preview-url { font-size: 12px; color: #3c4043; }
+.seo-preview-title { font-size: 18px; color: #1a0dab; line-height: 1.3; margin: 2px 0 3px; }
+.seo-preview-desc { font-size: 13px; color: #4d5156; line-height: 1.5; }
+
+.seo-health { display: flex; align-items: center; gap: 18px; flex-wrap: wrap; }
+.seo-score b { font-size: 34px; line-height: 1; }
+.seo-score span { display: block; font-size: 12px; color: var(--muted); font-weight: 700; margin-top: 4px; }
+.seo-bar { flex: 1; min-width: 200px; height: 12px; border-radius: 999px; background: #eceef1; overflow: hidden; }
+.seo-bar span { display: block; height: 100%; background: linear-gradient(90deg, #ff5a00, #ff9a3c); }
+
+.seo-missing { border-top: 1px solid var(--line); padding-top: 12px; margin-top: 12px; }
+.seo-missing ul { margin: 8px 0 10px; padding-left: 18px; font-size: 13px; }
+.seo-missing li { margin-bottom: 3px; }
+
+.seo-checklist { display: flex; flex-wrap: wrap; gap: 8px; margin: 4px 0 2px; }
+.seo-check {
+  font-size: 12px; font-weight: 700; border-radius: 999px; padding: 5px 11px;
+  background: #eceef1; color: #555;
+}
+.seo-check.done { background: #e7f6ed; color: #14663a; }
+.seo-check.todo { background: #fff4e0; color: #96590a; }
+
+@media (max-width: 900px) {
+  .seo-health { gap: 12px; }
+  .seo-score b { font-size: 28px; }
+}
+
+.image-item { display: grid; gap: 6px; width: 140px; }
+.image-item .image-tile { width: 140px; height: 110px; }
+.image-alt { font-size: 12px; padding: 7px 9px; }

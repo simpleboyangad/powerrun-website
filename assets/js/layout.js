@@ -109,8 +109,11 @@
     if (el && PR.cart) el.textContent = String(PR.cart.count());
   };
 
-  PR.mountLayout = function (active) {
+  PR.mountLayout = function (active, seoOptions) {
     PR.renderHeader(active);
     PR.renderFooter();
+    // Pages that know more about themselves (product, category) call
+    // PR.seo.apply again with that detail; applying twice is harmless.
+    if (PR.seo && seoOptions !== false) PR.seo.apply(seoOptions || {});
   };
 })();

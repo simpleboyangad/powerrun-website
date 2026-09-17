@@ -653,3 +653,12 @@ img { max-width: 100%; }
   .wa-float { right: 14px; bottom: 14px; width: 52px; height: 52px; font-size: 24px; }
   .toast-host { right: 12px; left: 12px; bottom: 78px; max-width: none; }
 }
+
+.internal-links { margin-top: 20px; border-top: 1px solid var(--line); padding-top: 16px; }
+.internal-links > b { display: block; font-size: 13px; margin-bottom: 10px; }
+.link-chips { display: flex; flex-wrap: wrap; gap: 8px; }
+.link-chips a {
+  font-size: 12px; font-weight: 700; padding: 8px 13px; border-radius: 999px;
+  border: 1px solid var(--line); background: #fff; color: #444;
+}
+.link-chips a:hover { border-color: var(--orange); color: var(--orange); }
