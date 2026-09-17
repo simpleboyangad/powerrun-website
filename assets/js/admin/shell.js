@@ -158,9 +158,12 @@
   };
 
   /* ----------------------------------------------------------------- drawer */
+  var drawerTimer = null;
+
   PRA.openDrawer = function (title, bodyHtml) {
     var existing = document.getElementById('adminDrawer');
     if (existing) existing.remove();
+    if (drawerTimer) { clearInterval(drawerTimer); drawerTimer = null; }
 
     document.body.insertAdjacentHTML('beforeend',
       '<div class="drawer-overlay show" id="adminDrawer">' +
@@ -168,10 +171,47 @@
           '<div class="drawer-head"><h2>' + PR.esc(title) + '</h2>' +
             '<button class="drawer-close" type="button" aria-label="Close">×</button></div>' +
           '<div class="drawer-body">' + bodyHtml + '</div>' +
+          '<div class="drawer-scroll" aria-hidden="true">' +
+            '<button class="drawer-scroll-btn" type="button" data-scroll="up" title="Scroll up" aria-label="Scroll up">▲</button>' +
+            '<button class="drawer-scroll-btn" type="button" data-scroll="down" title="Scroll down" aria-label="Scroll down">▼</button>' +
+          '</div>' +
         '</div>' +
       '</div>');
 
     var overlay = document.getElementById('adminDrawer');
+    var scroller = overlay.querySelector('.drawer-body');
+
+    // Long forms (a product has photos, specs and a datasheet below the fold)
+    // scroll inside the drawer; these buttons work when a mouse wheel or a
+    // trackpad gesture does not.
+    overlay.querySelector('.drawer-scroll').addEventListener('click', function (event) {
+      var button = event.target.closest('[data-scroll]');
+      if (!button) return;
+      var step = Math.max(160, scroller.clientHeight * 0.8);
+      var delta = button.getAttribute('data-scroll') === 'up' ? -step : step;
+      var from = scroller.scrollTop;
+      var target = Math.max(0, Math.min(scroller.scrollHeight - scroller.clientHeight, from + delta));
+      scroller.scrollBy({ top: delta, behavior: 'smooth' });
+      // if the browser ignores smooth scrolling, jump instead
+      setTimeout(function () {
+        if (scroller.scrollTop === from && Math.abs(target - from) > 2) {
+          scroller.scrollTop = target;
+          syncScrollButtons();
+        }
+      }, 450);
+    });
+    function syncScrollButtons() {
+      var atTop = scroller.scrollTop <= 2;
+      var atEnd = scroller.scrollTop + scroller.clientHeight >= scroller.scrollHeight - 2;
+      overlay.querySelector('[data-scroll="up"]').disabled = atTop;
+      overlay.querySelector('[data-scroll="down"]').disabled = atEnd;
+      overlay.querySelector('.drawer-scroll').hidden = atTop && atEnd;
+    }
+    scroller.addEventListener('scroll', syncScrollButtons, { passive: true });
+    setTimeout(syncScrollButtons, 0);
+    // the form grows and shrinks (spec rows, image tiles), so re-check now and then
+    drawerTimer = setInterval(syncScrollButtons, 600);
+
     overlay.querySelector('.drawer-close').addEventListener('click', PRA.closeDrawer);
     overlay.addEventListener('click', function (event) {
       if (event.target === overlay) PRA.closeDrawer();
@@ -185,6 +225,7 @@
   PRA.closeDrawer = function () {
     var overlay = document.getElementById('adminDrawer');
     if (overlay) overlay.remove();
+    if (drawerTimer) { clearInterval(drawerTimer); drawerTimer = null; }
     document.removeEventListener('keydown', escClose);
   };
 
