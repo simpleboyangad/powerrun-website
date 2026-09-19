@@ -34,10 +34,19 @@
       '</div>';
   }
 
+  /* Online payment shows when it is switched on in Admin > Settings. While it is
+     still off, the owner can try it on the live site with /checkout/?rzp_test=1
+     - customers never see it without that flag. */
+  function razorpayAvailable() {
+    var payments = settings.payments || {};
+    if (!PR.config.RAZORPAY_KEY_ID) return false;
+    return !!payments.razorpay_enabled || PR.param('rzp_test') === '1';
+  }
+
   function renderPaymentMethods() {
     var host = document.getElementById('paymentMethods');
     var payments = settings.payments || {};
-    var razorpayReady = !!payments.razorpay_enabled && !!PR.config.RAZORPAY_KEY_ID;
+    var razorpayReady = razorpayAvailable();
     var options = [];
 
     if (razorpayReady) {
@@ -260,7 +269,7 @@
       renderSummary();
       renderPaymentMethods();
 
-      if (settings.payments && settings.payments.razorpay_enabled && PR.config.RAZORPAY_KEY_ID) {
+      if (razorpayAvailable()) {
         var script = document.createElement('script');
         script.src = 'https://checkout.razorpay.com/v1/checkout.js';
         script.async = true;
