@@ -34,7 +34,7 @@
           ? '<div class="summary-row"><span>Tracking</span><b>' + PR.esc(order.courier_partner || '') +
             ' ' + PR.esc(order.tracking_number) + '</b></div>'
           : '') +
-        '<div class="summary-row total"><span>Total</span><span>' + PR.money(order.total_amount) + '</span></div>' +
+        PR.orderBreakdownHtml(order) +
         '<h2 style="margin:22px 0 8px;font-size:17px">Progress</h2>' + timeline(order.order_status) +
         '<h2 style="margin:22px 0 8px;font-size:17px">Items</h2>' +
         '<div class="table-scroll"><table class="data-table"><thead><tr>' +

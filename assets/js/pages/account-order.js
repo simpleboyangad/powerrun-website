@@ -67,10 +67,7 @@
         '<aside>' +
           '<div class="panel">' +
             '<h2>Summary</h2>' +
-            '<div class="summary-row"><span>Subtotal</span><b>' + PR.money(order.subtotal) + '</b></div>' +
-            '<div class="summary-row"><span>Shipping</span><b>' +
-              (Number(order.shipping_cost) > 0 ? PR.money(order.shipping_cost) : 'Free') + '</b></div>' +
-            '<div class="summary-row total"><span>Total</span><span>' + PR.money(order.total_amount) + '</span></div>' +
+            PR.orderBreakdownHtml(Object.assign({}, order, { items: items })) +
             '<a class="btn orange block" href="/account/invoice/?id=' +
               encodeURIComponent(order.order_number) + '" style="margin-top:12px">VIEW INVOICE</a>' +
             '<a class="outline block" href="/account/orders/" style="margin-top:8px">BACK TO MY ORDERS</a>' +

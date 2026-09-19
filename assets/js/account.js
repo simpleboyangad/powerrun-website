@@ -102,7 +102,7 @@
     if (!session) return [];
     return await PR.call('load your orders', function (sb) {
       return sb.from('orders')
-        .select('*, order_items(id,product_name,product_sku,quantity,unit_price,total_price)')
+        .select('*, order_items(id,product_name,product_sku,hsn_code,quantity,unit_price,mrp,gst_rate,gst_amount,total_price)')
         .eq('user_id', session.user.id)
         .order('created_at', { ascending: false });
     }) || [];
@@ -111,7 +111,7 @@
   account.loadOrder = async function (orderNumber) {
     var rows = await PR.call('load the order', function (sb) {
       return sb.from('orders')
-        .select('*, order_items(id,product_name,product_sku,quantity,unit_price,total_price)')
+        .select('*, order_items(id,product_name,product_sku,hsn_code,quantity,unit_price,mrp,gst_rate,gst_amount,total_price)')
         .eq('order_number', orderNumber)
         .limit(1);
     });

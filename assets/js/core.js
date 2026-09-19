@@ -59,6 +59,74 @@
     return '₹' + n.toLocaleString('en-IN', { maximumFractionDigits: 0 });
   };
 
+  /* Price breakdown for an order, from the values create_website_order stored:
+     MRP total, discount, subtotal, shipping, total, and the GST that is
+     INCLUDED in those prices (CGST + SGST within Uttar Pradesh, IGST outside).
+     Older orders placed before GST was recorded simply skip those rows. */
+  PR.money2 = function (value) {
+    var n = Number(value);
+    if (!Number.isFinite(n)) return '-';
+    return '\u20b9' + n.toLocaleString('en-IN', { minimumFractionDigits: 2, maximumFractionDigits: 2 });
+  };
+
+  PR.orderBreakdown = function (order) {
+    var num = function (v) { var n = Number(v); return Number.isFinite(n) ? n : 0; };
+    var subtotal = num(order.subtotal);
+    var mrp = num(order.mrp_total);
+    var discount = num(order.discount_amount) || (mrp > subtotal ? mrp - subtotal : 0);
+    var shipping = num(order.shipping_cost);
+    var cgst = num(order.cgst_amount), sgst = num(order.sgst_amount), igst = num(order.igst_amount);
+    var gst = num(order.gst_amount) || (cgst + sgst + igst);
+
+    var rates = [];
+    (order.items || []).forEach(function (item) {
+      var r = num(item.gst_rate);
+      if (r > 0 && rates.indexOf(r) === -1) rates.push(r);
+    });
+    var rateText = rates.length === 1 ? ' @ ' + rates[0] + '%' : '';
+
+    var rows = [];
+    if (mrp > subtotal + 0.5) {
+      rows.push({ label: 'MRP Total', value: PR.money(mrp), cls: 'mrp' });
+      rows.push({ label: 'Discount', value: '\u2212 ' + PR.money(discount), cls: 'discount' });
+    }
+    rows.push({ label: 'Subtotal', value: PR.money(subtotal) });
+    rows.push({ label: 'Shipping', value: shipping > 0 ? PR.money(shipping) : 'Free' });
+    rows.push({ label: 'Total Amount', value: PR.money(order.total_amount), cls: 'total' });
+
+    var gstRows = [];
+    if (gst > 0) {
+      gstRows.push({ label: 'GST included' + rateText, value: PR.money2(gst) });
+      if (igst > 0) {
+        gstRows.push({ label: 'IGST', value: PR.money2(igst), cls: 'sub' });
+      } else if (cgst > 0 || sgst > 0) {
+        gstRows.push({ label: 'CGST', value: PR.money2(cgst), cls: 'sub' });
+        gstRows.push({ label: 'SGST', value: PR.money2(sgst), cls: 'sub' });
+      }
+    }
+    return { rows: rows, gstRows: gstRows, saved: discount > 0.5 ? discount : 0 };
+  };
+
+  /* Standard markup used by the customer pages. */
+  PR.orderBreakdownHtml = function (order) {
+    var b = PR.orderBreakdown(order);
+    var html = '<div class="price-breakdown">' + b.rows.map(function (r) {
+      return '<div class="summary-row' + (r.cls ? ' ' + r.cls : '') + '"><span>' + PR.esc(r.label) +
+             '</span><' + (r.cls === 'total' ? 'span' : 'b') + '>' + r.value + '</' +
+             (r.cls === 'total' ? 'span' : 'b') + '></div>';
+    }).join('');
+    if (b.saved) {
+      html += '<div class="saved-note">\ud83c\udf89 You saved ' + PR.money(b.saved) + ' on this order</div>';
+    }
+    if (b.gstRows.length) {
+      html += '<div class="gst-box">' + b.gstRows.map(function (r) {
+        return '<div class="summary-row' + (r.cls ? ' ' + r.cls : '') + '"><span>' + PR.esc(r.label) +
+               '</span><b>' + r.value + '</b></div>';
+      }).join('') + '<small>Prices include GST. The full tax invoice is in My Account \u2192 Orders.</small></div>';
+    }
+    return html + '</div>';
+  };
+
   PR.slugify = function (value) {
     return String(value || '').toLowerCase().trim()
       .replace(/[^a-z0-9]+/g, '-').replace(/^-|-$/g, '');

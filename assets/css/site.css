@@ -668,3 +668,17 @@ img { max-width: 100%; }
 .policy h3:first-of-type { margin-top: 10px; }
 .policy .feature-list li { margin-bottom: 6px; }
 .policy a { color: var(--orange); font-weight: 700; }
+
+/* order price breakdown */
+.price-breakdown .summary-row.mrp b { color: #888; text-decoration: line-through; font-weight: 600; }
+.price-breakdown .summary-row.discount b { color: var(--green); }
+.saved-note {
+  margin: 8px 0 0; padding: 8px 12px; border-radius: 8px; background: #e7f6ed;
+  color: #14663a; font-size: 13px; font-weight: 800;
+}
+.gst-box {
+  margin-top: 10px; padding: 8px 12px; border: 1px dashed #ddd; border-radius: 8px; background: #fafafa;
+}
+.gst-box .summary-row { padding: 4px 0; font-size: 13px; }
+.gst-box .summary-row.sub { padding-left: 12px; font-size: 12px; color: #666; }
+.gst-box small { display: block; color: #888; font-size: 11px; margin-top: 4px; }

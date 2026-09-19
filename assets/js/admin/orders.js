@@ -14,7 +14,7 @@
   async function loadAll() {
     orders = await PR.call('load orders', function (sb) {
       return sb.from('orders')
-        .select('*, order_items(id,product_name,product_sku,quantity,unit_price,total_price)')
+        .select('*, order_items(id,product_name,product_sku,quantity,unit_price,total_price,mrp,gst_rate,gst_amount)')
         .order('created_at', { ascending: false });
     }) || [];
   }
@@ -117,12 +117,22 @@
       '</tbody></table></div>' +
 
       '<div style="margin-top:14px;display:grid;gap:6px;max-width:340px;margin-left:auto">' +
-        '<div style="display:flex;justify-content:space-between"><span>Subtotal</span><b>' +
-          PR.money(order.subtotal) + '</b></div>' +
-        '<div style="display:flex;justify-content:space-between"><span>Shipping</span><b>' +
-          (Number(order.shipping_cost) > 0 ? PR.money(order.shipping_cost) : 'Free') + '</b></div>' +
-        '<div style="display:flex;justify-content:space-between;border-top:1px solid #eee;padding-top:8px;font-size:17px">' +
-          '<b>Total</b><b>' + PR.money(order.total_amount) + '</b></div>' +
+        (function () {
+          var b = PR.orderBreakdown(Object.assign({}, order, { items: items }));
+          var line = function (r) {
+            var style = 'display:flex;justify-content:space-between' +
+              (r.cls === 'total' ? ';border-top:1px solid #eee;padding-top:8px;font-size:17px' : '') +
+              (r.cls === 'discount' ? ';color:#14663a' : '') +
+              (r.cls === 'mrp' ? ';color:#888' : '') +
+              (r.cls === 'sub' ? ';font-size:12px;color:#666;padding-left:12px' : '');
+            return '<div style="' + style + '"><span>' + PR.esc(r.label) + '</span><b>' + r.value + '</b></div>';
+          };
+          return b.rows.map(line).join('') +
+            (b.gstRows.length
+              ? '<div style="margin-top:6px;padding-top:6px;border-top:1px dashed #ddd;display:grid;gap:4px">' +
+                b.gstRows.map(line).join('') + '</div>'
+              : '');
+        })() +
       '</div>' +
 
       '<div class="hint" style="margin-top:12px">' +

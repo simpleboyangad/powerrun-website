@@ -57,10 +57,7 @@
       }).join('') +
       '</tbody></table></div>' +
 
-      '<div class="summary-row" style="margin-top:12px"><span>Subtotal</span><b>' + PR.money(order.subtotal) + '</b></div>' +
-      '<div class="summary-row"><span>Shipping</span><b>' +
-        (Number(order.shipping_cost) > 0 ? PR.money(order.shipping_cost) : 'Free') + '</b></div>' +
-      '<div class="summary-row total"><span>Total Amount</span><span>' + PR.money(order.total_amount) + '</span></div>' +
+      '<div style="margin-top:12px">' + PR.orderBreakdownHtml(order) + '</div>' +
 
       '<p class="small-note" style="margin-top:18px"><b>What happens next?</b> ' +
         (paid
