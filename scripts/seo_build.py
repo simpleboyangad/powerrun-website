@@ -232,8 +232,32 @@ def breadcrumb_schema(items):
     }
 
 
+def asset_stamp():
+    """Same hash scripts/stamp_assets.py uses, so generated pages already carry
+    the right ?v= and the stamping step has nothing left to rewrite."""
+    import glob
+    import hashlib
+    here = os.getcwd()
+    os.chdir(ROOT)
+    try:
+        files = sorted(glob.glob("assets/**/*.js", recursive=True) +
+                       glob.glob("assets/**/*.css", recursive=True))
+        digest = hashlib.sha1()
+        for path in files:
+            digest.update(io.open(path, "rb").read())
+        return digest.hexdigest()[:8]
+    finally:
+        os.chdir(here)
+
+
+def versioned(html, stamp):
+    html = re.sub(r'(src="/assets/[^"\']+?\.js)"', r"\1?v=" + stamp + '"', html)
+    return re.sub(r'(href="/assets/[^"\']+?\.css)"', r"\1?v=" + stamp + '"', html)
+
+
 def main():
     _, _, site = config()
+    stamp = asset_stamp()
     g = (fetch("global_seo?select=*&id=eq.1") or [{}])[0]
     site = (g.get("site_url") or site).rstrip("/")
     site_name = g.get("site_name") or "PowerRun Industries"
@@ -334,7 +358,7 @@ def main():
         folder = os.path.join(product_dir, slug)
         os.makedirs(folder, exist_ok=True)
         io.open(os.path.join(folder, "index.html"), "w", encoding="utf-8").write(
-            PRODUCT_TEMPLATE.format(head=block))
+            versioned(PRODUCT_TEMPLATE.format(head=block), stamp))
         written.append("products/%s/index.html" % slug)
         if indexable:
             add_url(canonical, lastmod=(product.get("updated_at") or today)[:10], priority="0.7")

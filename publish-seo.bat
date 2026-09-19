@@ -9,20 +9,25 @@ REM
 REM  It only ever touches SEO output + asset stamps. If there is nothing new,
 REM  it says so and stops.
 REM ===========================================================================
+title PowerRun - SEO publish
 cd /d "%~dp0"
 echo.
 echo ================================================
 echo   PowerRun - SEO publish
 echo ================================================
 echo.
+echo   Do NOT click inside this window while it runs.
+echo   (A click pauses Windows programs. If it ever looks
+echo    stuck, press ENTER once and it will continue.)
+echo.
 
 echo [1/4] Reading SEO settings and rebuilding sitemap.xml + robots.txt...
-python scripts\seo_build.py
+python -u scripts\seo_build.py
 if errorlevel 1 goto failed
 echo.
 
 echo [2/4] Updating file versions...
-python scripts\stamp_assets.py
+python -u scripts\stamp_assets.py
 if errorlevel 1 goto failed
 echo.
 
@@ -36,10 +41,11 @@ if not errorlevel 1 (
 )
 git commit -q -m "Update SEO"
 if errorlevel 1 goto failed
+echo       Saved.
 echo.
 
-echo [4/4] Publishing to powerrun.in...
-git push -q origin main
+echo [4/4] Publishing to powerrun.in (can take up to a minute)...
+git push origin main
 if errorlevel 1 goto failed
 echo.
 echo   Published. The website updates in about 1-2 minutes.
@@ -48,7 +54,7 @@ echo   Sitemap: https://powerrun.in/sitemap.xml
 :done
 echo.
 echo ================================================
-echo   Finished.
+echo   Finished. You can close this window.
 echo ================================================
 pause
 exit /b 0
