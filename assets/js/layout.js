@@ -97,6 +97,12 @@
             '<li><a href="/account/">My Account</a></li>' +
             '<li><a href="https://wa.me/' + PR.esc(cfg.WHATSAPP) + '" target="_blank" rel="noopener">WhatsApp Support</a></li>' +
           '</ul></div>' +
+          '<div><h3>Policies</h3><ul>' +
+            '<li><a href="/shipping-policy/">Shipping Policy</a></li>' +
+            '<li><a href="/refund-policy/">Return &amp; Refund</a></li>' +
+            '<li><a href="/terms/">Terms &amp; Conditions</a></li>' +
+            '<li><a href="/privacy-policy/">Privacy Policy</a></li>' +
+          '</ul></div>' +
         '</div>' +
         '<div class="copy">© ' + year + ' ' + PR.esc(cfg.COMPANY) + '. All Rights Reserved.</div>' +
       '</footer>' +

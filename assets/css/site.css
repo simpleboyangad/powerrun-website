@@ -529,7 +529,7 @@ img { max-width: 100%; }
 
 /* ----------------------------------------------------------------- footer */
 .footer { background: #080808; color: #eee; padding: 55px 5% 20px; }
-.footer-grid { display: grid; grid-template-columns: 2fr 1fr 1fr 1fr; gap: 35px; }
+.footer-grid { display: grid; grid-template-columns: 1.6fr 1fr 1fr 1fr 1fr; gap: 30px; }
 .footer h3 { color: var(--orange); margin-top: 0; }
 .footer p, .footer li { color: #aaa; font-size: 13px; line-height: 1.9; }
 .footer ul { list-style: none; padding: 0; margin: 0; }
@@ -662,3 +662,9 @@ img { max-width: 100%; }
   border: 1px solid var(--line); background: #fff; color: #444;
 }
 .link-chips a:hover { border-color: var(--orange); color: var(--orange); }
+
+/* policy pages */
+.policy h3 { margin-top: 26px; }
+.policy h3:first-of-type { margin-top: 10px; }
+.policy .feature-list li { margin-bottom: 6px; }
+.policy a { color: var(--orange); font-weight: 700; }
