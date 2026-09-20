@@ -283,7 +283,7 @@ def main():
     org = {
         "@context": "https://schema.org", "@type": "Organization",
         "@id": site + "/#organization", "name": site_name, "url": site + "/",
-        "logo": default_image, "email": "info@powerrun.in", "telephone": "+91 87003 07676",
+        "logo": default_image, "email": "service@powerrun.in", "telephone": "+91 87003 07676",
         "areaServed": "IN",
     }
 

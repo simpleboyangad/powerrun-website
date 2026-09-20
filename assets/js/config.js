@@ -15,7 +15,7 @@ window.PR_CONFIG = {
 
   WHATSAPP: '918700307676',
   PHONE: '+91 87003 07676',
-  EMAIL: 'info@powerrun.in',
+  EMAIL: 'service@powerrun.in',
   COMPANY: 'PowerRun Industries',
   SITE_URL: 'https://powerrun.in',
 

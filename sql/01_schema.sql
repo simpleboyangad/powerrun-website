@@ -279,7 +279,7 @@ create table if not exists public.site_settings (
 insert into public.site_settings(key, value) values
   ('shipping', '{"flat_rate": 0, "free_above": 0}'::jsonb),
   ('payments', '{"razorpay_enabled": false, "cod_enabled": true}'::jsonb),
-  ('store',    '{"name": "PowerRun Industries", "whatsapp": "918700307676", "email": "info@powerrun.in", "phone": "+91 87003 07676"}'::jsonb)
+  ('store',    '{"name": "PowerRun Industries", "whatsapp": "918700307676", "email": "service@powerrun.in", "phone": "+91 87003 07676"}'::jsonb)
 on conflict (key) do nothing;
 
 -- ---------------------------------------------------------------------------

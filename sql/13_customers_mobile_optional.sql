@@ -1,0 +1,21 @@
+-- ============================================================================
+-- PowerRun Industries - migration 13 / customers.mobile is optional
+--
+-- BUG: the account signup form (assets/js/pages/account.js) intentionally
+-- treats Mobile Number as optional - only Full Name, Email and Password are
+-- required. But customers.mobile was NOT NULL, so the on_auth_user_created
+-- trigger (sql/08_customer_accounts.sql) failed with a 500 error on every
+-- signup where the customer left mobile blank:
+--
+--   null value in column "mobile" of relation "customers" violates
+--   not-null constraint
+--
+-- This blocked account creation on the live site. Customers can still add
+-- their mobile later from My Account > Profile, or it is filled in
+-- automatically the first time they place an order or claim one.
+--
+-- Existing rows are untouched; NULL simply becomes a valid value.
+-- Safe to run more than once.
+-- ============================================================================
+
+alter table public.customers alter column mobile drop not null;

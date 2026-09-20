@@ -197,5 +197,27 @@
     var session = await PR.account.getSession();
     if (session) renderSignedIn(session);
     else renderSignedOut();
+
+    // Landed here from a "Confirm your signup" / magic-link / invite email
+    // (forwarded by core.js). Say so explicitly instead of leaving the
+    // visitor to guess why they are suddenly signed in.
+    var confirmed = PR.param('confirmed');
+    if (confirmed) {
+      if (session) {
+        var messages = {
+          signup: 'Your email is confirmed. Welcome to PowerRun Industries!',
+          email_change: 'Your new email address is confirmed.',
+          invite: 'Invitation accepted. You are now signed in.',
+          magiclink: 'You are now signed in.'
+        };
+        PR.toast(messages[confirmed] || 'You are now signed in.', 'success');
+      } else {
+        // The link's token was invalid, already used, or expired.
+        PR.toast('This link is invalid or has expired. Please sign in, or request a new one.', 'error');
+      }
+      var url = new URL(window.location.href);
+      url.searchParams.delete('confirmed');
+      window.history.replaceState(null, '', url.pathname + url.search);
+    }
   });
 })();

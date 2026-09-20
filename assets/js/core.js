@@ -27,6 +27,27 @@
     window.location.replace('/set-password/' + hash);
   })();
 
+  /* ------------------------------------------------ signup / other auth links
+   * The same problem hits "Confirm your signup", magic-link, invite and
+   * email-change links: they land on the Site URL (home page) too. The
+   * Supabase client below still detects the token and creates a session
+   * either way (detectSessionInUrl), but the visitor sees nothing happen -
+   * just the ordinary shop - and has no idea their email is now confirmed.
+   *
+   * Forward these to /account/, which shows the signed-in view as soon as
+   * the session is set, and pass along which type it was (?confirmed=...)
+   * so that page can show a clear "you're confirmed" message instead of
+   * silently landing signed in.
+   */
+  (function forwardAuthConfirmation() {
+    var hash = window.location.hash || '';
+    if (hash.indexOf('type=recovery') !== -1) return;   // handled above
+    var match = hash.match(/type=(signup|magiclink|invite|email_change)/);
+    if (!match) return;
+    if (window.location.pathname.indexOf('/account') === 0) return;
+    window.location.replace('/account/?confirmed=' + match[1] + hash);
+  })();
+
   /* ---------------------------------------------------------------- client */
   PR.sb = null;
   PR.clientError = null;
