@@ -17,7 +17,7 @@
   var PR = window.PR;
   var PRA = window.PRA;
 
-  var state = { tab: 'overview', page: 1, pageSize: 20, search: '', filterLoss: '', filterChannel: '', filterMinProfit: '', filterFrom: '', filterTo: '' };
+  var state = { tab: 'overview', page: 1, pageSize: 20, search: '', filterProduct: '', filterLoss: '', filterChannel: '', filterMinProfit: '', filterFrom: '', filterTo: '' };
   var host = null;
 
   var data = { products: [], channels: [], gstRates: [], targets: [], history: [], defaults: {} };
@@ -290,6 +290,7 @@
           .filter(Boolean).join(' ').toLowerCase();
         if (hay.indexOf(q) === -1) return false;
       }
+      if (state.filterProduct && String(r.product_id) !== state.filterProduct) return false;
       if (state.filterLoss === 'profit' && r.is_loss) return false;
       if (state.filterLoss === 'loss' && !r.is_loss) return false;
       if (state.filterChannel && String(r.selling_channel_id) !== state.filterChannel) return false;
@@ -298,6 +299,18 @@
       if (state.filterTo && r.created_at > state.filterTo + 'T23:59:59') return false;
       return true;
     });
+  }
+
+  function historyProductOptions() {
+    var seen = {};
+    var out = [];
+    data.history.forEach(function (r) {
+      if (!r.product_id || seen[r.product_id]) return;
+      seen[r.product_id] = true;
+      out.push({ id: r.product_id, name: r.product_name_snapshot, sku: r.sku_snapshot });
+    });
+    out.sort(function (a, b) { return (a.name || '').localeCompare(b.name || ''); });
+    return out;
   }
 
   function calculationsTab() {
@@ -317,7 +330,13 @@
           '</div>' +
         '</div>' +
         '<div class="toolbar">' +
-          '<input type="search" id="calcSearch" placeholder="Search product, SKU or user…" value="' + PR.esc(state.search) + '">' +
+          '<input type="search" id="calcSearch" placeholder="Search user or calc #…" value="' + PR.esc(state.search) + '">' +
+          '<select id="calcProductFilter"><option value="">All products / SKUs</option>' +
+            historyProductOptions().map(function (p) {
+              return '<option value="' + PR.esc(p.id) + '"' + (state.filterProduct === p.id ? ' selected' : '') + '>' +
+                PR.esc(p.name) + (p.sku ? ' (' + PR.esc(p.sku) + ')' : '') + '</option>';
+            }).join('') +
+          '</select>' +
           '<select id="calcLossFilter">' +
             '<option value="">Profit &amp; Loss</option>' +
             '<option value="profit"' + (state.filterLoss === 'profit' ? ' selected' : '') + '>Profit only</option>' +
@@ -351,6 +370,9 @@
     });
     document.getElementById('calcSearch').addEventListener('input', function (e) {
       state.search = e.target.value; state.page = 1; render();
+    });
+    document.getElementById('calcProductFilter').addEventListener('change', function (e) {
+      state.filterProduct = e.target.value; state.page = 1; render();
     });
     document.getElementById('calcLossFilter').addEventListener('change', function (e) {
       state.filterLoss = e.target.value; state.page = 1; render();
