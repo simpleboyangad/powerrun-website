@@ -11,7 +11,7 @@ window.PR_CONFIG = {
   // Razorpay public key id (rzp_test_... / rzp_live_...). Leave empty until the
   // keys are configured; checkout then falls back to pay-on-confirmation.
   // The matching KEY SECRET must be set ONLY as a Supabase Edge Function secret.
-  RAZORPAY_KEY_ID: 'rzp_test_Tdzlsss1H2ug4A',
+  RAZORPAY_KEY_ID: 'rzp_live_TeVizhEm73jmxI',
 
   WHATSAPP: '918700307676',
   PHONE: '+91 87003 07676',
