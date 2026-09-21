@@ -1,0 +1,115 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<!-- SEO:START -->
+<title>Battery Backup Calculator | PowerRun Industries</title>
+<meta name="description" content="Find the right lithium battery size for your home or business in seconds. Enter your load and backup hours needed, and we'll recommend the exact PowerRun battery.">
+<meta name="robots" content="index,follow,max-image-preview:large">
+<link rel="canonical" href="https://powerrun.in/battery-calculator/">
+<meta property="og:type" content="website">
+<meta property="og:site_name" content="PowerRun Industries">
+<meta property="og:title" content="Battery Backup Calculator | PowerRun Industries">
+<meta property="og:description" content="Find the right lithium battery size for your home or business in seconds. Enter your load and backup hours needed, and we'll recommend the exact PowerRun battery.">
+<meta property="og:url" content="https://powerrun.in/battery-calculator/">
+<meta property="og:image" content="https://powerrun.in/assets/powerrun-logo.png">
+<meta name="twitter:card" content="summary_large_image">
+<meta name="twitter:title" content="Battery Backup Calculator | PowerRun Industries">
+<meta name="twitter:description" content="Find the right lithium battery size for your home or business in seconds. Enter your load and backup hours needed, and we'll recommend the exact PowerRun battery.">
+<meta name="twitter:image" content="https://powerrun.in/assets/powerrun-logo.png">
+<script type="application/ld+json" id="ld-organization">{"@context":"https://schema.org","@type":"Organization","@id":"https://powerrun.in/#organization","name":"PowerRun Industries","url":"https://powerrun.in/","logo":"https://powerrun.in/assets/powerrun-logo.png","email":"service@powerrun.in","telephone":"+91 87003 07676","areaServed":"IN"}</script>
+<!-- SEO:END -->
+<meta name="theme-color" content="#ff5a00">
+<link rel="icon" href="/assets/powerrun-logo.png">
+<link rel="preconnect" href="https://nnkopxkyxcmtiunftlgr.supabase.co" crossorigin>
+<link rel="stylesheet" href="/assets/css/site.css?v=ce00e47b">
+</head>
+<body>
+<a class="skip-link" href="#main">Skip to content</a>
+<div id="pr-header"></div>
+<main id="main">
+    <section class="calc-hero">
+      <div class="eyebrow">⚡ FREE SIZING TOOL</div>
+      <h1>Battery Backup Calculator</h1>
+      <p>Tell us your load and how long you need backup for — we'll work out the exact lithium battery capacity you need, and recommend the right PowerRun battery.</p>
+      <div class="calc-switch">
+        <a href="/battery-calculator/" class="active">🔋 Battery Calculator</a>
+        <a href="/solar-calculator/">☀ Solar Calculator</a>
+      </div>
+    </section>
+
+    <section class="section">
+      <div class="tabs" id="calcModeTabs" role="tablist">
+        <button class="tab active" type="button" data-mode="size" role="tab" aria-selected="true">Find My Battery Size</button>
+        <button class="tab" type="button" data-mode="time" role="tab" aria-selected="false">Check My Backup Time</button>
+      </div>
+
+      <div class="calc-layout">
+        <div class="calc-panel">
+          <form class="form" id="calcForm">
+            <div class="calc-mode-fields" id="fields-size">
+              <h2>What do you need to run?</h2>
+              <p class="section-sub">Add up the watts of everything you want powered during a cut.</p>
+              <div class="form-grid">
+                <label>Total Load <span class="req">*</span>
+                  <input id="bc_load" type="number" min="1" step="1" value="500" inputmode="decimal">
+                  <span class="hint">Watts (W). E.g. fridge 150W + fans 150W + lights 100W + TV 100W.</span>
+                </label>
+                <label>Backup Time Needed <span class="req">*</span>
+                  <input id="bc_hours" type="number" min="0.5" step="0.5" value="4" inputmode="decimal">
+                  <span class="hint">Hours you want power to last.</span>
+                </label>
+              </div>
+              <label>System Voltage
+                <select id="bc_voltage">
+                  <option value="25.6">25.6V (small home systems)</option>
+                  <option value="51.2" selected>51.2V (larger homes &amp; hybrid inverters)</option>
+                </select>
+              </label>
+            </div>
+
+            <div class="calc-mode-fields" id="fields-time" hidden>
+              <h2>Tell us about your battery</h2>
+              <p class="section-sub">We'll estimate how long it can run your load.</p>
+              <div class="form-grid">
+                <label>Battery Voltage <span class="req">*</span>
+                  <select id="bc_v2">
+                    <option value="25.6">25.6V</option>
+                    <option value="51.2" selected>51.2V</option>
+                  </select>
+                </label>
+                <label>Battery Capacity (Ah) <span class="req">*</span>
+                  <input id="bc_ah2" type="number" min="1" step="1" value="200" inputmode="decimal">
+                </label>
+              </div>
+              <label>Total Load <span class="req">*</span>
+                <input id="bc_load2" type="number" min="1" step="1" value="500" inputmode="decimal">
+                <span class="hint">Watts (W) — everything you'll run at once.</span>
+              </label>
+            </div>
+          </form>
+
+          <div class="internal-links" style="margin-top:24px">
+            <b>Not sure about the load?</b>
+            <p class="small-note">Typical draws: LED light 10-15W · Ceiling fan 60-75W · Fridge 150-200W · TV 80-120W ·
+              1 Ton AC 1200-1500W · Water pump 500-750W · Laptop 60-90W.</p>
+          </div>
+        </div>
+
+        <aside class="calc-result" id="calcResult"></aside>
+      </div>
+    </section>
+
+</main>
+<div id="pr-footer"></div>
+<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2.48.0/dist/umd/supabase.js"></script>
+<script src="/assets/js/config.js?v=ce00e47b"></script>
+<script src="/assets/js/core.js?v=ce00e47b"></script>
+<script src="/assets/js/seo.js?v=ce00e47b"></script>
+<script src="/assets/js/cart.js?v=ce00e47b"></script>
+<script src="/assets/js/layout.js?v=ce00e47b"></script>
+<script src="/assets/js/catalog.js?v=ce00e47b"></script>
+<script src="/assets/js/pages/battery-calculator.js?v=ce00e47b"></script>
+</body>
+</html>

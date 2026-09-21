@@ -91,6 +91,8 @@
             '<li><a href="/contact/">Contact Us</a></li>' +
           '</ul></div>' +
           '<div><h3>Support</h3><ul>' +
+            '<li><a href="/battery-calculator/">Battery Calculator</a></li>' +
+            '<li><a href="/solar-calculator/">Solar Calculator</a></li>' +
             '<li><a href="/warranty/">Warranty Registration</a></li>' +
             '<li><a href="/service/">Service Request</a></li>' +
             '<li><a href="/track-order/">Track Order</a></li>' +

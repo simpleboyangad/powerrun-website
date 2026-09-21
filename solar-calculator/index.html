@@ -1,0 +1,115 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<!-- SEO:START -->
+<title>Solar System Size Calculator | PowerRun Industries</title>
+<meta name="description" content="Work out the solar panel, inverter and battery size you need based on your daily electricity usage. Free instant sizing tool with PowerRun product recommendations.">
+<meta name="robots" content="index,follow,max-image-preview:large">
+<link rel="canonical" href="https://powerrun.in/solar-calculator/">
+<meta property="og:type" content="website">
+<meta property="og:site_name" content="PowerRun Industries">
+<meta property="og:title" content="Solar System Size Calculator | PowerRun Industries">
+<meta property="og:description" content="Work out the solar panel, inverter and battery size you need based on your daily electricity usage. Free instant sizing tool with PowerRun product recommendations.">
+<meta property="og:url" content="https://powerrun.in/solar-calculator/">
+<meta property="og:image" content="https://powerrun.in/assets/powerrun-logo.png">
+<meta name="twitter:card" content="summary_large_image">
+<meta name="twitter:title" content="Solar System Size Calculator | PowerRun Industries">
+<meta name="twitter:description" content="Work out the solar panel, inverter and battery size you need based on your daily electricity usage. Free instant sizing tool with PowerRun product recommendations.">
+<meta name="twitter:image" content="https://powerrun.in/assets/powerrun-logo.png">
+<script type="application/ld+json" id="ld-organization">{"@context":"https://schema.org","@type":"Organization","@id":"https://powerrun.in/#organization","name":"PowerRun Industries","url":"https://powerrun.in/","logo":"https://powerrun.in/assets/powerrun-logo.png","email":"service@powerrun.in","telephone":"+91 87003 07676","areaServed":"IN"}</script>
+<!-- SEO:END -->
+<meta name="theme-color" content="#ff5a00">
+<link rel="icon" href="/assets/powerrun-logo.png">
+<link rel="preconnect" href="https://nnkopxkyxcmtiunftlgr.supabase.co" crossorigin>
+<link rel="stylesheet" href="/assets/css/site.css?v=ce00e47b">
+</head>
+<body>
+<a class="skip-link" href="#main">Skip to content</a>
+<div id="pr-header"></div>
+<main id="main">
+    <section class="calc-hero">
+      <div class="eyebrow">☀ FREE SIZING TOOL</div>
+      <h1>Solar System Size Calculator</h1>
+      <p>Enter how much electricity you use each day and we'll work out the solar panels, inverter and battery you need — with exact PowerRun products recommended.</p>
+      <div class="calc-switch">
+        <a href="/battery-calculator/">🔋 Battery Calculator</a>
+        <a href="/solar-calculator/" class="active">☀ Solar Calculator</a>
+      </div>
+    </section>
+
+    <section class="section">
+      <div class="calc-layout">
+        <div class="calc-panel">
+          <form class="form" id="calcForm">
+            <h2>Your daily electricity usage</h2>
+            <p class="section-sub">Check your electricity bill for "units consumed", or estimate it from your load below.</p>
+
+            <div class="tabs" id="usageModeTabs" role="tablist">
+              <button class="tab active" type="button" data-usage="units" role="tab" aria-selected="true">I know my units/day</button>
+              <button class="tab" type="button" data-usage="load" role="tab" aria-selected="false">Estimate from load</button>
+            </div>
+
+            <div class="calc-mode-fields" id="usage-units">
+              <label>Daily Electricity Usage <span class="req">*</span>
+                <input id="sc_units" type="number" min="0.5" step="0.5" value="10" inputmode="decimal">
+                <span class="hint">In units / kWh per day (shown on your electricity bill).</span>
+              </label>
+            </div>
+
+            <div class="calc-mode-fields" id="usage-load" hidden>
+              <div class="form-grid">
+                <label>Total Load
+                  <input id="sc_load" type="number" min="1" step="1" value="1000" inputmode="decimal">
+                  <span class="hint">Watts (W) running together.</span>
+                </label>
+                <label>Hours Used per Day
+                  <input id="sc_hours" type="number" min="0.5" step="0.5" value="8" inputmode="decimal">
+                </label>
+              </div>
+            </div>
+
+            <div class="form-grid" style="margin-top:6px">
+              <label>Backup Autonomy
+                <select id="sc_days">
+                  <option value="0.5">Half a day (12 hrs)</option>
+                  <option value="1" selected>1 full day</option>
+                  <option value="2">2 days</option>
+                </select>
+                <span class="hint">How long the battery should run with zero sun.</span>
+              </label>
+              <label>System Type
+                <select id="sc_voltage">
+                  <option value="25.6">Small system (25.6V battery)</option>
+                  <option value="51.2" selected>Home / hybrid system (51.2V battery)</option>
+                </select>
+              </label>
+            </div>
+          </form>
+
+          <div class="internal-links" style="margin-top:24px">
+            <b>Not sure about your units?</b>
+            <p class="small-note">1 unit = 1 kWh. A typical Indian home using a fridge, fans, lights, TV and an
+              occasional AC uses roughly 8-15 units/day. Your electricity bill shows the exact figure.</p>
+          </div>
+        </div>
+
+        <aside class="calc-result" id="calcResult"></aside>
+      </div>
+    </section>
+
+    <section class="section" id="panelBreakdownSection" style="padding-top:0"></section>
+
+</main>
+<div id="pr-footer"></div>
+<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2.48.0/dist/umd/supabase.js"></script>
+<script src="/assets/js/config.js?v=ce00e47b"></script>
+<script src="/assets/js/core.js?v=ce00e47b"></script>
+<script src="/assets/js/seo.js?v=ce00e47b"></script>
+<script src="/assets/js/cart.js?v=ce00e47b"></script>
+<script src="/assets/js/layout.js?v=ce00e47b"></script>
+<script src="/assets/js/catalog.js?v=ce00e47b"></script>
+<script src="/assets/js/pages/solar-calculator.js?v=ce00e47b"></script>
+</body>
+</html>
