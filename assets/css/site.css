@@ -723,7 +723,7 @@ img { max-width: 100%; }
 .calc-recommend > b { display: block; font-size: 13px; color: var(--ink); margin-bottom: 10px; }
 .calc-recommend-card {
   display: flex; gap: 12px; align-items: center; background: #fff; border: 1px solid var(--line);
-  border-radius: 12px; padding: 12px; margin-bottom: 10px;
+  border-radius: 12px; padding: 12px; margin-bottom: 10px; color: var(--ink);
 }
 .calc-recommend-card img, .calc-recommend-card .ph { width: 60px; height: 60px; flex: none; border-radius: 8px; object-fit: contain; background: #fafafa; }
 .calc-recommend-card .info { flex: 1; min-width: 0; }
