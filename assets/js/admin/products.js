@@ -309,6 +309,27 @@
             (p.price_includes_gst === false ? '' : ' checked') + '> Price already includes GST</label>' +
         '</div>' +
 
+        '<details><summary style="cursor:pointer;font-weight:800;font-size:12px">Costing (for P&amp;L Calculator)</summary>' +
+          '<div style="margin-top:12px;display:grid;gap:14px">' +
+            '<p class="hint" style="margin-top:0">Used to auto-fill the Profit &amp; Loss Calculator when this product ' +
+              'is selected. Purely internal - never shown to customers.</p>' +
+            '<div class="form-grid three">' +
+              '<label>Purchase Cost (₹)<input id="pf_purchase_cost" type="number" min="0" step="1" value="' +
+                PR.esc(p.purchase_cost === null || p.purchase_cost === undefined ? '' : p.purchase_cost) + '"></label>' +
+              '<label>Purchase GST (%)<input id="pf_purchase_gst" type="number" min="0" max="100" step="0.01" value="' +
+                PR.esc(p.purchase_gst_rate === null || p.purchase_gst_rate === undefined ? '' : p.purchase_gst_rate) + '"></label>' +
+              '<label>Default Freight (₹)<input id="pf_default_freight" type="number" min="0" step="1" value="' +
+                PR.esc(p.default_freight === null || p.default_freight === undefined ? '' : p.default_freight) + '"></label>' +
+            '</div>' +
+            '<div class="form-grid">' +
+              '<label>Default Packaging Cost (₹)<input id="pf_default_packaging" type="number" min="0" step="1" value="' +
+                PR.esc(p.default_packaging_cost === null || p.default_packaging_cost === undefined ? '' : p.default_packaging_cost) + '"></label>' +
+              '<label>Default Other Cost (₹)<input id="pf_default_other_cost" type="number" min="0" step="1" value="' +
+                PR.esc(p.default_other_cost === null || p.default_other_cost === undefined ? '' : p.default_other_cost) + '"></label>' +
+            '</div>' +
+          '</div>' +
+        '</details>' +
+
         '<div class="form-grid">' +
           '<label>Availability<select id="pf_availability">' +
             ['in_stock', 'out_of_stock', 'preorder', 'discontinued'].map(function (value) {
@@ -727,6 +748,11 @@
       hsn_code: document.getElementById('pf_hsn').value.trim() || null,
       price_includes_gst: document.getElementById('pf_gst_incl').checked,
       warranty: document.getElementById('pf_warranty').value.trim() || null,
+      purchase_cost: document.getElementById('pf_purchase_cost').value.trim() === '' ? null : Number(document.getElementById('pf_purchase_cost').value),
+      purchase_gst_rate: document.getElementById('pf_purchase_gst').value.trim() === '' ? null : Number(document.getElementById('pf_purchase_gst').value),
+      default_freight: document.getElementById('pf_default_freight').value.trim() === '' ? null : Number(document.getElementById('pf_default_freight').value),
+      default_packaging_cost: document.getElementById('pf_default_packaging').value.trim() === '' ? null : Number(document.getElementById('pf_default_packaging').value),
+      default_other_cost: document.getElementById('pf_default_other_cost').value.trim() === '' ? null : Number(document.getElementById('pf_default_other_cost').value),
       specifications: collectSpecs(),
       features: featuresText.split('\n').map(function (line) { return line.trim(); }).filter(Boolean),
       is_active: document.getElementById('pf_active').checked,

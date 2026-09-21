@@ -371,3 +371,22 @@ table.grid td small { color: var(--muted); display: block; margin-top: 3px; }
 .image-item { display: grid; gap: 6px; width: 140px; }
 .image-item .image-tile { width: 140px; height: 110px; }
 .image-alt { font-size: 12px; padding: 7px 9px; }
+
+/* ------------------------------------------------------ P&L calculator */
+.calc-result {
+  border-radius: 12px; padding: 16px 18px; display: grid; gap: 8px;
+  border: 1px solid var(--line); background: #fafbfc;
+}
+.calc-result.profit { border-color: #bfe4cd; background: #f2faf5; }
+.calc-result.loss { border-color: #f5c6c2; background: #fdf4f3; }
+.calc-result-title {
+  font-size: 11px; font-weight: 800; letter-spacing: .06em; text-transform: uppercase;
+  margin-bottom: 2px;
+}
+.calc-result.profit .calc-result-title { color: var(--green); }
+.calc-result.loss .calc-result-title { color: var(--red); }
+.calc-result-row { display: flex; justify-content: space-between; gap: 12px; font-size: 13px; }
+.calc-result-row span { color: var(--muted); }
+.calc-result-row.big { font-size: 18px; padding-top: 8px; border-top: 1px solid var(--line); margin-top: 2px; }
+.calc-result.profit .calc-result-row.big b { color: var(--green); }
+.calc-result.loss .calc-result-row.big b { color: var(--red); }

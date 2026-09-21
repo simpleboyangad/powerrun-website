@@ -24,8 +24,9 @@
     { key: 'warranty',  href: '/admin/warranty/',  icon: '🛡', label: 'Warranty', badge: 'warranty_pending' },
     { key: 'service',   href: '/admin/service/',   icon: '🔧', label: 'Service Requests', badge: 'service_open' },
     { key: 'dealers',   href: '/admin/dealers/',   icon: '🤝', label: 'Dealer Enquiries', badge: 'dealer_new' },
-    { key: 'seo',       href: '/admin/seo/',       icon: '🔍', label: 'SEO Manager' },
-    { key: 'settings',  href: '/admin/settings/',  icon: '⚙', label: 'Settings' }
+    { key: 'seo',        href: '/admin/seo/',        icon: '🔍', label: 'SEO Manager' },
+    { key: 'calculator', href: '/admin/calculator/', icon: '📊', label: 'Profit & Loss Calculator' },
+    { key: 'settings',   href: '/admin/settings/',   icon: '⚙', label: 'Settings' }
   ];
 
   PRA.session = null;
