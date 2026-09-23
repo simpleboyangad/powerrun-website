@@ -27,10 +27,40 @@
     }).join('');
   }
 
+  /* A site-wide banner for the one coupon the admin has marked "Show as a
+     site-wide banner" (assets/js/admin/coupons.js). Reads through a
+     read-only RPC that never exposes ids, usage counts or any other
+     coupon internals - see sql/16_coupon_site_banner.sql. */
+  function bannerMessage(coupon) {
+    if (coupon.banner_text) return coupon.banner_text;
+    var amount = coupon.discount_type === 'percent'
+      ? coupon.discount_value + '% off' : PR.money(coupon.discount_value) + ' off';
+    var min = Number(coupon.min_order_amount) > 0
+      ? ' on orders above ' + PR.money(coupon.min_order_amount) : '';
+    return '🎉 Use code ' + coupon.code + ' for ' + amount + min + '!';
+  }
+
+  PR.loadPromoBanner = async function () {
+    var host = document.getElementById('prPromoBanner');
+    if (!host || !PR.sb) return;
+    try {
+      var coupon = await PR.call('load site banner coupon', function (sb) {
+        return sb.rpc('active_site_banner_coupon');
+      });
+      if (!coupon) { host.hidden = true; return; }
+      host.hidden = false;
+      host.innerHTML = '<span>' + PR.esc(bannerMessage(coupon)) + '</span>';
+    } catch (err) {
+      console.warn('[PowerRun] promo banner unavailable:', err.message);
+      host.hidden = true;
+    }
+  };
+
   PR.renderHeader = function (active) {
     var host = document.getElementById('pr-header');
     if (!host) return;
     host.innerHTML =
+      '<div class="promo-banner" id="prPromoBanner" hidden></div>' +
       '<div class="top">' +
         '<div>⚡ Welcome to <b>' + PR.esc(cfg.COMPANY) + '</b></div>' +
         '<div><span>☎ ' + PR.esc(cfg.PHONE) + '</span><span>✉ ' + PR.esc(cfg.EMAIL) + '</span></div>' +
@@ -63,6 +93,7 @@
       });
     }
     PR.updateCartBadge();
+    PR.loadPromoBanner();
   };
 
   PR.renderFooter = function () {

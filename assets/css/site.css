@@ -44,6 +44,13 @@ img { max-width: 100%; }
 .skip-link:focus { left: 8px; top: 8px; }
 
 /* ------------------------------------------------------------------ header */
+.promo-banner {
+  background: linear-gradient(90deg, var(--orange), var(--orange2));
+  color: #fff; text-align: center; font-size: 13px; font-weight: 800;
+  padding: 10px 5%; letter-spacing: .01em;
+}
+.promo-banner[hidden] { display: none; }
+
 .top {
   height: 36px; background: #050505; color: #eee; display: flex;
   align-items: center; justify-content: space-between; padding: 0 5%; font-size: 12px;

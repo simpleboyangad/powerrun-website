@@ -35,6 +35,7 @@
             '</tr></thead><tbody>' +
             coupons.map(function (c) {
               return '<tr><td><b>' + PR.esc(c.code) + '</b>' +
+                  (c.show_on_site ? ' <span class="pill delivered">BANNER</span>' : '') +
                   (c.description ? '<small>' + PR.esc(c.description) + '</small>' : '') + '</td>' +
                 '<td>' + (c.discount_type === 'percent'
                   ? c.discount_value + '%' + (c.max_discount_amount ? ' (max ' + PR.money(c.max_discount_amount) + ')' : '')
@@ -103,6 +104,14 @@
         '</div>' +
         '<label class="inline"><input id="cn_active" type="checkbox"' +
           (c.is_active === false ? '' : ' checked') + '> Active</label>' +
+        '<div style="border:1px dashed var(--line);border-radius:10px;padding:14px">' +
+          '<label class="inline"><input id="cn_show_on_site" type="checkbox"' +
+            (c.show_on_site ? ' checked' : '') + '> Show as a site-wide banner</label>' +
+          '<p class="hint" style="margin:6px 0 10px">Announces this code to every visitor at the top of the site. ' +
+            'Only one coupon shows at a time (the most recent one marked here).</p>' +
+          '<label>Banner Text (optional)<input id="cn_banner_text" maxlength="120" value="' + PR.esc(c.banner_text || '') +
+            '" placeholder="Auto-generated from the discount if left empty"></label>' +
+        '</div>' +
         (coupon ? '<p class="hint">Used ' + c.usage_count + ' time' + (c.usage_count === 1 ? '' : 's') + ' so far.</p>' : '') +
         '<div class="page-actions" style="justify-content:flex-end">' +
           '<button class="btn gray" type="button" id="cancelCouponBtn">Cancel</button>' +
@@ -157,7 +166,9 @@
       per_customer_limit: custLimitRaw === '' ? null : Number(custLimitRaw),
       valid_from: fromRaw || null,
       valid_until: untilRaw || null,
-      is_active: document.getElementById('cn_active').checked
+      is_active: document.getElementById('cn_active').checked,
+      show_on_site: document.getElementById('cn_show_on_site').checked,
+      banner_text: document.getElementById('cn_banner_text').value.trim() || null
     };
 
     PR.setBusy(button, true, 'SAVING…');
