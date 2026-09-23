@@ -8,7 +8,7 @@
 <meta name="robots" content="noindex,nofollow">
 <meta name="theme-color" content="#ff5a00">
 <link rel="icon" href="/assets/powerrun-logo.png">
-<link rel="stylesheet" href="/assets/css/site.css?v=8fc4c7dc">
+<link rel="stylesheet" href="/assets/css/site.css?v=acd620ce">
 </head>
 <body>
 <a class="skip-link" href="#main">Skip to content</a>
@@ -39,6 +39,39 @@
             <button class="btn orange" id="profileBtn" type="submit">SAVE MY DETAILS</button>
           </form>
         </div>
+
+        <div class="panel">
+          <div class="panel-head" style="display:flex;justify-content:space-between;align-items:center;margin-bottom:14px">
+            <h2 style="margin:0">Saved Addresses</h2>
+            <button class="outline" type="button" id="addAddressBtn">+ ADD ADDRESS</button>
+          </div>
+          <div id="addressFormWrap" hidden>
+            <form class="form" id="addressForm" novalidate style="margin-bottom:18px;border:1px solid var(--line);border-radius:10px;padding:16px">
+              <div id="addressFormMessage"></div>
+              <div class="form-grid">
+                <label>Label<input id="af_label" maxlength="40" placeholder="Home, Office…"></label>
+                <label>Full Name <span class="req">*</span><input id="af_name" required maxlength="120"></label>
+              </div>
+              <div class="form-grid">
+                <label>Mobile Number <span class="req">*</span><input id="af_mobile" required inputmode="numeric" maxlength="10"></label>
+                <label>Pincode <span class="req">*</span><input id="af_pincode" required inputmode="numeric" maxlength="6"></label>
+              </div>
+              <label>Address <span class="req">*</span><textarea id="af_address" required maxlength="400"></textarea></label>
+              <div class="form-grid">
+                <label>City <span class="req">*</span><input id="af_city" required maxlength="80"></label>
+                <label>State <span class="req">*</span><select id="af_state" required></select></label>
+              </div>
+              <label class="small-note" style="display:flex;align-items:center;gap:8px;font-weight:400">
+                <input id="af_default" type="checkbox" style="width:auto"> Set as default address</label>
+              <div class="page-actions" style="display:flex;gap:10px;justify-content:flex-end">
+                <button class="outline" type="button" id="cancelAddressBtn">Cancel</button>
+                <button class="btn orange" type="submit" id="saveAddressBtn">SAVE ADDRESS</button>
+              </div>
+            </form>
+          </div>
+          <div id="addressList"></div>
+        </div>
+
         <aside>
           <div class="panel">
             <h2>Account</h2>
@@ -53,13 +86,13 @@
 </main>
 <div id="pr-footer"></div>
 <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2.48.0/dist/umd/supabase.js"></script>
-<script src="/assets/js/config.js?v=8fc4c7dc"></script>
-<script src="/assets/js/core.js?v=8fc4c7dc"></script>
-<script src="/assets/js/seo.js?v=8fc4c7dc"></script>
-<script src="/assets/js/cart.js?v=8fc4c7dc"></script>
-<script src="/assets/js/layout.js?v=8fc4c7dc"></script>
-<script src="/assets/js/catalog.js?v=8fc4c7dc"></script>
-<script src="/assets/js/account.js?v=8fc4c7dc"></script>
-<script src="/assets/js/pages/account-profile.js?v=8fc4c7dc"></script>
+<script src="/assets/js/config.js?v=acd620ce"></script>
+<script src="/assets/js/core.js?v=acd620ce"></script>
+<script src="/assets/js/seo.js?v=acd620ce"></script>
+<script src="/assets/js/cart.js?v=acd620ce"></script>
+<script src="/assets/js/layout.js?v=acd620ce"></script>
+<script src="/assets/js/catalog.js?v=acd620ce"></script>
+<script src="/assets/js/account.js?v=acd620ce"></script>
+<script src="/assets/js/pages/account-profile.js?v=acd620ce"></script>
 </body>
 </html>

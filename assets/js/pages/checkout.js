@@ -12,11 +12,13 @@
   var current = { lines: [], subtotal: 0 };
   var settings = null;
   var paymentMethod = 'cod';
+  var appliedCoupon = null; // { code, discount_amount, message } or null
 
   function renderSummary() {
     var host = document.getElementById('checkoutSummary');
     var shipping = PR.shippingFor(current.subtotal, settings.shipping);
-    var total = current.subtotal + shipping;
+    var discount = appliedCoupon ? appliedCoupon.discount_amount : 0;
+    var total = Math.max(current.subtotal + shipping - discount, 0);
 
     host.innerHTML =
       '<div class="panel">' +
@@ -29,9 +31,69 @@
           '<span>Subtotal</span><b>' + PR.money(current.subtotal) + '</b></div>' +
         '<div class="summary-row"><span>Shipping</span><b>' +
           (shipping > 0 ? PR.money(shipping) : 'Free') + '</b></div>' +
+        (appliedCoupon
+          ? '<div class="summary-row" style="color:var(--green)"><span>Coupon (' + PR.esc(appliedCoupon.code) +
+            ')</span><b>-' + PR.money(discount) + '</b></div>'
+          : '') +
         '<div class="summary-row total"><span>Grand Total</span><span>' + PR.money(total) + '</span></div>' +
         '<a class="outline block" href="/cart/" style="margin-top:12px">EDIT CART</a>' +
+      '</div>' +
+      '<div class="panel">' +
+        '<h2 style="font-size:16px">Have a coupon code?</h2>' +
+        '<div id="couponMessage"></div>' +
+        (appliedCoupon
+          ? '<div class="summary-row" style="align-items:center"><span>' +
+              '<b style="color:var(--green)">✓ ' + PR.esc(appliedCoupon.code) + '</b> applied</span>' +
+              '<button class="outline" type="button" id="removeCouponBtn" style="padding:8px 12px;font-size:12px">Remove</button></div>'
+          : '<div style="display:flex;gap:8px">' +
+              '<input id="couponInput" placeholder="Enter code" style="flex:1;padding:12px 14px;border:1px solid #ddd;border-radius:8px">' +
+              '<button class="outline" type="button" id="applyCouponBtn" style="white-space:nowrap">APPLY</button>' +
+            '</div>') +
       '</div>';
+
+    var applyBtn = document.getElementById('applyCouponBtn');
+    if (applyBtn) applyBtn.addEventListener('click', applyCoupon);
+    var couponInput = document.getElementById('couponInput');
+    if (couponInput) {
+      couponInput.addEventListener('keydown', function (event) {
+        if (event.key === 'Enter') { event.preventDefault(); applyCoupon(); }
+      });
+    }
+    var removeBtn = document.getElementById('removeCouponBtn');
+    if (removeBtn) {
+      removeBtn.addEventListener('click', function () {
+        appliedCoupon = null;
+        renderSummary();
+      });
+    }
+  }
+
+  async function applyCoupon() {
+    var input = document.getElementById('couponInput');
+    var messageHost = document.getElementById('couponMessage');
+    var code = input.value.trim();
+    messageHost.innerHTML = '';
+    if (!code) { messageHost.innerHTML = '<div class="form-message error" role="alert">Enter a coupon code.</div>'; return; }
+
+    var button = document.getElementById('applyCouponBtn');
+    PR.setBusy(button, true, 'CHECKING…');
+    try {
+      var result = await PR.call('check coupon', function (sb) {
+        return sb.rpc('preview_coupon', { p_code: code, p_subtotal: current.subtotal });
+      });
+      PR.setBusy(button, false);
+      if (!result || !result.valid) {
+        messageHost.innerHTML = '<div class="form-message error" role="alert">' +
+          PR.esc((result && result.message) || 'This coupon code is not valid.') + '</div>';
+        return;
+      }
+      appliedCoupon = { code: code.toUpperCase(), discount_amount: Number(result.discount_amount) || 0, message: result.message };
+      PR.toast(result.message || 'Coupon applied.', 'success');
+      renderSummary();
+    } catch (err) {
+      PR.setBusy(button, false);
+      messageHost.innerHTML = '<div class="form-message error" role="alert">' + PR.esc(err.message) + '</div>';
+    }
   }
 
   /* Online payment shows when it is switched on in Admin > Settings. While it is
@@ -204,7 +266,8 @@
           p_items: resolved.lines.map(function (line) {
             return { product_id: line.product.id, quantity: line.qty };
           }),
-          p_payment_method: paymentMethod
+          p_payment_method: paymentMethod,
+          p_coupon_code: appliedCoupon ? appliedCoupon.code : null
         });
       });
 
@@ -248,6 +311,55 @@
     }
   }
 
+  /* A signed-in customer with saved addresses gets a quick picker above the
+     address fields. Picking one fills the fields (still fully editable);
+     picking "Use a new address" clears back to blank/typed entry. */
+  var savedAddresses = [];
+
+  function fillAddressFields(a) {
+    var map = { ck_name: 'name', ck_mobile: 'mobile', ck_address: 'address',
+                ck_city: 'city', ck_state: 'state', ck_pincode: 'pincode' };
+    Object.keys(map).forEach(function (id) {
+      var el = document.getElementById(id);
+      if (el) el.value = (a && a[map[id]]) || '';
+    });
+  }
+
+  async function loadSavedAddresses() {
+    if (!PR.sb) return;
+    var session = await PR.account.getSession();
+    if (!session) return;
+    try {
+      savedAddresses = await PR.call('load addresses', function (sb) {
+        return sb.from('customer_addresses').select('*').order('is_default', { ascending: false }).order('created_at');
+      }) || [];
+    } catch (err) {
+      console.warn('[PowerRun] could not load saved addresses:', err.message);
+      return;
+    }
+    if (!savedAddresses.length) return;
+
+    var host = document.getElementById('savedAddressPicker');
+    host.innerHTML = '<label>Deliver to<select id="ck_saved_address">' +
+      '<option value="">Enter a new address</option>' +
+      savedAddresses.map(function (a, i) {
+        return '<option value="' + i + '">' + PR.esc(a.label || a.name) +
+          (a.is_default ? ' (default)' : '') + ' - ' + PR.esc(a.address).slice(0, 40) + '…</option>';
+      }).join('') +
+      '</select></label>';
+
+    document.getElementById('ck_saved_address').addEventListener('change', function (event) {
+      var index = event.target.value;
+      fillAddressFields(index === '' ? null : savedAddresses[Number(index)]);
+    });
+
+    var defaultIndex = savedAddresses.findIndex(function (a) { return a.is_default; });
+    if (defaultIndex >= 0) {
+      document.getElementById('ck_saved_address').value = String(defaultIndex);
+      fillAddressFields(savedAddresses[defaultIndex]);
+    }
+  }
+
   async function init() {
     PR.mountLayout('products');
     PR.fillStates(document.getElementById('ck_state'));
@@ -277,7 +389,8 @@
       }
 
       document.getElementById('checkoutForm').addEventListener('submit', submit);
-      prefillFromProfile();
+      await prefillFromProfile();
+      await loadSavedAddresses();
     } catch (err) {
       PR.toast(err.message, 'error');
     }
