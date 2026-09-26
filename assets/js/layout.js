@@ -140,7 +140,8 @@
         '<div class="copy">© ' + year + ' ' + PR.esc(cfg.COMPANY) + '. All Rights Reserved.</div>' +
       '</footer>' +
       '<a class="wa-float" href="' + PR.esc(PR.whatsapp('Hello PowerRun Industries, I need an energy solution.')) + '" ' +
-         'target="_blank" rel="noopener" aria-label="Chat with PowerRun Industries on WhatsApp">☎</a>';
+         'target="_blank" rel="noopener" aria-label="Chat with PowerRun Industries on WhatsApp">' +
+         '<svg viewBox="0 0 32 32" width="30" height="30" fill="#fff" aria-hidden="true"><path d="M16.04 3C9.37 3 3.98 8.39 3.98 15.06c0 2.66.87 5.13 2.36 7.13L4.98 28l5.98-1.32a12.02 12.02 0 0 0 5.08 1.12h.01c6.67 0 12.06-5.39 12.06-12.06C28.11 8.39 22.72 3 16.04 3zm7.1 17.06c-.3.84-1.5 1.54-2.44 1.74-.65.14-1.5.25-4.36-.93-3.66-1.5-6.02-5.2-6.2-5.44-.18-.24-1.48-1.97-1.48-3.76 0-1.79.94-2.66 1.28-3.02.33-.36.72-.45.96-.45.24 0 .48 0 .69.01.22.01.51-.08.8.61.3.72 1.02 2.49 1.11 2.67.09.18.15.39.03.63-.12.24-.18.39-.36.6-.18.21-.38.47-.54.63-.18.18-.37.38-.16.74.21.36.93 1.53 2 2.48 1.37 1.22 2.53 1.6 2.89 1.78.36.18.57.15.78-.09.21-.24.9-1.05 1.14-1.41.24-.36.48-.3.81-.18.33.12 2.1.99 2.46 1.17.36.18.6.27.69.42.09.15.09.87-.21 1.71z"/></svg></a>';
   };
 
   PR.updateCartBadge = function () {
