@@ -38,6 +38,8 @@ assets/js/admin/       Admin-only modules
 sql/                   Migrations (01–06) + RUN_ALL.sql
 supabase/functions/    Razorpay Edge Functions (dormant until keys are set)
 scripts/               Local admin/testing tooling — not deployed
+youtube/               Channel plan + ready-to-upload art (`robots.txt` disallows it;
+                       regenerate the art with `python scripts/youtube_art.py`)
 ```
 
 The admin panel is **not linked from anywhere on the customer site**, and

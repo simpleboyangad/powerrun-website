@@ -53,6 +53,7 @@ Disallow: /checkout/
 Disallow: /order-confirmation/
 Disallow: /account/
 Disallow: /set-password/
+Disallow: /youtube/
 Disallow: /track-order/
 Disallow: /*?add-to-cart=
 Disallow: /*&add-to-cart=
