@@ -1,0 +1,541 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Spare Part Dispatch Sheet</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Barlow:wght@400;500;600;700&family=Barlow+Condensed:wght@600;700&family=JetBrains+Mono:wght@500&display=swap">
+<script src="https://cdnjs.cloudflare.com/ajax/libs/html2canvas/1.4.1/html2canvas.min.js"></script>
+<style>
+:root{
+  --green:#14663a; --green-soft:#e7f6ed; --ink:#171717; --muted:#5d6560; --line:#cfd6d1;
+  --ground:#eef1ef; --paper:#ffffff; --red:#d7263d;
+  --sans:"Barlow",system-ui,"Segoe UI",Arial,sans-serif;
+  --cond:"Barlow Condensed","Arial Narrow",var(--sans);
+  --mono:"JetBrains Mono",Consolas,monospace;
+}
+*{box-sizing:border-box}
+body{margin:0;background:var(--ground);color:var(--ink);font:15px/1.4 var(--sans)}
+button,select,input,textarea{font:inherit;color:inherit}
+
+/* ---------- Toolbar ---------- */
+.bar{position:sticky;top:0;z-index:10;background:#0f2a1b;color:#fff;padding:10px 16px;display:flex;flex-wrap:wrap;gap:8px 14px;align-items:center}
+.bar .brand{font:700 18px var(--cond);letter-spacing:.04em;text-transform:uppercase;margin-right:6px}
+.grp{display:flex;gap:4px;align-items:center;flex-wrap:wrap}
+.grp .lbl{font-size:11px;text-transform:uppercase;letter-spacing:.08em;opacity:.65;margin-right:4px}
+.tb{background:#1c3d2a;border:1px solid #2d5a3f;color:#fff;border-radius:6px;padding:6px 10px;cursor:pointer;font-weight:600;font-size:13px;display:inline-flex;gap:6px;align-items:center}
+.tb:hover{background:#255037}
+.tb[aria-pressed="true"]{background:#fff;color:#0f2a1b;border-color:#fff}
+.tb.primary{background:#2fae62;border-color:#2fae62}
+.tb.primary:hover{background:#28994f}
+.tb:focus-visible,.sw:focus-visible{outline:2px solid #ffd54a;outline-offset:2px}
+.sw{width:24px;height:24px;border-radius:50%;border:2px solid #fff3;cursor:pointer;padding:0}
+.sw[aria-pressed="true"]{border-color:#fff;box-shadow:0 0 0 2px #0f2a1b inset}
+.hint{width:100%;font-size:12.5px;opacity:.75}
+
+/* ---------- Sheet ---------- */
+.wrap{padding:20px 16px 60px}
+.sheet{background:var(--paper);max-width:900px;margin:0 auto;box-shadow:0 2px 20px #0f2a1b22;border-top:8px solid var(--green)}
+.inner{padding:26px 30px 30px;display:grid;gap:18px}
+.head{display:flex;justify-content:space-between;gap:16px;flex-wrap:wrap;align-items:flex-end;border-bottom:2px solid var(--ink);padding-bottom:12px}
+.co{font:700 26px/1 var(--cond);letter-spacing:.03em;text-transform:uppercase;color:var(--green)}
+.co small{display:block;font:500 12px var(--sans);letter-spacing:.02em;text-transform:none;color:var(--muted);margin-top:4px}
+.doc{text-align:right}
+.doc h1{margin:0;font:700 22px/1 var(--cond);text-transform:uppercase;letter-spacing:.05em}
+.doc .kind{margin-top:6px}
+.doc select{border:1.5px solid var(--green);background:var(--green-soft);color:var(--green);font-weight:700;border-radius:4px;padding:3px 6px;font-size:13px}
+
+h2{margin:0 0 8px;font:700 13px var(--sans);text-transform:uppercase;letter-spacing:.1em;color:var(--green);display:flex;gap:8px;align-items:center}
+h2::after{content:"";flex:1;height:1px;background:var(--line)}
+
+.fields{display:grid;grid-template-columns:repeat(4,minmax(0,1fr));gap:10px 16px}
+.f{display:grid;gap:2px}
+.f.w2{grid-column:span 2}
+.f label{font-size:11px;text-transform:uppercase;letter-spacing:.07em;color:var(--muted);font-weight:600}
+.f input,.f select{border:0;border-bottom:1.5px solid var(--line);padding:4px 0;background:transparent;font-weight:600;min-width:0;width:100%}
+.f input:focus,.f select:focus,td input:focus,textarea:focus{outline:none;border-color:var(--green)}
+.mono{font-family:var(--mono)!important;font-size:14px}
+
+/* Photo */
+.photo{position:relative;border:1.5px dashed var(--line);background:#f7f9f8;border-radius:4px;min-height:260px;display:grid;place-items:center;overflow:hidden}
+.photo.has{border-style:solid;background:#fff}
+.photo.drag{border-color:var(--green);background:var(--green-soft)}
+#cv{display:block;max-width:100%;height:auto;touch-action:none}
+.photo.has #cv{cursor:crosshair}
+.empty{text-align:center;color:var(--muted);padding:30px 16px;display:grid;gap:10px;justify-items:center}
+.empty b{color:var(--ink);font-size:17px}
+.empty .tb{background:var(--green);border-color:var(--green)}
+.legend{font-size:12.5px;color:var(--muted);margin-top:6px}
+
+/* Tables */
+table{width:100%;border-collapse:collapse}
+th{font-size:11px;text-transform:uppercase;letter-spacing:.07em;color:var(--muted);text-align:left;padding:6px 6px;border-bottom:1.5px solid var(--ink);font-weight:600}
+td{border-bottom:1px solid var(--line);padding:2px 6px;vertical-align:middle}
+td input{border:0;border-bottom:1.5px solid transparent;width:100%;padding:6px 0;background:transparent;min-width:0}
+td.n{width:42px;font:700 15px var(--cond);color:var(--muted)}
+td.q{width:70px}
+td.x,th.x{width:30px;text-align:right}
+.pin{display:inline-grid;place-items:center;width:24px;height:24px;border-radius:50%;background:var(--red);color:#fff;font:700 13px var(--sans)}
+.del{border:0;background:none;color:#b3b9b5;cursor:pointer;font-size:18px;line-height:1;padding:4px}
+.del:hover{color:var(--red)}
+.add{margin-top:8px;border:1.5px dashed var(--line);background:none;border-radius:4px;padding:6px 12px;cursor:pointer;color:var(--green);font-weight:600;font-size:13px}
+.add:hover{border-color:var(--green)}
+.tablewrap{overflow-x:auto}
+
+textarea{width:100%;border:1.5px solid var(--line);border-radius:4px;padding:8px 10px;resize:vertical;min-height:70px;background:transparent}
+
+.sign{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:24px;margin-top:10px}
+.sign div{border-top:1.5px solid var(--ink);padding-top:4px;font-size:11px;text-transform:uppercase;letter-spacing:.07em;color:var(--muted)}
+.sign input{border:0;width:100%;font-weight:600;padding:0 0 4px;background:transparent;text-transform:none;letter-spacing:0;font-size:14px;color:var(--ink)}
+.foot{font-size:11.5px;color:var(--muted);text-align:center;border-top:1px solid var(--line);padding-top:10px}
+
+.toast{position:fixed;left:50%;bottom:24px;transform:translateX(-50%);background:#0f2a1b;color:#fff;padding:10px 16px;border-radius:6px;font-weight:600;font-size:14px;opacity:0;transition:opacity .2s;pointer-events:none;z-index:20}
+.toast.on{opacity:1}
+
+@media (max-width:700px){
+  .fields{grid-template-columns:repeat(2,minmax(0,1fr))}
+  .inner{padding:18px 16px 22px}
+  .doc{text-align:left}
+  .sign{grid-template-columns:1fr}
+}
+@media (prefers-reduced-motion:reduce){.toast{transition:none}}
+
+/* ---------- Print / PDF ---------- */
+@page{size:A4;margin:10mm}
+@media print{
+  body{background:#fff}
+  .bar,.noprint,.toast{display:none!important}
+  .wrap{padding:0}
+  .sheet{box-shadow:none;max-width:none}
+  .inner{padding:14px 4px}
+  .photo{border:1px solid var(--line);min-height:0}
+  .photo:not(.has){display:none}
+  #cv{max-height:115mm;width:auto;margin:0 auto}
+  input::placeholder,textarea::placeholder{color:transparent}
+  textarea{border-color:#e3e7e4;resize:none}
+  tr,.photo{break-inside:avoid}
+}
+</style>
+</head>
+<body>
+
+<div class="bar" role="toolbar" aria-label="Photo tools">
+  <span class="brand">PowerRun · Spare Part Sheet</span>
+
+  <div class="grp">
+    <span class="lbl">Tool</span>
+    <button class="tb" data-tool="pin" aria-pressed="true" title="Photo pe click karo – numbered issue marker lagega">① Issue No.</button>
+    <button class="tb" data-tool="arrow" title="Drag karke arrow banao">➜ Arrow</button>
+    <button class="tb" data-tool="circle" title="Drag karke gol ghera banao">◯ Circle</button>
+    <button class="tb" data-tool="box" title="Drag karke box banao">▭ Box</button>
+    <button class="tb" data-tool="text" title="Click karke text likho">T Text</button>
+    <button class="tb" data-tool="pen" title="Free-hand draw">✎ Pen</button>
+  </div>
+
+  <div class="grp" aria-label="Colour">
+    <span class="lbl">Colour</span>
+    <button class="sw" data-color="#d7263d" style="background:#d7263d" aria-pressed="true" aria-label="Red"></button>
+    <button class="sw" data-color="#f5b700" style="background:#f5b700" aria-label="Yellow"></button>
+    <button class="sw" data-color="#1f9d55" style="background:#1f9d55" aria-label="Green"></button>
+    <button class="sw" data-color="#1e6fd9" style="background:#1e6fd9" aria-label="Blue"></button>
+    <button class="sw" data-color="#ffffff" style="background:#ffffff" aria-label="White"></button>
+  </div>
+
+  <div class="grp">
+    <button class="tb" id="undo" title="Ctrl+Z">↶ Undo</button>
+    <button class="tb" id="clearMarks">Clear marks</button>
+    <button class="tb" id="changePhoto">Change photo</button>
+  </div>
+
+  <div class="grp">
+    <button class="tb primary" id="dlPng">⬇ Save as Image</button>
+    <button class="tb primary" id="print">⎙ Print / PDF</button>
+    <button class="tb" id="saveJson" title="Baad me dobara edit karne ke liye">Save file</button>
+    <button class="tb" id="openJson">Open file</button>
+    <button class="tb" id="newSheet">New sheet</button>
+  </div>
+
+  <div class="hint">Photo drag-drop karo, click karke choose karo, ya Ctrl+V se paste karo. Issue No. tool se photo pe click karo — neeche Issues list me usi number ki line apne-aap ban jayegi.</div>
+</div>
+
+<input type="file" id="imgFile" accept="image/*" hidden>
+<input type="file" id="jsonFile" accept=".json,application/json" hidden>
+
+<div class="wrap">
+<div class="sheet" id="sheet">
+<div class="inner">
+
+  <div class="head">
+    <div class="co">PowerRun Industries<small>Service &amp; Spare Parts Department</small></div>
+    <div class="doc">
+      <h1>Spare Part Dispatch</h1>
+      <div class="kind">
+        <select id="kind" aria-label="Sheet type">
+          <option>Replacement part being sent</option>
+          <option>Part to be returned by customer</option>
+          <option>Part sent for repair / inspection</option>
+          <option>Faulty part report</option>
+        </select>
+      </div>
+    </div>
+  </div>
+
+  <section>
+    <h2>Ticket &amp; Customer</h2>
+    <div class="fields">
+      <div class="f"><label for="ticket">Complaint / Ticket No.</label><input id="ticket" class="mono" placeholder="PR-SRV-0000"></div>
+      <div class="f"><label for="date">Date</label><input id="date" type="date"></div>
+      <div class="f w2"><label for="cname">Customer / Dealer Name</label><input id="cname" placeholder="Name"></div>
+      <div class="f"><label for="phone">Phone</label><input id="phone" class="mono" placeholder="+91"></div>
+      <div class="f"><label for="city">City / State</label><input id="city" placeholder="City"></div>
+      <div class="f w2"><label for="addr">Delivery Address</label><input id="addr" placeholder="Full address"></div>
+    </div>
+  </section>
+
+  <section>
+    <h2>Product</h2>
+    <div class="fields">
+      <div class="f w2"><label for="model">Product / Model</label><input id="model" placeholder="e.g. Inverter / Battery model"></div>
+      <div class="f"><label for="serial">Serial No.</label><input id="serial" class="mono" placeholder="S/N"></div>
+      <div class="f"><label for="invoice">Invoice / Purchase Date</label><input id="invoice" placeholder="Invoice no. / date"></div>
+      <div class="f"><label for="warranty">Warranty</label>
+        <select id="warranty"><option>In warranty</option><option>Out of warranty</option><option>Chargeable</option></select></div>
+      <div class="f"><label for="courier">Courier</label><input id="courier" placeholder="Courier name"></div>
+      <div class="f"><label for="docket">Docket / AWB No.</label><input id="docket" class="mono" placeholder="Tracking no."></div>
+      <div class="f"><label for="boxes">No. of Boxes</label><input id="boxes" class="mono" placeholder="1"></div>
+    </div>
+  </section>
+
+  <section>
+    <h2>Part Photo &amp; Issue Marking</h2>
+    <div class="photo" id="photo">
+      <canvas id="cv" hidden></canvas>
+      <div class="empty" id="empty">
+        <b>Spare part ki photo lagao</b>
+        <span>Drag &amp; drop, ya Ctrl+V se paste karo</span>
+        <button class="tb" id="pickPhoto" type="button">Choose photo</button>
+      </div>
+    </div>
+    <div class="legend noprint">Marker lagane ke baad neeche Issues list me detail likho. Photo pe galti ho to Undo (Ctrl+Z).</div>
+  </section>
+
+  <section>
+    <h2>Issues Found</h2>
+    <div class="tablewrap">
+      <table>
+        <thead><tr><th>Mark</th><th>Issue / Problem</th><th class="x noprint"></th></tr></thead>
+        <tbody id="issues"></tbody>
+      </table>
+    </div>
+    <button class="add noprint" id="addIssue" type="button">+ Add issue</button>
+  </section>
+
+  <section>
+    <h2>Parts Being Sent</h2>
+    <div class="tablewrap">
+      <table>
+        <thead><tr><th>#</th><th>Part Name</th><th>Part Code</th><th>Qty</th><th>Remark</th><th class="x noprint"></th></tr></thead>
+        <tbody id="parts"></tbody>
+      </table>
+    </div>
+    <button class="add noprint" id="addPart" type="button">+ Add part</button>
+  </section>
+
+  <section>
+    <h2>Instructions for Customer / Technician</h2>
+    <textarea id="notes" rows="3" placeholder="e.g. Purana part isi box me pack karke wapas bhejein. Installation ke baad photo WhatsApp karein."></textarea>
+  </section>
+
+  <div class="sign">
+    <div>Checked by<input id="checked" aria-label="Checked by"></div>
+    <div>Packed by<input id="packed" aria-label="Packed by"></div>
+    <div>Received by (customer)<input id="received" aria-label="Received by"></div>
+  </div>
+
+  <div class="foot">PowerRun Industries · Please quote the Ticket No. in all communication about this part.</div>
+</div>
+</div>
+</div>
+
+<div class="toast" id="toast" role="status" aria-live="polite"></div>
+
+<script>
+(() => {
+  const $ = s => document.querySelector(s);
+  const $$ = s => [...document.querySelectorAll(s)];
+  const cv = $('#cv'), ctx = cv.getContext('2d');
+  const FIELDS = ['kind','ticket','date','cname','phone','city','addr','model','serial','invoice','warranty','courier','docket','boxes','notes','checked','packed','received'];
+  const KEY = 'powerrun-spare-sheet-v1';
+
+  let img = null, imgData = null;
+  let shapes = [];
+  let issues = [];
+  let parts = [];
+  let tool = 'pin', color = '#d7263d';
+  let drawing = null;
+
+  const toast = msg => { const t = $('#toast'); t.textContent = msg; t.classList.add('on'); clearTimeout(toast.h); toast.h = setTimeout(() => t.classList.remove('on'), 1800); };
+
+  /* ---------- Image loading ---------- */
+  function loadImageFile(file) {
+    if (!file || !file.type.startsWith('image/')) return toast('Sirf image file chalegi');
+    const r = new FileReader();
+    r.onload = () => setImage(r.result, true);
+    r.readAsDataURL(file);
+  }
+  function setImage(src, fresh) {
+    const im = new Image();
+    im.onload = () => {
+      // downscale large phone photos so the file stays light
+      const MAX = 1600, s = Math.min(1, MAX / Math.max(im.width, im.height));
+      const c = document.createElement('canvas');
+      c.width = Math.round(im.width * s); c.height = Math.round(im.height * s);
+      c.getContext('2d').drawImage(im, 0, 0, c.width, c.height);
+      imgData = c.toDataURL('image/jpeg', 0.88);
+      img = c;
+      cv.width = c.width; cv.height = c.height;
+      if (fresh) { shapes = []; }
+      cv.hidden = false; $('#empty').hidden = true; $('#photo').classList.add('has');
+      redraw(); save();
+    };
+    im.src = src;
+  }
+  const pick = () => $('#imgFile').click();
+  $('#pickPhoto').onclick = pick;
+  $('#changePhoto').onclick = pick;
+  $('#imgFile').onchange = e => { loadImageFile(e.target.files[0]); e.target.value = ''; };
+  const ph = $('#photo');
+  ph.addEventListener('click', e => { if (!img && e.target === ph) pick(); });
+  ph.addEventListener('dragover', e => { e.preventDefault(); ph.classList.add('drag'); });
+  ph.addEventListener('dragleave', () => ph.classList.remove('drag'));
+  ph.addEventListener('drop', e => { e.preventDefault(); ph.classList.remove('drag'); loadImageFile(e.dataTransfer.files[0]); });
+  document.addEventListener('paste', e => {
+    const item = [...(e.clipboardData?.items || [])].find(i => i.type.startsWith('image/'));
+    if (item) { e.preventDefault(); loadImageFile(item.getAsFile()); }
+  });
+
+  /* ---------- Drawing ---------- */
+  const unit = () => Math.max(cv.width, cv.height) / 300;
+  function pt(e) {
+    const r = cv.getBoundingClientRect();
+    return { x: (e.clientX - r.left) * cv.width / r.width, y: (e.clientY - r.top) * cv.height / r.height };
+  }
+  function drawShape(s) {
+    const u = unit(), lw = u * 1.6;
+    ctx.save();
+    ctx.lineCap = 'round'; ctx.lineJoin = 'round';
+    ctx.strokeStyle = s.color; ctx.fillStyle = s.color; ctx.lineWidth = lw;
+    ctx.shadowColor = 'rgba(0,0,0,.45)'; ctx.shadowBlur = u * 1.2;
+    if (s.t === 'arrow') {
+      const a = Math.atan2(s.y2 - s.y1, s.x2 - s.x1), h = u * 7;
+      ctx.beginPath(); ctx.moveTo(s.x1, s.y1); ctx.lineTo(s.x2 - Math.cos(a) * h * .6, s.y2 - Math.sin(a) * h * .6); ctx.stroke();
+      ctx.beginPath(); ctx.moveTo(s.x2, s.y2);
+      ctx.lineTo(s.x2 - h * Math.cos(a - .45), s.y2 - h * Math.sin(a - .45));
+      ctx.lineTo(s.x2 - h * Math.cos(a + .45), s.y2 - h * Math.sin(a + .45));
+      ctx.closePath(); ctx.fill();
+    } else if (s.t === 'circle') {
+      ctx.beginPath();
+      ctx.ellipse((s.x1 + s.x2) / 2, (s.y1 + s.y2) / 2, Math.abs(s.x2 - s.x1) / 2, Math.abs(s.y2 - s.y1) / 2, 0, 0, Math.PI * 2);
+      ctx.stroke();
+    } else if (s.t === 'box') {
+      ctx.strokeRect(Math.min(s.x1, s.x2), Math.min(s.y1, s.y2), Math.abs(s.x2 - s.x1), Math.abs(s.y2 - s.y1));
+    } else if (s.t === 'pen') {
+      ctx.beginPath(); s.pts.forEach((p, i) => i ? ctx.lineTo(p.x, p.y) : ctx.moveTo(p.x, p.y)); ctx.stroke();
+    } else if (s.t === 'pin') {
+      const r = u * 6;
+      ctx.beginPath(); ctx.arc(s.x, s.y, r, 0, Math.PI * 2); ctx.fill();
+      ctx.shadowBlur = 0; ctx.lineWidth = u * 1.1; ctx.strokeStyle = '#fff'; ctx.stroke();
+      ctx.fillStyle = s.color === '#ffffff' || s.color === '#f5b700' ? '#111' : '#fff';
+      ctx.font = `700 ${r * 1.15}px Barlow, Arial, sans-serif`;
+      ctx.textAlign = 'center'; ctx.textBaseline = 'middle';
+      ctx.fillText(s.n, s.x, s.y + r * .05);
+    } else if (s.t === 'text') {
+      const fs = u * 7;
+      ctx.font = `700 ${fs}px Barlow, Arial, sans-serif`; ctx.textBaseline = 'top';
+      const w = ctx.measureText(s.text).width, pad = fs * .3;
+      ctx.shadowBlur = 0;
+      ctx.fillStyle = 'rgba(0,0,0,.72)';
+      ctx.fillRect(s.x - pad, s.y - pad, w + pad * 2, fs + pad * 2);
+      ctx.fillStyle = s.color; ctx.fillText(s.text, s.x, s.y + fs * .05);
+    }
+    ctx.restore();
+  }
+  function redraw() {
+    if (!img) return;
+    ctx.clearRect(0, 0, cv.width, cv.height);
+    ctx.drawImage(img, 0, 0);
+    shapes.forEach(drawShape);
+    if (drawing) drawShape(drawing);
+  }
+  const nextPin = () => shapes.filter(s => s.t === 'pin').reduce((m, s) => Math.max(m, s.n), 0) + 1;
+
+  cv.addEventListener('pointerdown', e => {
+    if (!img) return;
+    const p = pt(e);
+    if (tool === 'pin') {
+      const n = nextPin();
+      shapes.push({ t: 'pin', x: p.x, y: p.y, n, color });
+      if (!issues.some(i => i.n === n)) issues.push({ n, text: '' });
+      renderIssues(); redraw(); save();
+      setTimeout(() => $(`#issue-${n}`)?.focus({ preventScroll: true }), 0);
+      return;
+    }
+    if (tool === 'text') {
+      const text = prompt('Photo pe kya likhna hai?');
+      if (text && text.trim()) { shapes.push({ t: 'text', x: p.x, y: p.y, text: text.trim(), color }); redraw(); save(); }
+      return;
+    }
+    cv.setPointerCapture(e.pointerId);
+    drawing = tool === 'pen' ? { t: 'pen', pts: [p], color } : { t: tool, x1: p.x, y1: p.y, x2: p.x, y2: p.y, color };
+  });
+  cv.addEventListener('pointermove', e => {
+    if (!drawing) return;
+    const p = pt(e);
+    if (drawing.t === 'pen') drawing.pts.push(p); else { drawing.x2 = p.x; drawing.y2 = p.y; }
+    redraw();
+  });
+  const endDraw = () => {
+    if (!drawing) return;
+    const d = drawing; drawing = null;
+    const tiny = d.t === 'pen' ? d.pts.length < 2 : Math.hypot(d.x2 - d.x1, d.y2 - d.y1) < unit() * 3;
+    if (!tiny) shapes.push(d);
+    redraw(); save();
+  };
+  cv.addEventListener('pointerup', endDraw);
+  cv.addEventListener('pointercancel', endDraw);
+
+  function undo() {
+    const s = shapes.pop();
+    if (!s) return;
+    if (s.t === 'pin') {
+      const row = issues.find(i => i.n === s.n);
+      if (row && !row.text.trim()) issues = issues.filter(i => i !== row);
+      renderIssues();
+    }
+    redraw(); save();
+  }
+  $('#undo').onclick = undo;
+  document.addEventListener('keydown', e => {
+    if ((e.ctrlKey || e.metaKey) && e.key.toLowerCase() === 'z' && !/INPUT|TEXTAREA|SELECT/.test(document.activeElement.tagName)) { e.preventDefault(); undo(); }
+  });
+  $('#clearMarks').onclick = () => {
+    if (!shapes.length) return;
+    if (!confirm('Photo ke saare marks hata dein?')) return;
+    shapes = []; issues = issues.filter(i => i.text.trim()); renderIssues(); redraw(); save();
+  };
+
+  $$('[data-tool]').forEach(b => b.onclick = () => {
+    tool = b.dataset.tool;
+    $$('[data-tool]').forEach(x => x.setAttribute('aria-pressed', x === b));
+  });
+  $$('[data-color]').forEach(b => b.onclick = () => {
+    color = b.dataset.color;
+    $$('[data-color]').forEach(x => x.setAttribute('aria-pressed', x === b));
+  });
+
+  /* ---------- Issues & parts tables ---------- */
+  const esc = s => String(s ?? '').replace(/[&<>"]/g, c => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;' }[c]));
+  function renderIssues() {
+    issues.sort((a, b) => a.n - b.n);
+    $('#issues').innerHTML = issues.map((i, k) => `
+      <tr><td class="n"><span class="pin">${i.n}</span></td>
+      <td><input id="issue-${i.n}" data-k="${k}" value="${esc(i.text)}" placeholder="Is jagah kya problem hai? (e.g. terminal jal gaya / crack / loose wire)"></td>
+      <td class="x noprint"><button class="del" data-k="${k}" aria-label="Remove issue ${i.n}">×</button></td></tr>`).join('')
+      || `<tr><td colspan="3" style="color:var(--muted);padding:10px 6px">Photo pe "Issue No." tool se click karo, ya "+ Add issue" dabao.</td></tr>`;
+  }
+  $('#issues').addEventListener('input', e => { if (e.target.dataset.k) { issues[e.target.dataset.k].text = e.target.value; save(); } });
+  $('#issues').addEventListener('click', e => {
+    const b = e.target.closest('.del'); if (!b) return;
+    const n = issues[b.dataset.k].n;
+    issues.splice(b.dataset.k, 1);
+    shapes = shapes.filter(s => !(s.t === 'pin' && s.n === n));
+    renderIssues(); redraw(); save();
+  });
+  $('#addIssue').onclick = () => {
+    const n = Math.max(nextPin() - 1, ...issues.map(i => i.n), 0) + 1;
+    issues.push({ n, text: '' }); renderIssues(); save(); $(`#issue-${n}`)?.focus();
+  };
+
+  function renderParts() {
+    $('#parts').innerHTML = parts.map((p, k) => `
+      <tr><td class="n">${k + 1}</td>
+      <td><input data-k="${k}" data-f="name" value="${esc(p.name)}" placeholder="Part name" aria-label="Part name ${k + 1}"></td>
+      <td><input class="mono" data-k="${k}" data-f="code" value="${esc(p.code)}" placeholder="Code" aria-label="Part code ${k + 1}"></td>
+      <td class="q"><input class="mono" data-k="${k}" data-f="qty" value="${esc(p.qty)}" placeholder="1" aria-label="Qty ${k + 1}"></td>
+      <td><input data-k="${k}" data-f="remark" value="${esc(p.remark)}" placeholder="Remark" aria-label="Remark ${k + 1}"></td>
+      <td class="x noprint"><button class="del" data-k="${k}" aria-label="Remove part ${k + 1}">×</button></td></tr>`).join('');
+  }
+  $('#parts').addEventListener('input', e => { const t = e.target; if (t.dataset.f) { parts[t.dataset.k][t.dataset.f] = t.value; save(); } });
+  $('#parts').addEventListener('click', e => {
+    const b = e.target.closest('.del'); if (!b) return;
+    parts.splice(b.dataset.k, 1); if (!parts.length) parts.push(blankPart()); renderParts(); save();
+  });
+  const blankPart = () => ({ name: '', code: '', qty: '1', remark: '' });
+  $('#addPart').onclick = () => { parts.push(blankPart()); renderParts(); save(); $(`#parts tr:last-child input`)?.focus(); };
+
+  /* ---------- State: autosave, file save/open ---------- */
+  function collect() {
+    const f = {}; FIELDS.forEach(id => f[id] = $('#' + id).value);
+    return { v: 1, fields: f, image: imgData, shapes, issues, parts };
+  }
+  function apply(d) {
+    FIELDS.forEach(id => { if (d.fields && id in d.fields) $('#' + id).value = d.fields[id]; });
+    shapes = d.shapes || []; issues = d.issues || []; parts = d.parts?.length ? d.parts : [blankPart()];
+    renderIssues(); renderParts();
+    if (d.image) setImage(d.image, false);
+    else { img = null; imgData = null; cv.hidden = true; $('#empty').hidden = false; $('#photo').classList.remove('has'); }
+  }
+  let saveT;
+  function save() {
+    clearTimeout(saveT);
+    saveT = setTimeout(() => { try { localStorage.setItem(KEY, JSON.stringify(collect())); } catch (e) {} }, 300);
+  }
+  document.addEventListener('input', e => { if (FIELDS.includes(e.target.id)) save(); });
+  document.addEventListener('change', e => { if (FIELDS.includes(e.target.id)) save(); });
+
+  const fileBase = () => ($('#ticket').value.trim() || 'spare-part').replace(/[^\w-]+/g, '_');
+  function download(href, name) { const a = document.createElement('a'); a.href = href; a.download = name; document.body.appendChild(a); a.click(); a.remove(); }
+
+  $('#saveJson').onclick = () => {
+    const blob = new Blob([JSON.stringify(collect())], { type: 'application/json' });
+    const u = URL.createObjectURL(blob); download(u, fileBase() + '.powerrun.json'); setTimeout(() => URL.revokeObjectURL(u), 2000);
+    toast('File saved — "Open file" se dobara edit kar sakte ho');
+  };
+  $('#openJson').onclick = () => $('#jsonFile').click();
+  $('#jsonFile').onchange = e => {
+    const f = e.target.files[0]; if (!f) return;
+    const r = new FileReader();
+    r.onload = () => { try { apply(JSON.parse(r.result)); save(); toast('Sheet opened'); } catch (err) { toast('Ye file sahi nahi hai'); } };
+    r.readAsText(f); e.target.value = '';
+  };
+  $('#newSheet').onclick = () => {
+    if (!confirm('Nayi khali sheet shuru karein? (Current sheet pehle "Save file" kar lo)')) return;
+    apply({ fields: Object.fromEntries(FIELDS.map(id => [id, ''])) });
+    $('#kind').selectedIndex = 0; $('#warranty').selectedIndex = 0; $('#date').valueAsDate = new Date();
+    save();
+  };
+
+  $('#print').onclick = () => window.print();
+  $('#dlPng').onclick = async () => {
+    if (typeof html2canvas !== 'function') { toast('Image ke liye internet chahiye — abhi Print / PDF use karo'); return; }
+    toast('Image ban rahi hai…');
+    document.body.classList.add('snap');
+    const hide = $$('.noprint'); hide.forEach(el => el.style.visibility = 'hidden');
+    try {
+      const c = await html2canvas($('#sheet'), { scale: 2, backgroundColor: '#ffffff', useCORS: true });
+      download(c.toDataURL('image/png'), fileBase() + '.png');
+      toast('Image saved');
+    } catch (err) { toast('Image nahi bani — Print / PDF use karo'); }
+    finally { hide.forEach(el => el.style.visibility = ''); }
+  };
+
+  /* ---------- Boot ---------- */
+  let stored = null;
+  try { stored = JSON.parse(localStorage.getItem(KEY) || 'null'); } catch (e) {}
+  if (stored) apply(stored);
+  else { parts = [blankPart()]; renderParts(); renderIssues(); $('#date').valueAsDate = new Date(); }
+})();
+</script>
+</body>
+</html>
