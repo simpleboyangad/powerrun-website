@@ -14,8 +14,13 @@ to work properly:
      script bakes the current database values into every page between
      <!-- SEO:START --> and <!-- SEO:END -->, and writes:
 
-       - one real page per product at /products/<slug>/  (clean, indexable URL)
-       - sitemap.xml   every indexable page, category and product, no duplicates
+       - one real page per product at /products/<slug>/  (clean, indexable URL),
+         with the product's name, price, images, specifications and
+         description already in the HTML, so the page has real content even
+         before (or without) JavaScript - assets/js/pages/product.js then
+         replaces it with the interactive version
+       - sitemap.xml   every indexable page, non-empty category and product,
+                       no duplicates, with product images for Google Images
        - robots.txt    from global_seo.robots_txt, or a safe default
 
 Run it after changing SEO settings in the admin panel, then commit and push:
@@ -105,6 +110,7 @@ def head_block(title, description, canonical, image, site_name, keywords="",
         '<meta name="robots" content="%s">' % esc(robots),
         '<link rel="canonical" href="%s">' % esc(canonical),
         '<meta property="og:type" content="%s">' % esc(og_type),
+        '<meta property="og:locale" content="en_IN">',
         '<meta property="og:site_name" content="%s">' % esc(site_name),
         '<meta property="og:title" content="%s">' % esc(title),
         '<meta property="og:description" content="%s">' % esc(description),
@@ -167,7 +173,7 @@ PRODUCT_TEMPLATE = """<!doctype html>
 <main id="main">
     <section class="section" id="productSection">
       <div id="productContent">
-        <div class="empty-state"><h3>Loading product…</h3><p>One moment please.</p></div>
+{content}
       </div>
     </section>
     <section class="section" id="relatedSection" hidden style="padding-top:0">
@@ -211,6 +217,7 @@ def product_schema(product, canonical, images, site_name):
             "@type": "Offer",
             "priceCurrency": "INR",
             "price": str(price),
+            "itemCondition": "https://schema.org/NewCondition",
             "url": canonical,
             "availability": ("https://schema.org/InStock"
                              if (product.get("availability") or "in_stock") == "in_stock"
@@ -230,6 +237,90 @@ def breadcrumb_schema(items):
             for i, (name, url) in enumerate(items)
         ],
     }
+
+
+def money(value):
+    """Rupees with Indian digit grouping, like PR.money() in core.js."""
+    try:
+        n = int(round(float(value)))
+    except (TypeError, ValueError):
+        return "Price on request"
+    digits = str(abs(n))
+    if len(digits) > 3:
+        head, tail = digits[:-3], digits[-3:]
+        head = ",".join(re.findall(r"\d{1,2}(?=(?:\d{2})*$)", head))
+        digits = head + "," + tail
+    return "₹" + ("-" if n < 0 else "") + digits
+
+
+def spec_rows(specs):
+    """Same reading of products.specifications as normalizeProduct() in catalog.js."""
+    if isinstance(specs, list):
+        return [(str(e["label"]), "" if e.get("value") is None else str(e["value"]))
+                for e in specs if isinstance(e, dict) and e.get("label")], ""
+    if isinstance(specs, dict):
+        return [(k, str(v)) for k, v in specs.items() if k != "text"], str(specs.get("text") or "")
+    return [], str(specs or "")
+
+
+def prerender_product(product, cat, images):
+    """Static version of the product view in assets/js/pages/product.js, using
+    the same classes so the page looks right before the script takes over.
+    Only content that does not go stale between builds (no stock counts)."""
+    name = esc(product["name"])
+    alt = esc(product.get("image_alt") or product["name"])
+    out = ['<nav class="breadcrumb" aria-label="Breadcrumb">'
+           '<a href="/">Home</a> / <a href="/products/">Products</a>'
+           + (' / <a href="/products/?category=%s">%s</a>'
+              % (esc(urllib.parse.quote(cat["slug"])), esc(cat["name"])) if cat.get("slug") else "")
+           + ' / <span aria-current="page">%s</span></nav>' % name,
+           '<div class="product-detail-view">',
+           '<div class="product-gallery-main"><div class="gallery-stage"><div class="gallery-track">']
+    for i, url in enumerate(images or []):
+        out.append('<div class="gallery-slide"><img src="%s" alt="%s"%s width="700" height="560"></div>'
+                   % (esc(url), alt + (" - image %d" % (i + 1) if i else ""), ' loading="lazy"' if i else ""))
+    out.append('</div></div></div>')
+    out.append('<div class="product-info">')
+    if cat.get("name"):
+        out.append('<span class="detail-badge">%s</span>' % esc(cat["name"].upper()))
+    out.append('<h1>%s</h1>' % name)
+    if product.get("sku"):
+        out.append('<div class="sku">SKU: %s</div>' % esc(product["sku"]))
+    if product.get("short_description"):
+        out.append('<p class="prose" style="margin:12px 0 0">%s</p>' % esc(product["short_description"]))
+    price, mrp = product.get("price"), product.get("mrp")
+    if price:
+        row = '<div class="price-row"><span class="price-now">%s</span>' % money(price)
+        if mrp and float(mrp) > float(price):
+            row += ('<span class="price-mrp">%s</span><span class="discount-badge">-%d%%</span>'
+                    % (money(mrp), round((1 - float(price) / float(mrp)) * 100)))
+        out.append(row + '</div>')
+    else:
+        out.append('<div class="price-row"><span class="price-now">Price on request</span></div>')
+    if product.get("warranty"):
+        out.append('<p class="small-note" style="margin-top:14px">%s</p>' % esc(product["warranty"]))
+    rows, text = spec_rows(product.get("specifications"))
+    if rows:
+        out.append('<div class="spec-table-wrap"><b>Specifications</b><table class="spec-table"><tbody>'
+                   + "".join('<tr><td>%s</td><td>%s</td></tr>' % (esc(k), esc(v)) for k, v in rows)
+                   + '</tbody></table></div>')
+    elif text:
+        out.append('<div class="spec-table-wrap"><b>Specifications</b><p class="prose">%s</p></div>' % esc(text))
+    features = product.get("features")
+    features = features if isinstance(features, list) else ([features] if features else [])
+    if features:
+        out.append('<div class="spec-table-wrap"><b>Key Features</b><ul class="feature-list">'
+                   + "".join('<li>%s</li>' % esc(f) for f in features) + '</ul></div>')
+    if product.get("description"):
+        out.append('<div class="spec-table-wrap"><b>Product Description</b><p class="prose">%s</p></div>'
+                   % esc(product["description"]))
+    out.append('<div class="internal-links"><b>Explore more</b><div class="link-chips">'
+               + ('<a href="/products/?category=%s">All %s</a>'
+                  % (esc(urllib.parse.quote(cat["slug"])), esc(cat["name"])) if cat.get("slug") else "")
+               + '<a href="/products/">All products</a><a href="/warranty/">Warranty registration</a>'
+               '<a href="/service/">Service request</a></div></div>')
+    out.append('</div></div>')
+    return "\n".join("        " + line for line in out)
 
 
 def asset_stamp():
@@ -267,7 +358,7 @@ def main():
     pages = fetch("page_seo?select=*&order=sort_order")
     categories = fetch("categories?select=id,name,slug,parent_id,is_active,meta_title,meta_description,"
                        "focus_keyword,canonical_url,og_image,seo_index,seo_follow&is_active=eq.true")
-    products = fetch("products?select=id,name,slug,sku,price,stock,availability,short_description,description,"
+    products = fetch("products?select=id,name,slug,sku,price,mrp,stock,warranty,specifications,features,availability,short_description,description,"
                      "meta_title,meta_description,focus_keyword,secondary_keywords,canonical_url,og_title,"
                      "og_description,og_image,image_alt,seo_index,seo_follow,category_id,updated_at,"
                      "product_images(image_url,sort_order)&is_active=eq.true&order=sort_order")
@@ -276,9 +367,9 @@ def main():
     written, sitemap = [], []
     today = datetime.date.today().isoformat()
 
-    def add_url(loc, lastmod=today, priority="0.7", changefreq="weekly"):
+    def add_url(loc, lastmod=today, priority="0.7", changefreq="weekly", images=()):
         if loc not in [u[0] for u in sitemap]:
-            sitemap.append((loc, lastmod, priority, changefreq))
+            sitemap.append((loc, lastmod, priority, changefreq, list(images)))
 
     org = {
         "@context": "https://schema.org", "@type": "Organization",
@@ -305,6 +396,12 @@ def main():
             schema.append({
                 "@context": "https://schema.org", "@type": "WebSite", "@id": site + "/#website",
                 "url": site + "/", "name": site_name, "publisher": {"@id": site + "/#organization"},
+                "potentialAction": {
+                    "@type": "SearchAction",
+                    "target": {"@type": "EntryPoint",
+                               "urlTemplate": site + "/products/?q={search_term_string}"},
+                    "query-input": "required name=search_term_string",
+                },
             })
         block = head_block(
             title=page.get("title") or g.get("meta_title") or site_name,
@@ -321,8 +418,16 @@ def main():
             add_url(canonical, priority=str(page.get("sitemap_priority") or 0.8))
 
     # ----------------------------------------------------------- categories
+    # a category with no active products is an empty listing - keep it out of
+    # the sitemap until it has something in it (thin pages hurt the whole site)
+    stocked = set()
+    for product in products:
+        stocked.add(product.get("category_id"))
+        parent = (cat_by_id.get(product.get("category_id")) or {}).get("parent_id")
+        if parent:
+            stocked.add(parent)
     for cat in categories:
-        if cat.get("parent_id") or cat.get("seo_index") is False:
+        if cat.get("parent_id") or cat.get("seo_index") is False or cat["id"] not in stocked:
             continue
         add_url(cat.get("canonical_url") or (site + "/products/?category=" + urllib.parse.quote(cat["slug"])),
                 priority="0.8")
@@ -358,10 +463,12 @@ def main():
         folder = os.path.join(product_dir, slug)
         os.makedirs(folder, exist_ok=True)
         io.open(os.path.join(folder, "index.html"), "w", encoding="utf-8").write(
-            versioned(PRODUCT_TEMPLATE.format(head=block), stamp))
+            versioned(PRODUCT_TEMPLATE.format(head=block, content=prerender_product(product, cat, images)),
+                      stamp))
         written.append("products/%s/index.html" % slug)
         if indexable:
-            add_url(canonical, lastmod=(product.get("updated_at") or today)[:10], priority="0.7")
+            add_url(canonical, lastmod=(product.get("updated_at") or today)[:10], priority="0.7",
+                    images=images)
 
     # remove pages for products that no longer exist / are inactive
     removed = []
@@ -378,10 +485,14 @@ def main():
 
     # -------------------------------------------------------------- sitemap
     xml = ['<?xml version="1.0" encoding="UTF-8"?>',
-           '<urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">']
-    for loc, lastmod, priority, changefreq in sitemap:
+           '<urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9"'
+           ' xmlns:image="http://www.google.com/schemas/sitemap-image/1.1">']
+    for loc, lastmod, priority, changefreq, pics in sitemap:
         xml.append("  <url><loc>%s</loc><lastmod>%s</lastmod><changefreq>%s</changefreq>"
-                   "<priority>%s</priority></url>" % (esc(loc), lastmod, changefreq, priority))
+                   "<priority>%s</priority>%s</url>"
+                   % (esc(loc), lastmod, changefreq, priority,
+                      "".join("<image:image><image:loc>%s</image:loc></image:image>" % esc(u)
+                              for u in pics)))
     xml.append("</urlset>")
     io.open(os.path.join(ROOT, "sitemap.xml"), "w", encoding="utf-8").write("\n".join(xml) + "\n")
 
