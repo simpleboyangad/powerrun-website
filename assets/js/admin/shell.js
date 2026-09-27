@@ -27,6 +27,7 @@
     { key: 'coupons',    href: '/admin/coupons/',    icon: '🎟', label: 'Coupons' },
     { key: 'seo',        href: '/admin/seo/',        icon: '🔍', label: 'SEO Manager' },
     { key: 'calculator', href: '/admin/calculator/', icon: '📊', label: 'Profit & Loss Calculator' },
+    { key: 'bom',        href: '/admin/bom/',        icon: '🔋', label: 'Battery BOM Calculator' },
     { key: 'settings',   href: '/admin/settings/',   icon: '⚙', label: 'Settings' }
   ];
 
