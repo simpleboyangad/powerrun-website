@@ -113,6 +113,7 @@ img { max-width: 100%; }
   border-radius: 12px; backdrop-filter: blur(8px); color: #aaa; font-size: 12px;
 }
 .check b { display: block; color: #fff; font-size: 13px; margin-bottom: 4px; }
+.check-icon { display: block; width: 20px; height: 20px; color: var(--orange); margin-bottom: 8px; }
 .eyebrow {
   display: inline-flex; align-items: center; gap: 8px; padding: 7px 12px;
   border: 1px solid #ffffff18; border-radius: 999px; background: #ffffff08; color: #ddd;
