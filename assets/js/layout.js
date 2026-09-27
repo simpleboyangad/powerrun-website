@@ -129,6 +129,7 @@
             '<li><a href="/track-order/">Track Order</a></li>' +
             '<li><a href="/account/">My Account</a></li>' +
             '<li><a href="https://wa.me/' + PR.esc(cfg.WHATSAPP) + '" target="_blank" rel="noopener">WhatsApp Support</a></li>' +
+            '<li><a href="' + PR.esc(cfg.YOUTUBE) + '" target="_blank" rel="noopener">YouTube Channel</a></li>' +
           '</ul></div>' +
           '<div><h3>Policies</h3><ul>' +
             '<li><a href="/shipping-policy/">Shipping Policy</a></li>' +

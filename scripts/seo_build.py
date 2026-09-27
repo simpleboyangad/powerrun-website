@@ -377,6 +377,7 @@ def main():
         "@id": site + "/#organization", "name": site_name, "url": site + "/",
         "logo": default_image, "email": "service@powerrun.in", "telephone": "+91 87003 07676",
         "areaServed": "IN",
+        "sameAs": ["https://www.youtube.com/@PowerRunIndustries"],
     }
 
     # ---------------------------------------------------------------- pages

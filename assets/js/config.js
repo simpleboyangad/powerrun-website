@@ -14,6 +14,7 @@ window.PR_CONFIG = {
   RAZORPAY_KEY_ID: 'rzp_live_TeVizhEm73jmxI',
 
   WHATSAPP: '918700307676',
+  YOUTUBE: 'https://www.youtube.com/@PowerRunIndustries',
   PHONE: '+91 87003 07676',
   EMAIL: 'service@powerrun.in',
   COMPANY: 'PowerRun Industries',
