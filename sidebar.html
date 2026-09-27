@@ -1,0 +1,163 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Seller Sidebar</title>
+<style>
+  * { margin: 0; padding: 0; box-sizing: border-box; }
+
+  body {
+    font-family: Arial, Helvetica, sans-serif;
+    background: #e9e9ec;
+    display: flex;
+    min-height: 100vh;
+  }
+
+  .sidebar {
+    width: 110px;
+    background: #fff;
+    border-right: 1px solid #ddd;
+    min-height: 100vh;
+  }
+
+  .sidebar ul { list-style: none; }
+
+  .sidebar li a {
+    position: relative;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    gap: 4px;
+    height: 54px;
+    padding: 6px 4px;
+    text-decoration: none;
+    color: #222;
+    font-size: 11px;
+    border-bottom: 1px solid #eee;
+    transition: background 0.2s;
+  }
+
+  .sidebar li a:hover { background: #f3f3fb; }
+
+  .sidebar li a.active {
+    background: #eef0ff;
+    color: #2e3192;
+    font-weight: bold;
+  }
+
+  .sidebar svg { width: 24px; height: 24px; fill: #333; }
+  .sidebar a.active svg { fill: #2e3192; }
+
+  /* Badges */
+  .badge {
+    position: absolute;
+    top: 8px;
+    right: 10px;
+    font-size: 10px;
+    font-weight: bold;
+    color: #fff;
+    border-radius: 10px;
+    padding: 2px 6px;
+  }
+  .badge.offer { background: #ff6d00; right: 6px; }
+  .badge.count { background: #bdbdbd; padding: 3px 5px; }
+  .dot {
+    position: absolute;
+    top: 12px;
+    right: 26px;
+    width: 10px;
+    height: 10px;
+    background: #ff6d00;
+    border-radius: 50%;
+  }
+
+  .content { flex: 1; }
+</style>
+</head>
+<body>
+
+<nav class="sidebar">
+  <ul>
+    <li>
+      <a href="#" class="active">
+        <svg viewBox="0 0 24 24"><path d="M12 3 2 12h3v8h5v-6h4v6h5v-8h3z"/></svg>
+        Dashboard
+      </a>
+    </li>
+    <li>
+      <a href="#">
+        <svg viewBox="0 0 24 24"><path d="M6 3h12l4 6-10 12L2 9zm1.2 2L4.6 9h4.1l1.4-4zm5.2 0 1.4 4h-3.6zm3.5 0h-2.9l1.4 4h4.1zM4.9 10.5l5.6 6.7-2.3-6.7zm4.9 0L12 17l2.2-6.5zm5.9 0-2.3 6.7 5.6-6.7z"/></svg>
+        Paid Services
+        <span class="badge offer">Offer</span>
+      </a>
+    </li>
+    <li>
+      <a href="#">
+        <svg viewBox="0 0 24 24"><path d="M12 2a10 10 0 1 0 0 20 10 10 0 0 0 0-20zm0 4a3.5 3.5 0 1 1 0 7 3.5 3.5 0 0 1 0-7zm0 14a8 8 0 0 1-6-2.7c.9-2 3.3-3.3 6-3.3s5.1 1.3 6 3.3A8 8 0 0 1 12 20z"/></svg>
+        Profile
+      </a>
+    </li>
+    <li>
+      <a href="#">
+        <svg viewBox="0 0 24 24"><path d="M3 4h14a2 2 0 0 1 2 2v7a2 2 0 0 1-2 2H9l-4 3v-3H3a2 2 0 0 1-2-2V6a2 2 0 0 1 2-2zm18 4h1a1 1 0 0 1 1 1v9a1 1 0 0 1-1 1h-1v2l-3-2h-7v-2h8a2 2 0 0 0 2-2z"/></svg>
+        Lead Manager
+      </a>
+    </li>
+    <li>
+      <a href="#">
+        <svg viewBox="0 0 24 24"><path d="M2 18l6-8 5 5 4-7 5 6-1.6 1.2-3.2-3.9-4 7-5-5-4.6 6.1z"/><circle cx="8" cy="10" r="2"/><circle cx="13" cy="15" r="2"/><circle cx="17" cy="8" r="2"/></svg>
+        BuyLeads
+        <span class="badge count">99+</span>
+      </a>
+    </li>
+    <li>
+      <a href="#">
+        <svg viewBox="0 0 24 24"><path d="M1 3h3l3 11h11l3-8H7.4l-.6-2H23l-4 12H5.5L2.5 5H1zm7 15a2 2 0 1 1 0 4 2 2 0 0 1 0-4zm9 0a2 2 0 1 1 0 4 2 2 0 0 1 0-4z"/></svg>
+        Products
+        <span class="dot"></span>
+      </a>
+    </li>
+    <li>
+      <a href="#">
+        <svg viewBox="0 0 24 24"><path d="M19 10a7 7 0 0 0-13.6-1.5A5 5 0 0 0 6 18.5h3v-2H6a3 3 0 0 1-.2-6l.8-.1.2-.8a5 5 0 0 1 9.7 1l.1.9h1a2.5 2.5 0 0 1 0 5h-2.6v2H18a4.5 4.5 0 0 0 1-8.9zM12 10l-4 4h3v7h2v-7h3z"/></svg>
+        Photos &amp; Docs
+      </a>
+    </li>
+    <li>
+      <a href="#">
+        <svg viewBox="0 0 24 24"><path d="M8 7V6a4 4 0 0 1 8 0v1h4l1 15H3L4 7zm2 0h4V6a2 2 0 0 0-4 0z"/></svg>
+        Buyer Tools
+      </a>
+    </li>
+    <li>
+      <a href="#">
+        <svg viewBox="0 0 24 24"><path d="M19.4 13a7.8 7.8 0 0 0 0-2l2.1-1.6-2-3.5-2.5 1a7 7 0 0 0-1.7-1L15 3h-4l-.4 2.7a7 7 0 0 0-1.7 1l-2.5-1-2 3.5L4.6 11a7.8 7.8 0 0 0 0 2l-2.1 1.6 2 3.5 2.5-1a7 7 0 0 0 1.7 1L11 21h4l.4-2.7a7 7 0 0 0 1.7-1l2.5 1 2-3.5zM13 15.5a3.5 3.5 0 1 1 0-7 3.5 3.5 0 0 1 0 7z" transform="translate(-1 0)"/></svg>
+        Settings
+      </a>
+    </li>
+    <li>
+      <a href="#">
+        <svg viewBox="0 0 24 24"><path d="M3 5l6-2v18l-6-2zm7-2 5 2v16l-5-2zm6 2 5-2v16l-5 2z"/></svg>
+        Tally on web
+      </a>
+    </li>
+  </ul>
+</nav>
+
+<main class="content"></main>
+
+<script>
+  // Click karne par active item change hoga
+  document.querySelectorAll('.sidebar a').forEach(link => {
+    link.addEventListener('click', e => {
+      e.preventDefault();
+      document.querySelector('.sidebar a.active')?.classList.remove('active');
+      link.classList.add('active');
+    });
+  });
+</script>
+
+</body>
+</html>
