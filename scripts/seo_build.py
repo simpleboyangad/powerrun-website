@@ -201,7 +201,7 @@ PRODUCT_TEMPLATE = """<!doctype html>
 """
 
 
-def product_schema(product, canonical, images, site_name, reviews=None):
+def product_schema(product, canonical, images, site_name, reviews=None, site=""):
     node = {
         "@context": "https://schema.org",
         "@type": "Product",
@@ -229,6 +229,28 @@ def product_schema(product, canonical, images, site_name, reviews=None):
                              and (product.get("stock") or 0) > 0
                              else "https://schema.org/OutOfStock"),
             "seller": {"@type": "Organization", "name": site_name},
+            # Real policy, matching /shipping-policy/ and /refund-policy/ word for
+            # word: free pan-India shipping, 1-2 day dispatch + 3-7 day transit,
+            # and a 7-day no-cost replacement window for damaged/defective/wrong items.
+            "hasMerchantReturnPolicy": {
+                "@type": "MerchantReturnPolicy",
+                "applicableCountry": "IN",
+                "returnPolicyCategory": "https://schema.org/MerchantReturnFiniteReturnWindow",
+                "merchantReturnDays": 7,
+                "returnFees": "https://schema.org/FreeReturn",
+                "returnMethod": "https://schema.org/ReturnByMail",
+                "merchantReturnLink": site + "/refund-policy/",
+            },
+            "shippingDetails": {
+                "@type": "OfferShippingDetails",
+                "shippingRate": {"@type": "MonetaryAmount", "value": "0", "currency": "INR"},
+                "shippingDestination": {"@type": "DefinedRegion", "addressCountry": "IN"},
+                "deliveryTime": {
+                    "@type": "ShippingDeliveryTime",
+                    "handlingTime": {"@type": "QuantitativeValue", "minValue": 1, "maxValue": 2, "unitCode": "DAY"},
+                    "transitTime": {"@type": "QuantitativeValue", "minValue": 3, "maxValue": 7, "unitCode": "DAY"},
+                },
+            },
         }
     if reviews:
         ratings = [r["rating"] for r in reviews if r.get("rating")]
@@ -488,7 +510,7 @@ def main():
             keywords=", ".join(x for x in [product.get("focus_keyword"), product.get("secondary_keywords")] if x),
             robots=robots, og_type="product", gsc=gsc,
             schema=[org, product_schema(product, canonical, images, site_name,
-                                         reviews_by_product.get(product["id"])), breadcrumb_schema(crumbs)])
+                                         reviews_by_product.get(product["id"]), site), breadcrumb_schema(crumbs)])
         folder = os.path.join(product_dir, slug)
         os.makedirs(folder, exist_ok=True)
         io.open(os.path.join(folder, "index.html"), "w", encoding="utf-8").write(
