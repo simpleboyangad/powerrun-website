@@ -378,6 +378,137 @@
     }
   }
 
+  /* -------------------------------------------------------------- reviews */
+  function stars(rating) {
+    var n = Number(rating) || 0;
+    return '★★★★★☆☆☆☆☆'.slice(5 - n, 10 - n);
+  }
+
+  async function renderReviews(p) {
+    var host = document.getElementById('productReviews');
+    if (!host || !PR.sb) return;
+    try {
+      var reviews = await PR.call('load reviews', function (sb) {
+        return sb.from('product_reviews')
+          .select('rating,title,body,customer_name,created_at')
+          .eq('product_id', p.id).eq('status', 'approved')
+          .order('created_at', { ascending: false });
+      }) || [];
+
+      var avg = reviews.length
+        ? reviews.reduce(function (sum, r) { return sum + r.rating; }, 0) / reviews.length
+        : 0;
+
+      host.innerHTML =
+        '<div class="section-head"><h2>CUSTOMER <span>REVIEWS</span></h2>' +
+          (reviews.length
+            ? '<span class="hint" style="color:#f5a623">' + stars(Math.round(avg)) +
+              '<span style="color:var(--muted)"> ' + avg.toFixed(1) + ' out of 5 · ' +
+              reviews.length + ' review' + (reviews.length === 1 ? '' : 's') + '</span></span>'
+            : '') +
+        '</div>' +
+        '<div class="review-list">' +
+          (reviews.length
+            ? reviews.map(function (r) {
+                return '<div class="review-card">' +
+                  '<div style="color:#f5a623">' + stars(r.rating) + '</div>' +
+                  (r.title ? '<b>' + PR.esc(r.title) + '</b>' : '') +
+                  '<p style="margin:6px 0">' + PR.esc(r.body) + '</p>' +
+                  '<div class="hint">' + PR.esc(r.customer_name || 'Verified Buyer') + ' · ' +
+                    PR.formatDate(r.created_at) + '</div>' +
+                '</div>';
+              }).join('')
+            : '<p class="hint">No reviews yet — be the first to review this product.</p>') +
+        '</div>' +
+        '<div id="reviewFormHost"></div>';
+
+      renderReviewForm(p);
+    } catch (err) {
+      console.warn('[PowerRun] reviews unavailable:', err.message);
+    }
+  }
+
+  async function renderReviewForm(p) {
+    var host = document.getElementById('reviewFormHost');
+    if (!host || !PR.account) return;
+    var session = await PR.account.getSession();
+    if (!session) {
+      host.innerHTML = '<p class="hint" style="margin-top:14px"><a href="/account/?next=' +
+        encodeURIComponent(window.location.pathname) + '">Sign in</a> to write a review.</p>';
+      return;
+    }
+    try {
+      var mine = await PR.call('check your review', function (sb) {
+        return sb.from('product_reviews').select('id,status')
+          .eq('product_id', p.id).eq('user_id', session.user.id).limit(1);
+      });
+      if (mine && mine.length) {
+        var status = mine[0].status;
+        host.innerHTML = '<p class="hint" style="margin-top:14px">' +
+          (status === 'approved' ? 'You already reviewed this product.'
+            : status === 'pending' ? 'Your review is awaiting approval.'
+            : 'Your review was not approved for publishing.') + '</p>';
+        return;
+      }
+      var eligible = await PR.call('check purchase', function (sb) {
+        return sb.from('order_items').select('id, orders!inner(order_status)')
+          .eq('product_id', p.id).eq('orders.order_status', 'delivered').limit(1);
+      });
+      if (!eligible || !eligible.length) {
+        host.innerHTML = '<p class="hint" style="margin-top:14px">Only customers who have received ' +
+          'this product can write a review.</p>';
+        return;
+      }
+
+      var profile = await PR.account.loadProfile();
+      host.innerHTML =
+        '<form class="form" id="reviewSubmitForm" style="max-width:520px;margin-top:16px">' +
+          '<label>Your Rating' +
+            '<div class="star-picker" id="starPicker" role="radiogroup" aria-label="Rating">' +
+              [1, 2, 3, 4, 5].map(function (n) {
+                return '<button type="button" class="star-btn" data-star="' + n + '" aria-label="' + n + ' star">☆</button>';
+              }).join('') +
+            '</div></label>' +
+          '<label>Review<textarea id="rv_body" required maxlength="1000" ' +
+            'placeholder="Share your experience with this product…"></textarea></label>' +
+          '<button class="btn orange" type="submit">SUBMIT REVIEW</button>' +
+        '</form>';
+
+      var chosen = 0;
+      var buttons = host.querySelectorAll('.star-btn');
+      function paintStars() {
+        buttons.forEach(function (b, i) { b.textContent = i < chosen ? '★' : '☆'; });
+      }
+      buttons.forEach(function (btn, i) {
+        btn.addEventListener('click', function () { chosen = i + 1; paintStars(); });
+      });
+
+      document.getElementById('reviewSubmitForm').addEventListener('submit', async function (event) {
+        event.preventDefault();
+        if (!chosen) { PR.toast('Please select a rating.', 'error'); return; }
+        var body = document.getElementById('rv_body').value.trim();
+        if (!body) { PR.toast('Please write a review.', 'error'); return; }
+        try {
+          await PR.call('submit review', function (sb) {
+            return sb.from('product_reviews').insert({
+              product_id: p.id,
+              user_id: session.user.id,
+              customer_name: (profile && profile.name) || null,
+              rating: chosen,
+              body: body
+            });
+          });
+          PR.toast('Review submitted — awaiting approval.', 'success');
+          host.innerHTML = '<p class="hint" style="margin-top:14px">Your review is awaiting approval.</p>';
+        } catch (err) {
+          PR.toast(err.message, 'error');
+        }
+      });
+    } catch (err) {
+      console.warn('[PowerRun] review form unavailable:', err.message);
+    }
+  }
+
   /* The clean URL is /products/<slug>/. The older /product/?slug=... address
      stays alive for links that are already out there and forwards here. */
   function slugFromPath() {
@@ -415,6 +546,7 @@
       setMeta(product);
       render(product);
       renderRelated(product);
+      renderReviews(product);
     } catch (err) {
       PR.toast(err.message, 'error');
       host.innerHTML = '<div class="empty-state"><h3>Product could not be loaded</h3>' +

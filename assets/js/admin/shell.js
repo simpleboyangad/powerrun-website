@@ -25,6 +25,7 @@
     { key: 'service',   href: '/admin/service/',   icon: '🔧', label: 'Service Requests', badge: 'service_open' },
     { key: 'dealers',   href: '/admin/dealers/',   icon: '🤝', label: 'Dealer Enquiries', badge: 'dealer_new' },
     { key: 'coupons',    href: '/admin/coupons/',    icon: '🎟', label: 'Coupons' },
+    { key: 'reviews',    href: '/admin/reviews/',    icon: '⭐', label: 'Product Reviews', badge: 'reviews_pending' },
     { key: 'seo',        href: '/admin/seo/',        icon: '🔍', label: 'SEO Manager' },
     { key: 'calculator', href: '/admin/calculator/', icon: '📊', label: 'Profit & Loss Calculator' },
     { key: 'bom',        href: '/admin/bom/',        icon: '🔋', label: 'Battery BOM Calculator' },

@@ -181,6 +181,9 @@ PRODUCT_TEMPLATE = """<!doctype html>
       <div class="section-head"><h2>RELATED <span>PRODUCTS</span></h2></div>
       <div class="products" id="relatedGrid"></div>
     </section>
+    <section class="section" id="reviewsSection" style="padding-top:0">
+      <div id="productReviews"></div>
+    </section>
 </main>
 <div id="pr-footer"></div>
 
@@ -191,13 +194,14 @@ PRODUCT_TEMPLATE = """<!doctype html>
 <script src="/assets/js/cart.js"></script>
 <script src="/assets/js/layout.js"></script>
 <script src="/assets/js/catalog.js"></script>
+<script src="/assets/js/account.js"></script>
 <script src="/assets/js/pages/product.js"></script>
 </body>
 </html>
 """
 
 
-def product_schema(product, canonical, images, site_name):
+def product_schema(product, canonical, images, site_name, reviews=None):
     node = {
         "@context": "https://schema.org",
         "@type": "Product",
@@ -226,6 +230,24 @@ def product_schema(product, canonical, images, site_name):
                              else "https://schema.org/OutOfStock"),
             "seller": {"@type": "Organization", "name": site_name},
         }
+    if reviews:
+        ratings = [r["rating"] for r in reviews if r.get("rating")]
+        if ratings:
+            node["aggregateRating"] = {
+                "@type": "AggregateRating",
+                "ratingValue": str(round(sum(ratings) / len(ratings), 1)),
+                "reviewCount": str(len(ratings)),
+            }
+            node["review"] = [
+                {
+                    "@type": "Review",
+                    "author": {"@type": "Person", "name": r.get("customer_name") or "Verified Buyer"},
+                    "datePublished": (r.get("created_at") or "")[:10],
+                    "reviewRating": {"@type": "Rating", "ratingValue": str(r["rating"])},
+                    "reviewBody": clean(r.get("body"), 500),
+                }
+                for r in reviews[:5]
+            ]
     return {k: v for k, v in node.items() if v is not None}
 
 
@@ -365,6 +387,10 @@ def main():
                      "product_images(image_url,sort_order)&is_active=eq.true&order=sort_order")
     cat_by_id = {c["id"]: c for c in categories}
 
+    reviews_by_product = {}
+    for r in fetch("product_reviews?select=product_id,rating,customer_name,body,created_at&status=eq.approved"):
+        reviews_by_product.setdefault(r["product_id"], []).append(r)
+
     written, sitemap = [], []
     today = datetime.date.today().isoformat()
 
@@ -461,7 +487,8 @@ def main():
             site_name=site_name,
             keywords=", ".join(x for x in [product.get("focus_keyword"), product.get("secondary_keywords")] if x),
             robots=robots, og_type="product", gsc=gsc,
-            schema=[org, product_schema(product, canonical, images, site_name), breadcrumb_schema(crumbs)])
+            schema=[org, product_schema(product, canonical, images, site_name,
+                                         reviews_by_product.get(product["id"])), breadcrumb_schema(crumbs)])
         folder = os.path.join(product_dir, slug)
         os.makedirs(folder, exist_ok=True)
         io.open(os.path.join(folder, "index.html"), "w", encoding="utf-8").write(

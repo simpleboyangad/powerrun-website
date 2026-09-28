@@ -426,6 +426,17 @@ img { max-width: 100%; }
 .prose { line-height: 1.8; color: #444; font-size: 14.5px; }
 .prose h3 { color: var(--ink); margin: 26px 0 8px; font-size: 18px; }
 
+/* ------------------------------------------------------------------ reviews */
+.review-list { display: grid; gap: 14px; margin-top: 6px; }
+.review-card {
+  border: 1px solid var(--line); border-radius: 10px; padding: 14px 16px; background: #fff;
+}
+.star-picker { display: flex; gap: 4px; margin-top: 6px; }
+.star-btn {
+  border: 0; background: none; cursor: pointer; font-size: 26px; color: #f5a623;
+  line-height: 1; padding: 2px;
+}
+
 /* -------------------------------------------------------------------- cart */
 .cart-layout { display: grid; grid-template-columns: minmax(0, 1.6fr) minmax(300px, .9fr); gap: 28px; align-items: start; }
 .panel {
