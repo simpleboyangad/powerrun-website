@@ -3,7 +3,8 @@ REM ===========================================================================
 REM  PowerRun Industries - publish SEO changes to powerrun.in
 REM
 REM  Double-click this file after changing anything in Admin > SEO Manager
-REM  (or after adding / renaming a product). It rebuilds the static SEO tags,
+REM  (or after adding / renaming a product, or adding a blog article to
+REM  scripts\blog_posts). It rebuilds the blog, the static SEO tags,
 REM  sitemap.xml and robots.txt, then publishes them.
 REM
 REM  It only ever touches SEO output + asset stamps. If there is nothing new,
@@ -22,6 +23,8 @@ echo    stuck, press ENTER once and it will continue.)
 echo.
 
 echo [1/4] Reading SEO settings and rebuilding sitemap.xml + robots.txt...
+python -u scripts\blog_build.py
+if errorlevel 1 goto failed
 python -u scripts\seo_build.py
 if errorlevel 1 goto failed
 echo.
@@ -33,7 +36,7 @@ echo.
 
 echo [3/4] Saving changes...
 REM only the SEO output, never whatever else is lying around in the folder
-git add sitemap.xml robots.txt products assets *.html about account admin cart checkout contact dealer order-confirmation product service set-password track-order warranty battery-calculator solar-calculator shipping-policy refund-policy terms privacy-policy hybrid-inverters lithium-batteries solar-panels e-rickshaw-batteries
+git add sitemap.xml robots.txt products assets *.html about account admin cart checkout contact dealer order-confirmation product service set-password track-order warranty battery-calculator solar-calculator shipping-policy refund-policy terms privacy-policy hybrid-inverters lithium-batteries solar-panels e-rickshaw-batteries blog scripts\blog_posts
 git diff --cached --quiet
 if not errorlevel 1 (
   echo       Nothing new to publish - the website is already up to date.

@@ -17,6 +17,7 @@
     { href: '/warranty/', label: 'WARRANTY', key: 'warranty' },
     { href: '/service/', label: 'SERVICE', key: 'service' },
     { href: '/dealer/', label: 'DEALERSHIP', key: 'dealer' },
+    { href: '/blog/', label: 'BLOG', key: 'blog' },
     { href: '/contact/', label: 'CONTACT US', key: 'contact' }
   ];
 
@@ -119,6 +120,7 @@
             '<li><a href="/about/">About Us</a></li>' +
             '<li><a href="/products/">All Products</a></li>' +
             '<li><a href="/dealer/">Become a Dealer</a></li>' +
+            '<li><a href="/blog/">Energy Guides</a></li>' +
             '<li><a href="/contact/">Contact Us</a></li>' +
           '</ul></div>' +
           '<div><h3>Support</h3><ul>' +

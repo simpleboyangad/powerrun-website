@@ -724,6 +724,21 @@ def main():
             add_url(canonical, lastmod=(product.get("updated_at") or today)[:10], priority="0.7",
                     images=images)
 
+    # ----------------------------------------------------------------- blog
+    # pages written by scripts/blog_build.py (no database involved)
+    blog_dir = os.path.join(ROOT, "blog")
+    if os.path.isdir(blog_dir):
+        for name in [""] + sorted(os.listdir(blog_dir)):
+            page = os.path.join(blog_dir, name, "index.html")
+            if not os.path.isfile(page):
+                continue
+            html = io.open(page, encoding="utf-8").read()
+            if 'content="noindex' in html:
+                continue
+            modified = re.search(r'"dateModified":"(\d{4}-\d{2}-\d{2})"', html)
+            add_url(site + "/blog/" + (name + "/" if name else ""),
+                    lastmod=modified.group(1) if modified else today, priority="0.6" if name else "0.7")
+
     # remove pages for products that no longer exist / are inactive
     removed = []
     if os.path.isdir(product_dir):

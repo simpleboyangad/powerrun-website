@@ -1,0 +1,46 @@
+<!--
+{
+  "title": "How Many Hours of Backup Will My Battery Give?",
+  "seo_title": "Battery Backup Time Calculation | PowerRun",
+  "description": "A simple formula to work out how long an inverter battery will last on your load, with worked examples for lithium and lead-acid batteries.",
+  "date": "2026-10-03",
+  "topic": "Lithium Batteries",
+  "related": ["lithium-batteries", "hybrid-inverters"]
+}
+-->
+<p>"How long will it run?" is the first question everyone asks about an inverter battery. The answer comes from one simple formula - no guesswork needed.</p>
+
+<h2>The formula</h2>
+<p><strong>Backup hours = battery energy (kWh) x usable fraction x inverter efficiency / load (kW)</strong></p>
+<ul>
+  <li><strong>Battery energy</strong> = voltage x amp-hours / 1000. A 51.2 V 100 Ah battery holds 51.2 x 100 / 1000 = 5.12 kWh.</li>
+  <li><strong>Usable fraction</strong> - about 0.8 for LiFePO4 lithium (rated at 80% depth of discharge), about 0.5 for lead-acid.</li>
+  <li><strong>Inverter efficiency</strong> - use about 0.9 to allow for conversion losses.</li>
+  <li><strong>Load</strong> - the total watts running, divided by 1000.</li>
+</ul>
+
+<h2>Example 1: a PowerRun 51.2 V 100 Ah lithium battery</h2>
+<p>5.12 kWh x 0.8 x 0.9 = about 3.7 kWh delivered.</p>
+<ul>
+  <li>At 500 W (lights, fans, TV, router): 3.7 / 0.5 = <strong>about 7 hours</strong></li>
+  <li>At 800 W (add a fridge): 3.7 / 0.8 = <strong>about 4.5 hours</strong></li>
+  <li>At 2 kW (add a 1.5 ton AC): 3.7 / 2 = <strong>under 2 hours</strong></li>
+</ul>
+<p>The <a href="/products/pr-lfp-battery-25-6v-200ah/">25.6 V 200 Ah battery</a> stores the same 5.12 kWh, so it gives the same backup on a 24 V inverter.</p>
+
+<h2>Example 2: a 12 V 150 Ah lead-acid battery</h2>
+<p>12 x 150 / 1000 = 1.8 kWh. Usable: 1.8 x 0.5 x 0.9 = about 0.8 kWh. At 500 W that is roughly 1.6 hours - which is why lead-acid systems need several batteries for long cuts.</p>
+
+<h2>Working backwards: what capacity do I need?</h2>
+<p>Flip the formula: <strong>battery kWh needed = load (kW) x hours / (0.8 x 0.9)</strong> for lithium.</p>
+<p>For 800 W over 6 hours: 0.8 x 6 / 0.72 = 6.7 kWh. The nearest PowerRun options are the 25.6 V 280 Ah (7.17 kWh) for a 24 V inverter or the 51.2 V 200 Ah (10.24 kWh) for a 48 V inverter.</p>
+
+<h2>Three tips for longer backup</h2>
+<ul>
+  <li><strong>Switch to BLDC fans and LED lights.</strong> A BLDC fan uses less than half the power of a regular fan.</li>
+  <li><strong>Keep heavy loads off backup.</strong> Geysers, irons and induction cooktops drain a battery in minutes.</li>
+  <li><strong>Add solar.</strong> With a hybrid inverter, the sun recharges the battery during the day, so it starts every evening full.</li>
+</ul>
+
+<h2>Let the calculator do it</h2>
+<p>Our <a href="/battery-calculator/">battery calculator</a> runs these numbers for you, or message us on WhatsApp with your load and the hours you need. Browse the full range of <a href="/lithium-batteries/">PowerRun lithium batteries</a>.</p>
