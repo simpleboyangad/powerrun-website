@@ -34,7 +34,8 @@ GREY = (110, 110, 110)
 WHITE = (255, 255, 255)
 S = 2000
 
-# Every figure below is printed on the pack's own label - nothing invented.
+# Electrical figures are printed on the pack's own label; cycle life and
+# warranty are the ones the website lists for PR-023.
 SPECS = [
     ("Chemistry", "LiFePO4 (Lithium Iron Phosphate)", "\ue945"),
     ("Nominal Voltage", "51.2 V", "\ue945"),
@@ -42,8 +43,9 @@ SPECS = [
     ("Energy", "5.63 kWh", "\ue9d9"),
     ("Max Charge Current", "50 A", "\ue83e"),
     ("Max Discharge Current", "100 A", "\uec4a"),
+    ("Cycle Life", "3000+ cycles", "\ue895"),
+    ("Warranty", "18 Months", "\uea18"),
     ("Application", "E-Rickshaw / E-Loader", "\ue804"),
-    ("Made in", "India", "\ue909"),
 ]
 
 
@@ -258,7 +260,7 @@ def main_badged(front):
     d.text((S - 80 - w / 2, 145), t, font=f, fill=WHITE, anchor="mm")
     d.text((S - 80 - w / 2, 250), "51.2V 110Ah LiFePO4", font=bold(36), fill=GREY, anchor="mm")
     place(img, front, S // 2, 330, 1720, 1350)
-    chips_centred(d, 1745, ["LiFePO4", "51.2V 110Ah", "E-Rickshaw", "Made in India"])
+    chips_centred(d, 1745, ["LiFePO4", "51.2V 110Ah", "3000+ Cycles", "18 Months Warranty"])
     d.text((S // 2, 1890), "E-Rickshaw Lithium Battery", font=bold(40), fill=INK, anchor="mm")
     return img
 
@@ -282,18 +284,19 @@ def why_powerrun(top):
         ("\ue945", "LiFePO4 Chemistry", "Safer & more stable than lead-acid"),
         ("\ue83f", "5.63 kWh Energy", "51.2V x 110Ah - longer range per charge"),
         ("\uec4a", "100A Max Discharge", "Strong pickup on climbs & full load"),
+        ("\ue895", "3000+ Cycle Life", "Years of daily deep-cycle duty"),
         ("\ue83e", "50A Charge Current", "Back on the road faster"),
         ("\ue74d", "Maintenance-free", "No water top-up, no acid, no corrosion"),
-        ("\ue909", "Made in India", "Built & supported by PowerRun"),
+        ("\uea18", "18 Months Warranty", "Backed by PowerRun service"),
     ]
-    y = 560
+    y = 530
     for g, title, sub in feats:
         icon_tile(d, 1060, y, g, 104)
         d.text((1195, y + 30), title, font=bold(52), fill=WHITE, anchor="lm")
         d.text((1195, y + 82), sub, font=regular(32), fill=(185, 185, 185), anchor="lm")
-        y += 205
+        y += 178
     d.rectangle([S // 2 - 60, 1880, S // 2 + 60, 1886], fill=ORANGE)
-    d.text((S // 2, 1925), "Specifications as printed on the battery label",
+    d.text((S // 2, 1925), "Specifications as printed on the battery label • Made in India",
            font=regular(28), fill=(120, 120, 120), anchor="mm")
     return img
 
@@ -313,13 +316,13 @@ def specifications(front):
     d.text((S // 2, 455), "LiFePO4   \u2022   51.2V   \u2022   110Ah", font=bold(36),
            fill=GREY, anchor="mm")
 
-    y = 540
+    y = 515
     for label, value, g in SPECS:
-        d.rounded_rectangle([80, y, 1040, y + 132], radius=20, fill=(246, 246, 246))
-        icon_tile(d, 108, y + 26, g, 80)
-        d.text((220, y + 44), label, font=regular(30), fill=GREY, anchor="lm")
-        d.text((220, y + 90), value, font=bold(44 if len(value) < 24 else 36), fill=INK, anchor="lm")
-        y += 148
+        d.rounded_rectangle([80, y, 1040, y + 118], radius=20, fill=(246, 246, 246))
+        icon_tile(d, 108, y + 22, g, 74)
+        d.text((212, y + 38), label, font=regular(28), fill=GREY, anchor="lm")
+        d.text((212, y + 80), value, font=bold(42 if len(value) < 24 else 34), fill=INK, anchor="lm")
+        y += 132
 
     place(img, front, 1510, 720, 860, 900)
 
@@ -344,7 +347,7 @@ def why_lithium():
            font=regular(42), fill=GREY, anchor="mm")
 
     rows = [
-        ("Cycle Life", "300 \u2013 500 cycles", "2000+ cycles"),
+        ("Cycle Life", "300 \u2013 500 cycles", "3000+ cycles"),
         ("Usable Capacity", "~50% of rated", "~90% of rated"),
         ("Weight", "Heavy (4 \u2013 5 batteries)", "Up to 60% lighter"),
         ("Maintenance", "Water top-up, acid, corrosion", "Maintenance-free"),
