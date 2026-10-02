@@ -42,7 +42,7 @@
         return sb.from('categories').select('id,name');
       }),
       PR.call('load staff for quotations', function (sb) {
-        return sb.from('admin_users').select('id,name').eq('is_active', true).order('name');
+        return sb.from('admin_users').select('id,name,user_id').eq('is_active', true).order('name');
       }),
       PR.getSettings()
     ]);
@@ -365,7 +365,9 @@
     var customer = src.customer_id ? customers.filter(function (c) { return c.id === src.customer_id; })[0] : null;
     var type = src.quotation_type || 'customer';
     var validDays = src.valid_days || (quoteDefaults.valid_days || 15);
-    var salesPersonDefault = src.sales_person || (isNew && PRA.session && PRA.session.user && PRA.session.user.id) || '';
+    var currentAuthId = PRA.session && PRA.session.user && PRA.session.user.id;
+    var currentStaffRow = currentAuthId ? staff.filter(function (s) { return s.user_id === currentAuthId; })[0] : null;
+    var salesPersonDefault = src.sales_person || (isNew && currentStaffRow && currentStaffRow.id) || '';
 
     var body = PRA.openDrawer(q ? 'Quotation ' + (q.quote_number || '') : (duplicateFrom ? 'Duplicate Quotation' : 'New Quotation'),
       '<div id="quoteFormMessage"></div>' +
