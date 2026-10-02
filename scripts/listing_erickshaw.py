@@ -1,13 +1,17 @@
 """
-E-rickshaw battery listing images - PowerRun 51.2V 110Ah LiFePO4.
+E-rickshaw battery listing images - PowerRun 51.2V LiFePO4 (110 / 230 / 314Ah).
 
-    python scripts/listing_erickshaw.py
+    python scripts/listing_erickshaw.py            every variant
+    python scripts/listing_erickshaw.py 230        one variant
+
+All variants share the same two photos; the capacity printed on the pack
+(lid badge, lid panel, rating label, top-view lid) is repainted per variant.
 
 Reads   photos/original/erickshaw-front.png   (front 3/4 view, label + lid print)
         photos/original/erickshaw-top.png     (top view; its lid carried a wrong
                                                "PowerRun Industries" logo)
         photos/original/logo.jpeg             (the real PowerRun logo)
-Writes  photos/listing/e-rickshaw/51v-110ah/
+Writes  photos/listing/e-rickshaw/51v-<ah>ah/
         0-main-white.jpg   plain product on pure white (Amazon/Flipkart main)
         1-main.jpg         product + logo + badges
         2-why-powerrun.jpg
@@ -18,13 +22,14 @@ Writes  photos/listing/e-rickshaw/51v-110ah/
 Needs Pillow, numpy and opencv-python. Fonts come from C:\\Windows\\Fonts.
 """
 import os
+import sys
 import cv2
 import numpy as np
 from PIL import Image, ImageDraw, ImageFilter, ImageFont
 
 ROOT = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
 SRC = os.path.join(ROOT, "photos", "original")
-OUT = os.path.join(ROOT, "photos", "listing", "e-rickshaw", "51v-110ah")
+OUT_ROOT = os.path.join(ROOT, "photos", "listing", "e-rickshaw")
 FONTS = os.path.join(os.environ.get("WINDIR", r"C:\Windows"), "Fonts")
 
 ORANGE = (255, 90, 0)
@@ -34,19 +39,36 @@ GREY = (110, 110, 110)
 WHITE = (255, 255, 255)
 S = 2000
 
-# Electrical figures are printed on the pack's own label; cycle life (4000+)
-# and warranty (3 years) are as confirmed by the owner for PR-023.
-SPECS = [
-    ("Chemistry", "LiFePO4 (Lithium Iron Phosphate)", "\ue945"),
-    ("Nominal Voltage", "51.2 V", "\ue945"),
-    ("Rated Capacity", "110 Ah", "\ue83f"),
-    ("Energy", "5.63 kWh", "\ue9d9"),
-    ("Max Charge Current", "50 A", "\ue83e"),
-    ("Max Discharge Current", "100 A", "\uec4a"),
-    ("Cycle Life", "4000+ cycles", "\ue895"),
-    ("Warranty", "3 Years", "\uea18"),
-    ("Application", "E-Rickshaw / E-Loader", "\ue804"),
-]
+# 110Ah currents are printed on that pack's label; 230/314Ah currents,
+# cycle life (4000+) and warranty (3 years) are the owner's figures.
+VARIANTS = {
+    "110": {"ah": 110, "charge": 50, "discharge": 100},
+    "230": {"ah": 230, "charge": 150, "discharge": 150},
+    "314": {"ah": 314, "charge": 150, "discharge": 150},
+}
+for _v in VARIANTS.values():
+    _v["kwh"] = "{:.2f} kWh".format(51.2 * _v["ah"] / 1000)
+    _v["name"] = "51.2V {}Ah".format(_v["ah"])
+
+
+def specs_for(v):
+    rows = [
+        ("Chemistry", "LiFePO4 (Lithium Iron Phosphate)", "\ue945"),
+        ("Nominal Voltage", "51.2 V", "\ue945"),
+        ("Rated Capacity", "{} Ah".format(v["ah"]), "\ue83f"),
+        ("Energy", v["kwh"], "\ue9d9"),
+    ]
+    if v["charge"]:
+        rows += [("Max Charge Current", "{} A".format(v["charge"]), "\ue83e"),
+                 ("Max Discharge Current", "{} A".format(v["discharge"]), "\uec4a")]
+    else:
+        rows += [("BMS", "Integrated, with charge balancing", "\ue83e")]
+    rows += [
+        ("Cycle Life", "4000+ cycles", "\ue895"),
+        ("Warranty", "3 Years", "\uea18"),
+        ("Application", "E-Rickshaw / E-Loader", "\ue804"),
+    ]
+    return rows
 
 
 def font(name, size):
@@ -67,6 +89,13 @@ def heavy(size):
 
 def icon(size):
     return font("SegoeIcons.ttf", size)
+
+
+def condensed(size):
+    """Bold condensed face, close to the capacity print on the pack's lid."""
+    f = font("bahnschrift.ttf", size)
+    f.set_variation_by_name("Bold Condensed")
+    return f
 
 
 def fit(img, box_w, box_h):
@@ -101,7 +130,7 @@ def mark_only(logo):
 
 
 # ---------------------------------------------------------------- photo fixes
-def fix_top_view():
+def fix_top_view(v):
     """Paint out the wrong lid print on the top view and lay the real logo on it."""
     im = cv2.imread(os.path.join(SRC, "erickshaw-top.png"))
     h0, w0 = im.shape[:2]
@@ -128,7 +157,7 @@ def fix_top_view():
     art.alpha_composite(lg, (cx - lg.width // 2, ly))
     d = ImageDraw.Draw(art)
     ty = ly + lg.height + 62
-    d.text((cx, ty), "51.2V  110Ah  LiFePO4", font=bold(44), fill=(22, 22, 22), anchor="mt")
+    d.text((cx, ty), "51.2V  {}Ah  LiFePO4".format(v["ah"]), font=bold(44), fill=(22, 22, 22), anchor="mt")
     d.text((cx, ty + 62), "E-RICKSHAW BATTERY", font=bold(34), fill=(22, 22, 22), anchor="mt")
 
     an = cv2.GaussianBlur(np.asarray(art).astype(np.float32), (0, 0), 0.6)
@@ -149,10 +178,13 @@ def fix_top_view():
     return (im * (1 - wa) + back * wa).astype(np.uint8)
 
 
-def fix_front_view():
+def fix_front_view(v):
     """The front view's lid already carries the real logo; only the small
-    mark on the rating label was a look-alike - swap it for the real one."""
+    mark on the rating label was a look-alike - swap it for the real one.
+    Other capacities also get their figures repainted on the lid and label."""
     im = Image.open(os.path.join(SRC, "erickshaw-front.png")).convert("RGB")
+    if v["ah"] != 110:
+        im = repaint_capacity(im, v)
     # Blank the old mark with label paper, following the label's tilted edges.
     ImageDraw.Draw(im).polygon([(754, 137), (828, 152), (828, 177), (754, 164)],
                                fill=(238, 239, 240))
@@ -161,6 +193,62 @@ def fix_front_view():
     lg = lg.rotate(-5, resample=Image.BICUBIC, expand=True)
     im.paste(lg, (792 - lg.width // 2, 160 - lg.height // 2), lg)
     return cv2.cvtColor(np.asarray(im), cv2.COLOR_RGB2BGR)
+
+
+def rotated_text(im, xy, text, fnt, fill, angle):
+    """Draw text centred on xy, turned by angle degrees (counter-clockwise)."""
+    tmp = Image.new("RGBA", (600, 200), (0, 0, 0, 0))
+    ImageDraw.Draw(tmp).text((300, 100), text, font=fnt, fill=fill, anchor="mm")
+    tmp = tmp.rotate(angle, resample=Image.BICUBIC)
+    im.paste(tmp, (int(xy[0] - 300), int(xy[1] - 100)), tmp)
+
+
+def repaint_capacity(im, v):
+    ah = "{}AH".format(v["ah"])
+    d = ImageDraw.Draw(im)
+    # Lid badge: "51.2V 110AH" in white on the black plate - redo the "110AH",
+    # squeezed to the old glyph box (the print is narrower than Bahnschrift).
+    d.rectangle([1048, 456, 1206, 538], fill=(15, 15, 16))
+    t = Image.new("L", (900, 300), 0)
+    ImageDraw.Draw(t).text((10, 10), ah, font=condensed(200), fill=255)
+    t = t.crop(t.getbbox()).resize((150, 80), Image.LANCZOS)
+    im.paste(Image.new("RGB", t.size, (250, 250, 250)), (1052, 456), t)
+    # Lower panel: "Capacity : 110AH".
+    d.polygon([(858, 852), (940, 846), (942, 882), (860, 888)], fill=(17, 17, 18))
+    rotated_text(im, (898, 867), ah, font("seguisb.ttf", 27), (240, 240, 240), 3)
+    return repaint_label(im, v)
+
+
+def repaint_label(im, v):
+    """Rewrite the rating label's spec lines: flatten the label, repaint, warp back."""
+    arr = np.asarray(im).copy()
+    quad = np.float32([[662, 112], [835, 143], [835, 402], [662, 384]])
+    W, H = 346, 540
+    flat_q = np.float32([[0, 0], [W, 0], [W, H], [0, H]])
+    M = cv2.getPerspectiveTransform(quad, flat_q)
+    flat = Image.fromarray(cv2.warpPerspective(arr, M, (W, H), flags=cv2.INTER_CUBIC))
+    d = ImageDraw.Draw(flat)
+    box = (12, 98, 334, 290)                         # header rule .. "Warning"
+    d.rectangle(box, fill=(237, 238, 239))
+    rows = [("Model", "51.2V / {}Ah".format(v["ah"])), ("Nominal Voltage", "51.2V"),
+            ("Rated Capacity", "{}Ah".format(v["ah"])), ("Energy", v["kwh"].replace(" ", "")),
+            ("Max Charge Current", "{}A".format(v["charge"])),
+            ("Max Discharge Current", "{}A".format(v["discharge"])), ("Cell Type", "LiFePO4")]
+    f = regular(19)
+    y = box[1] + 16
+    # The plate is turned away from the camera, so a level row reads as a
+    # slope; the values are lifted a little to sit beside their keys.
+    for k, val in rows:
+        d.text((box[0] + 6, y), k, font=f, fill=(35, 35, 35))
+        d.text((198, y - 18), ": " + val, font=f, fill=(35, 35, 35))
+        y += 25
+    size = (arr.shape[1], arr.shape[0])
+    back = cv2.warpPerspective(np.asarray(flat), np.linalg.inv(M), size, flags=cv2.INTER_CUBIC)
+    m = np.zeros((H, W), np.uint8)
+    m[box[1]:box[3], box[0]:box[2]] = 255
+    m = cv2.warpPerspective(m, np.linalg.inv(M), size)
+    m = cv2.GaussianBlur(m, (0, 0), 0.8).astype(np.float32)[..., None] / 255
+    return Image.fromarray((arr * (1 - m) + back * m).astype(np.uint8))
 
 
 def cutout(im, rect):
@@ -248,24 +336,24 @@ def main_white(front):
     return img
 
 
-def main_badged(front):
+def main_badged(front, v):
     img = Image.new("RGBA", (S, S), WHITE)
     d = ImageDraw.Draw(img)
     header(img)
     # top-right energy badge
     f = heavy(78)
-    t = "5.63 kWh"
+    t = v["kwh"]
     w = d.textlength(t, font=f) + 90
     d.rounded_rectangle([S - 80 - w, 80, S - 80, 210], radius=26, fill=ORANGE)
     d.text((S - 80 - w / 2, 145), t, font=f, fill=WHITE, anchor="mm")
-    d.text((S - 80 - w / 2, 250), "51.2V 110Ah LiFePO4", font=bold(36), fill=GREY, anchor="mm")
+    d.text((S - 80 - w / 2, 250), v["name"] + " LiFePO4", font=bold(36), fill=GREY, anchor="mm")
     place(img, front, S // 2, 330, 1720, 1350)
-    chips_centred(d, 1745, ["LiFePO4", "51.2V 110Ah", "4000+ Cycles", "3 Years Warranty"])
+    chips_centred(d, 1745, ["LiFePO4", v["name"], "4000+ Cycles", "3 Years Warranty"])
     d.text((S // 2, 1890), "E-Rickshaw Lithium Battery", font=bold(40), fill=INK, anchor="mm")
     return img
 
 
-def why_powerrun(top):
+def why_powerrun(top, v):
     img = dark_backdrop()
     d = ImageDraw.Draw(img)
     header(img, dark=True)
@@ -275,17 +363,25 @@ def why_powerrun(top):
     x = (S - wa - wb) / 2
     d.text((x, 330), a, font=f, fill=WHITE, anchor="lm")
     d.text((x + wa, 330), b, font=f, fill=ORANGE, anchor="lm")
-    d.text((S // 2, 425), "51.2V 110Ah LiFePO4 E-Rickshaw Battery", font=bold(44),
+    d.text((S // 2, 425), v["name"] + " LiFePO4 E-Rickshaw Battery", font=bold(44),
            fill=(200, 200, 200), anchor="mm")
 
     place(img, top, 520, 700, 940, 900, with_shadow=False)
 
+    if v["charge"]:
+        power = [("\uec4a", "{}A Max Discharge".format(v["discharge"]),
+                  "Strong pickup on climbs & full load"),
+                 ("\ue83e", "{}A Charge Current".format(v["charge"]), "Back on the road faster")]
+    else:
+        power = [("\uec4a", "Integrated Smart BMS", "Charge balancing & full protection"),
+                 ("\ue83e", "Fast Charge Capable", "Back on the road faster")]
     feats = [
         ("\ue945", "LiFePO4 Chemistry", "Safer & more stable than lead-acid"),
-        ("\ue83f", "5.63 kWh Energy", "51.2V x 110Ah - longer range per charge"),
-        ("\uec4a", "100A Max Discharge", "Strong pickup on climbs & full load"),
+        ("\ue83f", v["kwh"] + " Energy",
+         "51.2V x {}Ah - longer range per charge".format(v["ah"])),
+        power[0],
         ("\ue895", "4000+ Cycle Life", "Years of daily deep-cycle duty"),
-        ("\ue83e", "50A Charge Current", "Back on the road faster"),
+        power[1],
         ("\ue74d", "Maintenance-free", "No water top-up, no acid, no corrosion"),
         ("\uea18", "3 Years Warranty", "Backed by PowerRun service"),
     ]
@@ -296,28 +392,28 @@ def why_powerrun(top):
         d.text((1195, y + 82), sub, font=regular(32), fill=(185, 185, 185), anchor="lm")
         y += 178
     d.rectangle([S // 2 - 60, 1880, S // 2 + 60, 1886], fill=ORANGE)
-    d.text((S // 2, 1925), "Specifications as printed on the battery label • Made in India",
+    d.text((S // 2, 1925), "Made in India \u2022 Backed by PowerRun service",
            font=regular(28), fill=(120, 120, 120), anchor="mm")
     return img
 
 
-def specifications(front):
+def specifications(front, v):
     img = Image.new("RGBA", (S, S), WHITE)
     d = ImageDraw.Draw(img)
     header(img)
     f = heavy(70)
-    t1, t2 = "5.63 kWh", "E-RICKSHAW BATTERY"
+    t1, t2 = v["kwh"], "E-RICKSHAW BATTERY"
     w1 = d.textlength(t1, font=f) + 60
     w2 = d.textlength(t2, font=bold(64))
     x = (S - w1 - 30 - w2) / 2
     d.rounded_rectangle([x, 290, x + w1, 400], radius=22, fill=ORANGE)
     d.text((x + w1 / 2, 345), t1, font=f, fill=WHITE, anchor="mm")
     d.text((x + w1 + 30, 345), t2, font=bold(64), fill=INK, anchor="lm")
-    d.text((S // 2, 455), "LiFePO4   \u2022   51.2V   \u2022   110Ah", font=bold(36),
+    d.text((S // 2, 455), "LiFePO4   \u2022   51.2V   \u2022   {}Ah".format(v["ah"]), font=bold(36),
            fill=GREY, anchor="mm")
 
     y = 515
-    for label, value, g in SPECS:
+    for label, value, g in specs_for(v):
         d.rounded_rectangle([80, y, 1040, y + 118], radius=20, fill=(246, 246, 246))
         icon_tile(d, 108, y + 22, g, 74)
         d.text((212, y + 38), label, font=regular(28), fill=GREY, anchor="lm")
@@ -328,8 +424,8 @@ def specifications(front):
 
     band_y = 1740
     d.rectangle([0, band_y, S, S], fill=(14, 14, 14))
-    stats = [("\ue945", "51.2V"), ("\ue83f", "110Ah"), ("\ue9d9", "5.63 kWh"),
-             ("\uec4a", "100A"), ("\ue804", "E-Rickshaw")]
+    stats = [("\ue945", "51.2V"), ("\ue83f", "{}Ah".format(v["ah"])), ("\ue9d9", v["kwh"]),
+             ("\ue895", "4000+ Cycles"), ("\uea18", "3 Yr Warranty")]
     step = S / len(stats)
     for i, (g, t) in enumerate(stats):
         cx = step * i + step / 2
@@ -338,7 +434,7 @@ def specifications(front):
     return img
 
 
-def why_lithium():
+def why_lithium(v):
     img = Image.new("RGBA", (S, S), WHITE)
     d = ImageDraw.Draw(img)
     header(img)
@@ -351,7 +447,8 @@ def why_lithium():
         ("Usable Capacity", "~50% of rated", "~90% of rated"),
         ("Weight", "Heavy (4 \u2013 5 batteries)", "Up to 60% lighter"),
         ("Maintenance", "Water top-up, acid, corrosion", "Maintenance-free"),
-        ("Charging", "8 \u2013 10 hours", "Fast (up to 50A)"),
+        ("Charging", "8 \u2013 10 hours",
+         "Fast (up to {}A)".format(v["charge"]) if v["charge"] else "Fast charge capable"),
         ("Power Delivery", "Drops as charge falls", "Steady till the end"),
         ("Replacement", "Every 8 \u2013 12 months", "Lasts years"),
     ]
@@ -408,24 +505,35 @@ def build(top, origin):
     return img
 
 
-def main():
-    os.makedirs(OUT, exist_ok=True)
-    front_im = fix_front_view()
-    top_im = fix_top_view()
-    front, _ = cutout(front_im, (60, 40, 1260, 1020))
-    top, top_origin = cutout(top_im, (200, 40, 1300, 860))
+def render(key):
+    v = VARIANTS[key]
+    out = os.path.join(OUT_ROOT, "51v-{}ah".format(v["ah"]))
+    os.makedirs(out, exist_ok=True)
+    front, _ = cutout(fix_front_view(v), (60, 40, 1260, 1020))
+    top, top_origin = cutout(fix_top_view(v), (200, 40, 1300, 860))
 
     slides = {
         "0-main-white.jpg": main_white(front),
-        "1-main.jpg": main_badged(front),
-        "2-why-powerrun.jpg": why_powerrun(top),
-        "3-specifications.jpg": specifications(front),
-        "4-why-lithium.jpg": why_lithium(),
+        "1-main.jpg": main_badged(front, v),
+        "2-why-powerrun.jpg": why_powerrun(top, v),
+        "3-specifications.jpg": specifications(front, v),
+        "4-why-lithium.jpg": why_lithium(v),
         "5-build.jpg": build(top, top_origin),
     }
     for name, img in slides.items():
-        img.convert("RGB").save(os.path.join(OUT, name), quality=92, optimize=True)
-        print("  ", os.path.relpath(os.path.join(OUT, name), ROOT))
+        img.convert("RGB").save(os.path.join(out, name), quality=92, optimize=True)
+        print("  ", os.path.relpath(os.path.join(out, name), ROOT))
+    sheet = Image.new("RGB", (3000, 2000), (128, 128, 128))
+    for i, img in enumerate(slides.values()):
+        sheet.paste(img.convert("RGB").resize((990, 990), Image.LANCZOS),
+                    ((i % 3) * 1005, (i // 3) * 1005))
+    sheet.save(os.path.join(out, "overview.jpg"), quality=85)
+
+
+def main():
+    keys = [a for a in sys.argv[1:] if a in VARIANTS] or list(VARIANTS)
+    for key in keys:
+        render(key)
 
 
 if __name__ == "__main__":
