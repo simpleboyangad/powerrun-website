@@ -20,6 +20,11 @@
         stat('New This Month', s.new_customers_month, 'good', null, '/admin/customers/') +
       '</div>' +
 
+      '<div class="stat-group-title">Quotations</div>' +
+      '<div class="stats">' +
+        stat('Awaiting Response', s.quotations_pending, s.quotations_pending > 0 ? 'warn' : 'good', null, '/admin/quotations/?status=sent') +
+      '</div>' +
+
       '<div class="stat-group-title">Leads</div>' +
       '<div class="stats">' +
         stat('Total Leads', s.total_leads, '', null, '/admin/leads/') +

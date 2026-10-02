@@ -11,7 +11,7 @@
   var cache = {};
 
   var TABS = [
-    ['overview', 'Overview'], ['orders', 'Orders'], ['warranty', 'Warranty'],
+    ['overview', 'Overview'], ['orders', 'Orders'], ['quotations', 'Quotations'], ['warranty', 'Warranty'],
     ['service', 'Service'], ['leads', 'Leads'], ['followups', 'Follow-ups']
   ];
 
@@ -100,6 +100,26 @@
         '</div>' +
       '</div>';
     }).join('');
+  }
+
+  async function quotationsTab() {
+    if (!cache.quotations) {
+      cache.quotations = await PR.call('load customer quotations', function (sb) {
+        return sb.from('quotations').select('id,quote_number,status,total_amount,created_at,converted_order_id')
+          .eq('customer_id', customerId).order('created_at', { ascending: false });
+      });
+    }
+    var rows = cache.quotations;
+    if (!rows.length) return PRA.empty('No quotations yet', '');
+    return '<div class="table-scroll"><table class="grid"><thead><tr>' +
+      '<th>Quote #</th><th>Date</th><th>Total</th><th>Status</th><th></th>' +
+    '</tr></thead><tbody>' + rows.map(function (q) {
+      return '<tr><td class="nowrap">' + PR.esc(q.quote_number || '-') + '</td>' +
+        '<td class="nowrap">' + PR.formatDate(q.created_at) + '</td>' +
+        '<td class="nowrap">' + PR.money(q.total_amount) + '</td>' +
+        '<td>' + PRA.pill(q.status) + (q.converted_order_id ? ' <small>Converted</small>' : '') + '</td>' +
+        '<td class="nowrap"><a class="btn ghost small" href="/admin/quotations/?id=' + encodeURIComponent(q.id) + '">Open</a></td></tr>';
+    }).join('') + '</tbody></table></div>';
   }
 
   async function warrantyTab() {
@@ -192,7 +212,7 @@
   }
 
   var TAB_FN = {
-    overview: overviewTab, orders: ordersTab, warranty: warrantyTab,
+    overview: overviewTab, orders: ordersTab, quotations: quotationsTab, warranty: warrantyTab,
     service: serviceTab, leads: leadsTab, followups: followupsTab
   };
 

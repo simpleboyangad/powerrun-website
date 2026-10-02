@@ -24,6 +24,7 @@
     { key: 'crm-group', icon: '👥', label: 'CRM', children: [
       { key: 'crm',       href: '/admin/crm/',       icon: '📈', label: 'Overview' },
       { key: 'customers', href: '/admin/customers/', icon: '👥', label: 'Customers' },
+      { key: 'quotations', href: '/admin/quotations/', icon: '📄', label: 'Quotations', badge: 'quotations_pending' },
       { key: 'leads',     href: '/admin/leads/',     icon: '🎯', label: 'Leads', badge: 'new_leads' },
       { key: 'followups', href: '/admin/followups/', icon: '⏰', label: 'Follow-ups', badge: 'followups_overdue' },
       { key: 'warranty',  href: '/admin/warranty/',  icon: '🛡', label: 'Warranty', badge: 'warranty_pending' },
