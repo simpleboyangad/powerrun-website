@@ -132,7 +132,7 @@
       ? '<div class="product-thumbs">' + p.images.map(function (img, i) {
           return '<button class="thumb' + (i === 0 ? ' active' : '') + '" type="button" data-go="' + i + '" ' +
                  'aria-label="View image ' + (i + 1) + '">' +
-                 '<img src="' + PR.esc(img.url) + '" alt="" loading="lazy" width="86" height="72"></button>';
+                 PR.thumbImg(img, '', 'loading="lazy" width="86" height="72"') + '</button>';
         }).join('') + '</div>'
       : '';
 
