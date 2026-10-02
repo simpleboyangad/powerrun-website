@@ -484,7 +484,13 @@ def static_card(product, cat, images):
     """No-JavaScript version of PR.productCard() in catalog.js."""
     url = "/products/%s/" % urllib.parse.quote(product["slug"])
     if images:
-        img = '<img src="%s" alt="%s" loading="lazy" width="400" height="400">' % (esc(images[0]), esc(product["name"]))
+        # the 500px copy at thumb/<path> that PR.thumbImg() uses, falling back
+        # to the full listing image if the thumbnail is missing
+        full = images[0]
+        thumb = full.replace("/object/public/product-images/", "/object/public/product-images/thumb/", 1)
+        img = ('<img src="%s" data-full="%s" alt="%s"%s loading="lazy" width="400" height="400">'
+               % (esc(thumb), esc(full), esc(product["name"]),
+                  ' onerror="this.onerror=null;this.src=this.dataset.full"' if thumb != full else ""))
     else:
         img = '<div class="ph">%s</div>' % esc("".join(w[0] for w in product["name"].split()[:2]).upper())
     price, mrp = product.get("price"), product.get("mrp")
