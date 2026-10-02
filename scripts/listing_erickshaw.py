@@ -34,8 +34,8 @@ GREY = (110, 110, 110)
 WHITE = (255, 255, 255)
 S = 2000
 
-# Electrical figures are printed on the pack's own label; cycle life and
-# warranty are the ones the website lists for PR-023.
+# Electrical figures are printed on the pack's own label; cycle life (4000+)
+# and warranty (3 years) are as confirmed by the owner for PR-023.
 SPECS = [
     ("Chemistry", "LiFePO4 (Lithium Iron Phosphate)", "\ue945"),
     ("Nominal Voltage", "51.2 V", "\ue945"),
@@ -43,8 +43,8 @@ SPECS = [
     ("Energy", "5.63 kWh", "\ue9d9"),
     ("Max Charge Current", "50 A", "\ue83e"),
     ("Max Discharge Current", "100 A", "\uec4a"),
-    ("Cycle Life", "3000+ cycles", "\ue895"),
-    ("Warranty", "18 Months", "\uea18"),
+    ("Cycle Life", "4000+ cycles", "\ue895"),
+    ("Warranty", "3 Years", "\uea18"),
     ("Application", "E-Rickshaw / E-Loader", "\ue804"),
 ]
 
@@ -260,7 +260,7 @@ def main_badged(front):
     d.text((S - 80 - w / 2, 145), t, font=f, fill=WHITE, anchor="mm")
     d.text((S - 80 - w / 2, 250), "51.2V 110Ah LiFePO4", font=bold(36), fill=GREY, anchor="mm")
     place(img, front, S // 2, 330, 1720, 1350)
-    chips_centred(d, 1745, ["LiFePO4", "51.2V 110Ah", "3000+ Cycles", "18 Months Warranty"])
+    chips_centred(d, 1745, ["LiFePO4", "51.2V 110Ah", "4000+ Cycles", "3 Years Warranty"])
     d.text((S // 2, 1890), "E-Rickshaw Lithium Battery", font=bold(40), fill=INK, anchor="mm")
     return img
 
@@ -284,10 +284,10 @@ def why_powerrun(top):
         ("\ue945", "LiFePO4 Chemistry", "Safer & more stable than lead-acid"),
         ("\ue83f", "5.63 kWh Energy", "51.2V x 110Ah - longer range per charge"),
         ("\uec4a", "100A Max Discharge", "Strong pickup on climbs & full load"),
-        ("\ue895", "3000+ Cycle Life", "Years of daily deep-cycle duty"),
+        ("\ue895", "4000+ Cycle Life", "Years of daily deep-cycle duty"),
         ("\ue83e", "50A Charge Current", "Back on the road faster"),
         ("\ue74d", "Maintenance-free", "No water top-up, no acid, no corrosion"),
-        ("\uea18", "18 Months Warranty", "Backed by PowerRun service"),
+        ("\uea18", "3 Years Warranty", "Backed by PowerRun service"),
     ]
     y = 530
     for g, title, sub in feats:
@@ -347,7 +347,7 @@ def why_lithium():
            font=regular(42), fill=GREY, anchor="mm")
 
     rows = [
-        ("Cycle Life", "300 \u2013 500 cycles", "3000+ cycles"),
+        ("Cycle Life", "300 \u2013 500 cycles", "4000+ cycles"),
         ("Usable Capacity", "~50% of rated", "~90% of rated"),
         ("Weight", "Heavy (4 \u2013 5 batteries)", "Up to 60% lighter"),
         ("Maintenance", "Water top-up, acid, corrosion", "Maintenance-free"),
