@@ -1,5 +1,5 @@
 """
-E-rickshaw battery listing images - PowerRun 51.2V LiFePO4 (110 / 230 / 314Ah).
+E-rickshaw battery listing images - PowerRun 51.2V LiFePO4 (110 / 150 / 230 / 314Ah).
 
     python scripts/listing_erickshaw.py            every variant
     python scripts/listing_erickshaw.py 230        one variant
@@ -41,10 +41,12 @@ S = 2000
 
 # 110Ah currents are printed on that pack's label; 230/314Ah currents,
 # cycle life (4000+) and warranty (3 years) are the owner's figures.
+# No currents have been given for 150Ah, so that set leaves them out.
 VARIANTS = {
     "110": {"ah": 110, "charge": 50, "discharge": 100},
     "230": {"ah": 230, "charge": 150, "discharge": 150},
     "314": {"ah": 314, "charge": 150, "discharge": 150},
+    "150": {"ah": 150, "charge": None, "discharge": None},
 }
 for _v in VARIANTS.values():
     _v["kwh"] = "{:.2f} kWh".format(51.2 * _v["ah"] / 1000)
@@ -232,16 +234,19 @@ def repaint_label(im, v):
     d.rectangle(box, fill=(237, 238, 239))
     rows = [("Model", "51.2V / {}Ah".format(v["ah"])), ("Nominal Voltage", "51.2V"),
             ("Rated Capacity", "{}Ah".format(v["ah"])), ("Energy", v["kwh"].replace(" ", "")),
-            ("Max Charge Current", "{}A".format(v["charge"])),
-            ("Max Discharge Current", "{}A".format(v["discharge"])), ("Cell Type", "LiFePO4")]
-    f = regular(19)
+            ("Cell Type", "LiFePO4")]
+    if v["charge"]:
+        rows[4:4] = [("Max Charge Current", "{}A".format(v["charge"])),
+                     ("Max Discharge Current", "{}A".format(v["discharge"]))]
+    tight = len(rows) > 5                    # currents listed: 7 rows to fit
+    f = regular(19 if tight else 21)
     y = box[1] + 16
     # The plate is turned away from the camera, so a level row reads as a
     # slope; the values are lifted a little to sit beside their keys.
     for k, val in rows:
         d.text((box[0] + 6, y), k, font=f, fill=(35, 35, 35))
-        d.text((198, y - 18), ": " + val, font=f, fill=(35, 35, 35))
-        y += 25
+        d.text((198 if tight else 178, y - 18), ": " + val, font=f, fill=(35, 35, 35))
+        y += 25 if tight else 33
     size = (arr.shape[1], arr.shape[0])
     back = cv2.warpPerspective(np.asarray(flat), np.linalg.inv(M), size, flags=cv2.INTER_CUBIC)
     m = np.zeros((H, W), np.uint8)
