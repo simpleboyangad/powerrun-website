@@ -20,9 +20,14 @@
     { key: 'products',  href: '/admin/products/',  icon: '📦', label: 'Products' },
     { key: 'categories', href: '/admin/categories/', icon: '🗂', label: 'Categories' },
     { key: 'orders',    href: '/admin/orders/',    icon: '🧾', label: 'Orders', badge: 'pending_orders' },
-    { key: 'customers', href: '/admin/customers/', icon: '👥', label: 'Customers' },
-    { key: 'warranty',  href: '/admin/warranty/',  icon: '🛡', label: 'Warranty', badge: 'warranty_pending' },
-    { key: 'service',   href: '/admin/service/',   icon: '🔧', label: 'Service Requests', badge: 'service_open' },
+
+    { key: 'crm',        href: '/admin/crm/',        icon: '📈', label: 'CRM Overview', group: 'CRM' },
+    { key: 'customers',  href: '/admin/customers/',  icon: '👥', label: 'Customers', group: 'CRM' },
+    { key: 'leads',      href: '/admin/leads/',      icon: '🎯', label: 'Leads', badge: 'new_leads', group: 'CRM' },
+    { key: 'followups',  href: '/admin/followups/',  icon: '⏰', label: 'Follow-ups', badge: 'followups_overdue', group: 'CRM' },
+    { key: 'warranty',   href: '/admin/warranty/',   icon: '🛡', label: 'Warranty', badge: 'warranty_pending', group: 'CRM' },
+    { key: 'service',    href: '/admin/service/',    icon: '🔧', label: 'Service Requests', badge: 'service_open', group: 'CRM' },
+
     { key: 'dealers',   href: '/admin/dealers/',   icon: '🤝', label: 'Dealer Enquiries', badge: 'dealer_new' },
     { key: 'coupons',    href: '/admin/coupons/',    icon: '🎟', label: 'Coupons' },
     { key: 'reviews',    href: '/admin/reviews/',    icon: '⭐', label: 'Product Reviews', badge: 'reviews_pending' },
@@ -103,12 +108,21 @@
             '<img src="/assets/powerrun-logo.png" alt="PowerRun Industries">' +
             '<b>PowerRun<small>ADMIN PANEL</small></b>' +
           '</div>' +
-          NAV.map(function (item) {
-            return '<a href="' + item.href + '"' + (item.key === activeKey ? ' class="active"' : '') + '>' +
-              '<span class="ic" aria-hidden="true">' + item.icon + '</span>' + PR.esc(item.label) +
-              (item.badge ? '<span class="badge-count" data-badge="' + item.badge + '" hidden></span>' : '') +
-            '</a>';
-          }).join('') +
+          (function () {
+            var lastGroup = null;
+            return NAV.map(function (item) {
+              var groupHtml = '';
+              if (item.group !== lastGroup) {
+                groupHtml = item.group ? '<div class="nav-group-title">' + PR.esc(item.group) + '</div>' : '';
+                lastGroup = item.group || null;
+              }
+              return groupHtml +
+                '<a href="' + item.href + '"' + (item.key === activeKey ? ' class="active"' : '') + '>' +
+                '<span class="ic" aria-hidden="true">' + item.icon + '</span>' + PR.esc(item.label) +
+                (item.badge ? '<span class="badge-count" data-badge="' + item.badge + '" hidden></span>' : '') +
+              '</a>';
+            }).join('');
+          })() +
           '<div class="spacer"></div>' +
           '<a href="/" target="_blank" rel="noopener"><span class="ic">↗</span>View Website</a>' +
           '<button type="button" class="logout" id="logoutBtn"><span class="ic">⏻</span>Logout</button>' +
@@ -382,6 +396,15 @@
       host.innerHTML = '<div class="panel">' + PRA.skeleton(7) + '</div>';
       await load();
       render();
+
+      // Deep-link support: /admin/<page>/?id=<row id> opens that row's detail
+      // drawer directly, so other pages (follow-ups, customer profile, ...)
+      // can link straight into a specific record.
+      var deepId = PR.param('id');
+      if (deepId && config.detail) {
+        var match = rows.find(function (r) { return String(r[config.idField || 'id']) === String(deepId); });
+        if (match) config.detail(match, updateStatus);
+      }
     });
   };
 
