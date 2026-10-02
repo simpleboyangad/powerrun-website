@@ -253,7 +253,17 @@
     if (editable) {
       recompute(body);
       body.addEventListener('input', function (e) { if (e.target.closest('#quoteItemRows, #qf_shipping, #qf_customer')) recompute(body); });
-      body.addEventListener('change', function (e) { if (e.target.closest('#qf_customer')) recompute(body); });
+      body.addEventListener('change', function (e) {
+        var productSel = e.target.closest('.qi-product');
+        if (productSel) {
+          var product = products.filter(function (p) { return p.id === productSel.value; })[0];
+          var tr = productSel.closest('tr');
+          tr.querySelector('.qi-price').value = product ? product.price : 0;
+          recompute(body);
+          return;
+        }
+        if (e.target.closest('#qf_customer')) recompute(body);
+      });
 
       document.getElementById('quoteAddRowBtn').addEventListener('click', function () {
         var tbody = body.querySelector('#quoteItemRows');
