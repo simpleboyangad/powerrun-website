@@ -78,6 +78,7 @@ img { max-width: 100%; }
 .nav-parent.open { color: #fff; }
 .nav-caret { margin-left: auto; font-size: 11px; color: #8a8a8a; }
 .nav-children { display: flex; flex-direction: column; gap: 4px; padding-left: 14px; }
+.nav-children[hidden] { display: none; }
 .nav-children a { font-size: 13px; }
 
 .admin-main { min-width: 0; display: flex; flex-direction: column; }
