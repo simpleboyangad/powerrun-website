@@ -36,7 +36,7 @@
     if (!rec) return '';
     var p = rec.product;
     var img = p.images && p.images.length
-      ? '<img src="' + PR.esc(p.images[0].url) + '" alt="' + PR.esc(p.name) + '">'
+      ? PR.thumbImg(p.images[0], p.name)
       : '<div class="ph small">' + PR.esc(PR.initials(p.name)) + '</div>';
     return '<div class="calc-recommend"><b>' + (rec.count > 1 ? 'Recommended (use ' + rec.count + ' in parallel)' : 'Recommended for you') + '</b>' +
       '<div class="calc-recommend-card">' + img +

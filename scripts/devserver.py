@@ -10,7 +10,7 @@ Cache-Control: no-store on everything instead.
 import functools
 import os
 import sys
-from http.server import HTTPServer, SimpleHTTPRequestHandler
+from http.server import ThreadingHTTPServer, SimpleHTTPRequestHandler
 
 ROOT = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
 
@@ -30,4 +30,4 @@ if __name__ == "__main__":
     port = int(sys.argv[1]) if len(sys.argv) > 1 else 8123
     handler = functools.partial(NoCacheHandler, directory=ROOT)
     print("Serving {} at http://127.0.0.1:{} (no-cache)".format(ROOT, port))
-    HTTPServer(("127.0.0.1", port), handler).serve_forever()
+    ThreadingHTTPServer(("127.0.0.1", port), handler).serve_forever()

@@ -23,6 +23,22 @@
     categoryById: {}
   };
 
+  /* Cards and thumbnail strips use a 500px copy stored at thumb/<path> in the
+     same bucket (scripts/make_thumbs.py, and the admin upload makes one too).
+     A missing thumbnail falls back to the full image via onerror. */
+  PR.thumbUrl = function (path) {
+    return PR.config.SUPABASE_URL + '/storage/v1/object/public/' + PR.config.STORAGE_BUCKET +
+           '/thumb/' + String(path).split('/').map(encodeURIComponent).join('/');
+  };
+
+  PR.thumbImg = function (img, alt, attrs) {
+    var full = PR.esc(img.url);
+    var src = img.thumb && img.thumb !== img.url ? PR.esc(img.thumb) : full;
+    return '<img src="' + src + '" data-full="' + full + '" alt="' + PR.esc(alt || '') + '"' +
+           (src !== full ? ' onerror="this.onerror=null;this.src=this.dataset.full"' : '') +
+           (attrs ? ' ' + attrs : '') + '>';
+  };
+
   function categoryOf(id) {
     return (id && PR.catalog.categoryById[id]) || null;
   }
@@ -32,7 +48,8 @@
       .slice()
       .sort(function (a, b) { return (a.sort_order || 0) - (b.sort_order || 0); })
       .map(function (img) {
-        return { id: img.id, url: img.image_url, path: img.storage_path, alt: img.alt_text || '', sort_order: img.sort_order || 0 };
+        return { id: img.id, url: img.image_url, path: img.storage_path, alt: img.alt_text || '', sort_order: img.sort_order || 0,
+                 thumb: img.storage_path ? PR.thumbUrl(img.storage_path) : img.image_url };
       });
 
     // Specifications are stored as an ORDERED array [{label, value}] so the
@@ -100,16 +117,23 @@
     };
   };
 
-  PR.loadCategories = async function (includeInactive) {
-    var rows = await PR.call('load categories', function (sb) {
+  var pendingCategories = null;
+
+  PR.loadCategories = function (includeInactive) {
+    var request = PR.call('load categories', function (sb) {
       var q = sb.from('categories').select('*').order('sort_order', { ascending: true }).order('name');
       if (!includeInactive) q = q.eq('is_active', true);
       return q;
+    }).then(function (rows) {
+      PR.catalog.categories = rows || [];
+      PR.catalog.categoryById = {};
+      PR.catalog.categories.forEach(function (c) { PR.catalog.categoryById[c.id] = c; });
+      return PR.catalog.categories;
     });
-    PR.catalog.categories = rows || [];
-    PR.catalog.categoryById = {};
-    PR.catalog.categories.forEach(function (c) { PR.catalog.categoryById[c.id] = c; });
-    return PR.catalog.categories;
+    pendingCategories = request;
+    request.then(function () { if (pendingCategories === request) pendingCategories = null; },
+                 function () { if (pendingCategories === request) pendingCategories = null; });
+    return request;
   };
 
   PR.topCategories = function () {
@@ -120,39 +144,44 @@
     return PR.catalog.categories.filter(function (c) { return c.parent_id === parentId; });
   };
 
+  /* Reuses a categories request that is already on its way, so a page that
+     loads categories and products together does not fetch categories twice. */
   PR.ensureCategories = async function () {
+    if (pendingCategories) await pendingCategories;
     if (!PR.catalog.categories.length) await PR.loadCategories(true);
     return PR.catalog.categories;
   };
 
   PR.loadProducts = async function (options) {
     options = options || {};
-    await PR.ensureCategories();
-    var rows = await queryProducts('load products', function (sb, select) {
+    // Categories are only needed to name each product's category, so fetch
+    // them alongside the products instead of before them.
+    var results = await Promise.all([queryProducts('load products', function (sb, select) {
       var q = sb.from('products').select(select)
         .order('sort_order', { ascending: true })
         .order('created_at', { ascending: true });
       if (!options.includeInactive) q = q.eq('is_active', true);
       if (options.categoryId) q = q.eq('category_id', options.categoryId);
       return q;
-    });
+    }), PR.ensureCategories()]);
+    var rows = results[0];
     PR.catalog.products = (rows || []).map(PR.normalizeProduct);
     return PR.catalog.products;
   };
 
   PR.loadProductBySlug = async function (slug) {
-    await PR.ensureCategories();
-    var rows = await queryProducts('load product', function (sb, select) {
+    var results = await Promise.all([queryProducts('load product', function (sb, select) {
       return sb.from('products').select(select).eq('slug', slug).eq('is_active', true).limit(1);
-    });
+    }), PR.ensureCategories()]);
+    var rows = results[0];
     return rows && rows.length ? PR.normalizeProduct(rows[0]) : null;
   };
 
   PR.loadProductById = async function (id) {
-    await PR.ensureCategories();
-    var rows = await queryProducts('load product', function (sb, select) {
+    var results = await Promise.all([queryProducts('load product', function (sb, select) {
       return sb.from('products').select(select).eq('id', id).limit(1);
-    });
+    }), PR.ensureCategories()]);
+    var rows = results[0];
     return rows && rows.length ? PR.normalizeProduct(rows[0]) : null;
   };
 
@@ -223,8 +252,7 @@
 
   PR.productImage = function (product, cssClass) {
     if (product.images.length) {
-      return '<img src="' + PR.esc(product.images[0].url) + '" alt="' + PR.esc(product.name) +
-             '" loading="lazy" width="400" height="400">';
+      return PR.thumbImg(product.images[0], product.name, 'loading="lazy" width="400" height="400"');
     }
     return '<div class="ph' + (cssClass ? ' ' + cssClass : '') + '">' + PR.esc(PR.initials(product.name)) + '</div>';
   };

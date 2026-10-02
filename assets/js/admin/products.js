@@ -639,7 +639,7 @@
         });
       }
       if (image.storage_path) {
-        var removal = await PR.sb.storage.from(BUCKET).remove([image.storage_path]);
+        var removal = await PR.sb.storage.from(BUCKET).remove([image.storage_path, 'thumb/' + image.storage_path]);
         if (removal.error) console.error('[PowerRun] storage delete failed:', removal.error);
       }
       existingImages.splice(index, 1);
@@ -647,6 +647,35 @@
       PR.toast('Image deleted.', 'success');
     } catch (err) {
       PR.toast(err.message, 'error');
+    }
+  }
+
+  /* 500px JPEG copy for product cards and thumbnail strips (see PR.thumbUrl).
+     Best effort: if the browser cannot decode the file, cards simply fall
+     back to the full image. */
+  async function makeThumb(file) {
+    var bitmap = await createImageBitmap(file);
+    var scale = Math.min(1, 500 / Math.max(bitmap.width, bitmap.height));
+    var canvas = document.createElement('canvas');
+    canvas.width = Math.round(bitmap.width * scale);
+    canvas.height = Math.round(bitmap.height * scale);
+    var ctx = canvas.getContext('2d');
+    ctx.fillStyle = '#fff';
+    ctx.fillRect(0, 0, canvas.width, canvas.height);
+    ctx.drawImage(bitmap, 0, 0, canvas.width, canvas.height);
+    return new Promise(function (resolve) { canvas.toBlob(resolve, 'image/jpeg', 0.8); });
+  }
+
+  async function uploadThumb(path, file) {
+    try {
+      var blob = await makeThumb(file);
+      if (!blob) return;
+      var result = await PR.sb.storage.from(BUCKET).upload('thumb/' + path, blob, {
+        cacheControl: '31536000', upsert: true, contentType: 'image/jpeg'
+      });
+      if (result.error) console.warn('[PowerRun] thumbnail upload failed:', result.error);
+    } catch (err) {
+      console.warn('[PowerRun] thumbnail not created:', err);
     }
   }
 
@@ -663,6 +692,7 @@
         console.error('[PowerRun] image upload failed:', upload.error);
         throw new Error('Image "' + file.name + '" could not be uploaded: ' + upload.error.message);
       }
+      await uploadThumb(path, file);
 
       var publicUrl = PR.sb.storage.from(BUCKET).getPublicUrl(path).data.publicUrl;
       await PR.call('save image record', function (sb) {
@@ -841,6 +871,7 @@
     try {
       var paths = (product.product_images || [])
         .map(function (img) { return img.storage_path; }).filter(Boolean);
+      paths = paths.concat(paths.map(function (p) { return 'thumb/' + p; }));
 
       await PR.call('delete product', function (sb) {
         return sb.from('products').delete().eq('id', id);
