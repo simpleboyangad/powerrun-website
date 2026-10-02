@@ -437,7 +437,9 @@ def main():
             print("  skip (no file):", path)
             continue
         canonical = page.get("canonical_url") or (site + path)
-        indexable = page.get("seo_index", True)
+        # /product/ is only the old ?slug= address that forwards to /products/<slug>/;
+        # on its own it is an empty "No product selected" page, never index it
+        indexable = page.get("seo_index", True) and path != "/product/"
         robots = ("index," if indexable else "noindex,") + ("follow" if page.get("seo_follow", True) else "nofollow")
         if indexable:
             robots += ",max-image-preview:large"
