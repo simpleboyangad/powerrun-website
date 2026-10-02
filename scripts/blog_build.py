@@ -13,7 +13,8 @@ an HTML comment, then the article body as plain HTML (h2, p, ul, table).
       "date": "2026-10-03",
       "updated": "optional, when the article was last revised",
       "topic": "Lithium Batteries",
-      "related": ["lithium-batteries", "hybrid-inverters"]
+      "related": ["lithium-batteries", "hybrid-inverters"],
+      "lang": "optional: \"hi\" for an article written in Hindi (default English)"
     }
     -->
     <p>First paragraph...</p>
@@ -49,7 +50,7 @@ CATEGORY_NAMES = {
 }
 
 PAGE = """<!doctype html>
-<html lang="en">
+<html lang="{lang}">
 <head>
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width,initial-scale=1">
@@ -120,11 +121,13 @@ def nice_date(iso):
 
 def card(post):
     url = "/blog/%s/" % post["slug"]
-    return ('<article class="blog-card"><a href="%s">'
+    hindi = post.get("lang") == "hi"
+    return ('<article class="blog-card"%s><a href="%s">'
             '<span class="blog-topic">%s</span><h3>%s</h3><p>%s</p>'
             '<span class="blog-meta">%s · %d min read</span></a></article>'
-            % (url, b.esc(post.get("topic") or "Guide"), b.esc(post["title"]), b.esc(post["description"]),
-               nice_date(post["date"]), post["minutes"]))
+            % (' lang="hi"' if hindi else "", url,
+               b.esc(post.get("topic") or "Guide") + (" · हिंदी" if hindi else ""),
+               b.esc(post["title"]), b.esc(post["description"]), nice_date(post["date"]), post["minutes"]))
 
 
 def write(rel, html, stamp):
@@ -147,6 +150,7 @@ def main():
             "headline": post["title"], "description": post["description"],
             "datePublished": post["date"], "dateModified": post.get("updated") or post["date"],
             "mainEntityOfPage": url, "image": default_image,
+            "inLanguage": "hi-IN" if post.get("lang") == "hi" else "en-IN",
             "author": {"@type": "Organization", "name": SITE_NAME, "url": site + "/"},
             "publisher": {"@type": "Organization", "name": SITE_NAME,
                           "logo": {"@type": "ImageObject", "url": site + "/assets/powerrun-logo.png"}},
@@ -156,6 +160,8 @@ def main():
                             description=post["description"], canonical=url, image=default_image,
                             site_name=SITE_NAME, og_type="article", gsc=gsc,
                             schema=[s for s in (org, crumbs) if s])
+        if post.get("lang") == "hi":
+            head = head.replace('content="en_IN"', 'content="hi_IN"')
         head = head.replace(b.END, '<meta property="article:published_time" content="%s">\n'
                                    '<script type="application/ld+json" id="ld-article">%s</script>\n%s'
                             % (post["date"], json.dumps(article, ensure_ascii=False, separators=(",", ":")), b.END))
@@ -191,7 +197,8 @@ def main():
                 '<a class="view" href="/blog/">All guides →</a></div>\n'
                 '      <div class="blog-grid">\n%s\n      </div>\n    </section>'
                 % "\n".join("        " + card(p) for p in others)) if others else ""))
-        write(os.path.join("blog", post["slug"], "index.html"), PAGE.format(head=head, body=body), stamp)
+        write(os.path.join("blog", post["slug"], "index.html"),
+              PAGE.format(lang=post.get("lang") or "en", head=head, body=body), stamp)
         print("article  /blog/%s/" % post["slug"])
 
     # -------------------------------------------------------------- listing
@@ -216,7 +223,7 @@ def main():
             '    <section class="section">\n'
             '      <div class="blog-grid">\n%s\n      </div>\n'
             '    </section>' % "\n".join("        " + card(p) for p in posts))
-    write(os.path.join("blog", "index.html"), PAGE.format(head=head, body=body), stamp)
+    write(os.path.join("blog", "index.html"), PAGE.format(lang="en", head=head, body=body), stamp)
     print("listing  /blog/  (%d articles)" % len(posts))
     print("\nNext: python scripts/stamp_assets.py, then commit and push.")
 
