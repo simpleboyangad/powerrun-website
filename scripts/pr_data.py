@@ -81,7 +81,7 @@ WARRANTY_BY_PREFIX = [
     ("PR Hybrid Inverter", "2 Years Comprehensive Warranty"),
     ("PR LFP Battery", "5 Years Warranty"),
     ("PR Solar Panel", "10 Years Product / 25 Years Performance Warranty"),
-    ("PR E-Rickshaw Battery", "18 Months Warranty"),
+    ("PR E-Rickshaw Battery", "3 Years Warranty"),
 ]
 
 
