@@ -164,6 +164,13 @@
     return '/products/' + encodeURIComponent(product.slug) + '/';
   };
 
+  /* A category's address: its own landing page when it has one, otherwise
+     the filtered catalogue. */
+  PR.categoryPath = function (slug) {
+    if ((PR.config.CATEGORY_PAGES || []).indexOf(slug) !== -1) return '/' + encodeURIComponent(slug) + '/';
+    return '/products/?category=' + encodeURIComponent(slug);
+  };
+
   PR.priceBlock = function (product) {
     var price = Number(product.price);
     var mrp = Number(product.mrp);

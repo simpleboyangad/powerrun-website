@@ -20,6 +20,10 @@ window.PR_CONFIG = {
   COMPANY: 'PowerRun Industries',
   SITE_URL: 'https://powerrun.in',
 
+  // Categories that have their own landing page at /<slug>/ (intro, buying
+  // guide, FAQ). Every other category is linked as /products/?category=<slug>.
+  CATEGORY_PAGES: ['hybrid-inverters', 'lithium-batteries', 'solar-panels', 'e-rickshaw-batteries'],
+
   MAX_PRODUCT_IMAGES: 5,
   STORAGE_BUCKET: 'product-images'
 };

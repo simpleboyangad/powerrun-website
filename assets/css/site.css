@@ -766,3 +766,23 @@ img { max-width: 100%; }
   .calc-layout { grid-template-columns: 1fr; }
   .calc-result { position: static; }
 }
+
+/* ---------------------------------------------- FAQ + category landing pages */
+.faq-item {
+  background: #fff; border: 1px solid var(--line); border-radius: var(--radius);
+  margin-bottom: 10px; overflow: hidden;
+}
+.faq-item summary {
+  cursor: pointer; padding: 15px 18px; font-weight: 700; color: var(--ink);
+  list-style: none; display: flex; justify-content: space-between; gap: 12px;
+}
+.faq-item summary::-webkit-details-marker { display: none; }
+.faq-item summary::after { content: "+"; color: var(--orange); font-size: 20px; line-height: 1; }
+.faq-item[open] summary::after { content: "−"; }
+.faq-item p { margin: 0; padding: 0 18px 16px; color: #444; line-height: 1.7; font-size: 14.5px; }
+.faq-item a, .category-guide a { color: var(--orange); }
+.category-intro .prose { max-width: 900px; }
+.category-intro .prose p { margin: 0 0 12px; }
+.category-guide h2 { margin-top: 0; }
+.category-cta { text-align: center; }
+.category-cta .btn, .category-cta .outline { margin: 6px; }
