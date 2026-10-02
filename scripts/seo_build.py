@@ -413,6 +413,10 @@ def main():
     for r in fetch("product_reviews?select=product_id,rating,customer_name,body,created_at&status=eq.approved"):
         reviews_by_product.setdefault(r["product_id"], []).append(r)
 
+    company = {}
+    for row in fetch("site_settings?select=key,value&key=eq.company"):
+        company = row.get("value") or {}
+
     written, sitemap = [], []
     today = datetime.date.today().isoformat()
 
@@ -427,6 +431,15 @@ def main():
         "areaServed": "IN",
         "sameAs": ["https://www.youtube.com/@PowerRunIndustries"],
     }
+    if company.get("address_line1") or company.get("city"):
+        org["address"] = {k: v for k, v in {
+            "@type": "PostalAddress",
+            "streetAddress": clean(" ".join(x for x in [company.get("address_line1"), company.get("address_line2")] if x)),
+            "addressLocality": company.get("city") or None,
+            "addressRegion": company.get("state") or None,
+            "postalCode": company.get("pincode") or None,
+            "addressCountry": "IN",
+        }.items() if v}
 
     # ---------------------------------------------------------------- pages
     for page in pages:
