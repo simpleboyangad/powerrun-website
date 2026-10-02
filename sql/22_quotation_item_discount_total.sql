@@ -1,0 +1,12 @@
+-- ============================================================================
+-- PowerRun Industries - migration 22 / quotations.item_discount_amount
+--
+-- Phase 3A's per-line "Disc %" was folding into discount_amount (which used
+-- to mean, and should still mean, the MRP-vs-selling-price gap - that's how
+-- Phase 2 defined it and how admin_convert_quotation_to_order's caller
+-- expects it). This adds a separate column so the admin's typed line
+-- discounts show as their own line, distinct from the catalogue MRP gap.
+--
+-- Additive and idempotent. Safe to run more than once.
+-- ============================================================================
+alter table public.quotations add column if not exists item_discount_amount numeric not null default 0;

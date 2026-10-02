@@ -13,6 +13,7 @@
     var items = (quote.quotation_items || []).sort(function (a, b) { return a.sort_order - b.sort_order; });
     var showGst = (Number(quote.gst_amount) || 0) > 0;
     var discount = Number(quote.discount_amount) || 0;
+    var itemDiscount = Number(quote.item_discount_amount) || 0;
     var cgst = Number(quote.cgst_amount) || 0, sgst = Number(quote.sgst_amount) || 0, igst = Number(quote.igst_amount) || 0;
     var isDealer = quote.quotation_type === 'dealer' && showDealerMargin;
     var companyAddress = [company.address_line1, company.address_line2, company.city, company.state, company.pincode]
@@ -101,7 +102,10 @@
         '<div class="invoice-totals"><table>' +
           (discount > 0
             ? '<tr><td>Total MRP</td><td>' + PR.money(quote.mrp_total) + '</td></tr>' +
-              '<tr><td style="color:#14663a">Discount</td><td style="color:#14663a">- ' + PR.money(discount) + '</td></tr>'
+              '<tr><td style="color:#14663a">Discount vs MRP</td><td style="color:#14663a">- ' + PR.money(discount) + '</td></tr>'
+            : '') +
+          (itemDiscount > 0
+            ? '<tr><td style="color:#14663a">Item Discount</td><td style="color:#14663a">- ' + PR.money(itemDiscount) + '</td></tr>'
             : '') +
           '<tr><td>' + (showGst ? 'Taxable Value' : 'Subtotal') + '</td><td>' + PR.money(showGst ? quote.taxable_amount : quote.subtotal) + '</td></tr>' +
           (showGst && igst > 0 ? '<tr><td>IGST</td><td>' + PR.money(igst) + '</td></tr>' : '') +

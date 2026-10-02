@@ -82,23 +82,25 @@
 
   function computeTotals(items, header, customerState) {
     header = header || {};
-    var subtotal = 0, mrpTotal = 0, taxable = 0, gst = 0, gstAdded = 0, lineDiscounts = 0;
+    var grossTotal = 0, subtotal = 0, mrpTotal = 0, taxable = 0, gst = 0, gstAdded = 0, itemDiscount = 0;
     items.forEach(function (item) {
       var m = lineMath(item);
+      grossTotal += m.gross;
       subtotal += m.total;
       mrpTotal += (Number(item.mrp) || Number(item.unit_price)) * Number(item.quantity);
-      lineDiscounts += m.discount_amount;
+      itemDiscount += m.discount_amount;
       taxable += m.taxable;
       gst += m.gst;
       if (!m.inclusive) gstAdded += m.gst;
     });
+    grossTotal = round2(grossTotal);
     subtotal = round2(subtotal);
     mrpTotal = round2(mrpTotal);
-    lineDiscounts = round2(lineDiscounts);
+    itemDiscount = round2(itemDiscount);
     taxable = round2(taxable);
     gst = round2(gst);
     gstAdded = round2(gstAdded);
-    var discount = Math.max(round2(mrpTotal - subtotal), 0);
+    var discount = Math.max(round2(mrpTotal - grossTotal), 0);
     var shippingCost = round2(header.shipping_cost || 0);
     var freightCost = round2(header.freight_cost || 0);
     var installationCost = round2(header.installation_cost || 0);
@@ -110,7 +112,7 @@
     var sgst = intra ? round2(gst - cgst) : 0;
     var igst = intra ? 0 : gst;
     return {
-      subtotal: subtotal, mrp_total: mrpTotal, discount_amount: discount,
+      subtotal: subtotal, mrp_total: mrpTotal, discount_amount: discount, item_discount_amount: itemDiscount,
       taxable_amount: taxable, gst_amount: gst, cgst_amount: cgst, sgst_amount: sgst, igst_amount: igst,
       shipping_cost: shippingCost, freight_cost: freightCost, installation_cost: installationCost,
       other_charges: otherCharges, round_off: roundOff, total_amount: total
@@ -315,6 +317,9 @@
       (totals.discount_amount > 0.5
         ? '<div style="display:flex;justify-content:space-between;color:#14663a"><span>Discount vs MRP</span><b>- ' + PR.money(totals.discount_amount) + '</b></div>'
         : '') +
+      (totals.item_discount_amount > 0.5
+        ? '<div style="display:flex;justify-content:space-between;color:#14663a"><span>Item Discount</span><b>- ' + PR.money(totals.item_discount_amount) + '</b></div>'
+        : '') +
       (totals.gst_amount > 0
         ? '<div style="display:flex;justify-content:space-between;font-size:12px;color:#666"><span>GST included (' + PR.money2(totals.gst_amount) + ')</span><span></span></div>'
         : '') +
@@ -375,7 +380,7 @@
         (q.converted_order_id ? ' &middot; converted to an order' : '') + '</div>' : '') +
 
       (editable
-        ? '<form id="quoteForm">' +
+        ? '<form id="quoteForm" class="form">' +
           '<div class="form-grid">' +
             '<label>Quotation Type<span class="req">*</span><div class="inline" style="gap:14px;display:flex">' +
               TYPES.map(function (t) {
