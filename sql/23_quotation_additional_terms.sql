@@ -1,0 +1,12 @@
+-- ============================================================================
+-- PowerRun Industries - migration 23 / quotations.additional_terms
+--
+-- quotations.terms now always snapshots the fixed standard Terms & Conditions
+-- from site_settings.quotation_defaults.terms at save time (no longer
+-- per-quote editable in the admin form - it is managed centrally in
+-- Settings). This adds a separate, genuinely per-quote free-text field for
+-- any extra notes an admin wants to add on top of the standard terms.
+--
+-- Additive and idempotent. Safe to run more than once.
+-- ============================================================================
+alter table public.quotations add column if not exists additional_terms text;

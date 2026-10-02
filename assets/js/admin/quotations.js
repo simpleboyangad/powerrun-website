@@ -516,8 +516,12 @@
 
           '<label>Warranty Terms<textarea id="qf_warranty" maxlength="2000">' +
             PR.esc(isNew && !duplicateFrom ? (quoteDefaults.warranty_terms || '') : (src.warranty_terms || '')) + '</textarea></label>' +
-          '<label>Terms &amp; Conditions<textarea id="qf_terms" maxlength="4000">' +
-            PR.esc(isNew && !duplicateFrom ? (quoteDefaults.terms || '') : (src.terms || '')) + '</textarea></label>' +
+          '<label>Terms &amp; Conditions (standard)<textarea readonly style="background:#f6f7f9;color:#666">' +
+            PR.esc(quoteDefaults.terms || 'No default set — add one in Settings → Quotation Settings.') + '</textarea>' +
+            '<span class="hint">Fixed — edit the default in Settings → Quotation Settings.</span></label>' +
+          '<label>Additional Terms (optional)<textarea id="qf_additional_terms" maxlength="2000">' +
+            PR.esc(src.additional_terms || '') + '</textarea>' +
+            '<span class="hint">Any extra notes for this specific quotation, shown below the standard terms.</span></label>' +
 
           '<div class="stat-group-title">Totals</div>' +
           '<div id="quoteTotalsPanel" style="display:grid;gap:6px;max-width:340px"></div>' +
@@ -731,7 +735,8 @@
         installation_included: document.getElementById('qf_installation_included').checked,
         commissioning_included: document.getElementById('qf_commissioning_included').checked,
         warranty_terms: document.getElementById('qf_warranty').value.trim() || null,
-        terms: document.getElementById('qf_terms').value.trim() || null,
+        terms: quoteDefaults.terms || null,
+        additional_terms: document.getElementById('qf_additional_terms').value.trim() || null,
         place_of_supply: customer.state || null,
         dealer_discount_percent: quotationType === 'dealer' ? (Number(document.getElementById('qf_dealer_discount').value) || 0) : null,
         dealer_margin_percent: quotationType === 'dealer' ? (Number(document.getElementById('qf_dealer_margin').value) || 0) : null,

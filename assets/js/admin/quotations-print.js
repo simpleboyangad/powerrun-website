@@ -136,6 +136,10 @@
           ? '<div class="invoice-note"><b>Terms &amp; Conditions</b><br>' + PR.esc(quote.terms).replace(/\n/g, '<br>') + '</div>'
           : '<div class="invoice-note">This quotation is valid until the date shown above. Prices and availability are subject to change thereafter.</div>') +
 
+        (quote.additional_terms
+          ? '<div class="invoice-note"><b>Additional Terms</b><br>' + PR.esc(quote.additional_terms).replace(/\n/g, '<br>') + '</div>'
+          : '') +
+
         (company.bank_name || company.signatory_name
           ? '<div class="invoice-parties" style="margin-top:14px">' +
             '<div>' + (company.bank_name
