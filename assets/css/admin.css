@@ -75,10 +75,10 @@ img { max-width: 100%; }
   border-radius: 999px; padding: 2px 7px; min-width: 20px; text-align: center;
 }
 .sidebar a.active .badge-count { background: #fff; color: var(--orange); }
-.nav-group-title {
-  font-size: 10.5px; text-transform: uppercase; letter-spacing: .08em; color: #8a8a8a;
-  font-weight: 800; margin: 14px 0 2px; padding: 0 12px;
-}
+.nav-parent.open { color: #fff; }
+.nav-caret { margin-left: auto; font-size: 11px; color: #8a8a8a; }
+.nav-children { display: flex; flex-direction: column; gap: 4px; padding-left: 14px; }
+.nav-children a { font-size: 13px; }
 
 .admin-main { min-width: 0; display: flex; flex-direction: column; }
 

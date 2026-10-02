@@ -21,12 +21,14 @@
     { key: 'categories', href: '/admin/categories/', icon: '🗂', label: 'Categories' },
     { key: 'orders',    href: '/admin/orders/',    icon: '🧾', label: 'Orders', badge: 'pending_orders' },
 
-    { key: 'crm',        href: '/admin/crm/',        icon: '📈', label: 'CRM Overview', group: 'CRM' },
-    { key: 'customers',  href: '/admin/customers/',  icon: '👥', label: 'Customers', group: 'CRM' },
-    { key: 'leads',      href: '/admin/leads/',      icon: '🎯', label: 'Leads', badge: 'new_leads', group: 'CRM' },
-    { key: 'followups',  href: '/admin/followups/',  icon: '⏰', label: 'Follow-ups', badge: 'followups_overdue', group: 'CRM' },
-    { key: 'warranty',   href: '/admin/warranty/',   icon: '🛡', label: 'Warranty', badge: 'warranty_pending', group: 'CRM' },
-    { key: 'service',    href: '/admin/service/',    icon: '🔧', label: 'Service Requests', badge: 'service_open', group: 'CRM' },
+    { key: 'crm-group', icon: '👥', label: 'CRM', children: [
+      { key: 'crm',       href: '/admin/crm/',       icon: '📈', label: 'Overview' },
+      { key: 'customers', href: '/admin/customers/', icon: '👥', label: 'Customers' },
+      { key: 'leads',     href: '/admin/leads/',     icon: '🎯', label: 'Leads', badge: 'new_leads' },
+      { key: 'followups', href: '/admin/followups/', icon: '⏰', label: 'Follow-ups', badge: 'followups_overdue' },
+      { key: 'warranty',  href: '/admin/warranty/',  icon: '🛡', label: 'Warranty', badge: 'warranty_pending' },
+      { key: 'service',   href: '/admin/service/',   icon: '🔧', label: 'Service Requests', badge: 'service_open' }
+    ] },
 
     { key: 'dealers',   href: '/admin/dealers/',   icon: '🤝', label: 'Dealer Enquiries', badge: 'dealer_new' },
     { key: 'coupons',    href: '/admin/coupons/',    icon: '🎟', label: 'Coupons' },
@@ -108,21 +110,27 @@
             '<img src="/assets/powerrun-logo.png" alt="PowerRun Industries">' +
             '<b>PowerRun<small>ADMIN PANEL</small></b>' +
           '</div>' +
-          (function () {
-            var lastGroup = null;
-            return NAV.map(function (item) {
-              var groupHtml = '';
-              if (item.group !== lastGroup) {
-                groupHtml = item.group ? '<div class="nav-group-title">' + PR.esc(item.group) + '</div>' : '';
-                lastGroup = item.group || null;
-              }
-              return groupHtml +
-                '<a href="' + item.href + '"' + (item.key === activeKey ? ' class="active"' : '') + '>' +
-                '<span class="ic" aria-hidden="true">' + item.icon + '</span>' + PR.esc(item.label) +
-                (item.badge ? '<span class="badge-count" data-badge="' + item.badge + '" hidden></span>' : '') +
-              '</a>';
-            }).join('');
-          })() +
+          NAV.map(function (item) {
+            if (item.children) {
+              var isOpen = item.children.some(function (c) { return c.key === activeKey; });
+              return '<button type="button" class="nav-parent' + (isOpen ? ' open' : '') + '" data-toggle-group="' + item.key + '">' +
+                  '<span class="ic" aria-hidden="true">' + item.icon + '</span>' + PR.esc(item.label) +
+                  '<span class="nav-caret" aria-hidden="true">' + (isOpen ? '▾' : '▸') + '</span>' +
+                '</button>' +
+                '<div class="nav-children" id="navGroup-' + item.key + '"' + (isOpen ? '' : ' hidden') + '>' +
+                  item.children.map(function (c) {
+                    return '<a href="' + c.href + '"' + (c.key === activeKey ? ' class="active"' : '') + '>' +
+                      '<span class="ic" aria-hidden="true">' + c.icon + '</span>' + PR.esc(c.label) +
+                      (c.badge ? '<span class="badge-count" data-badge="' + c.badge + '" hidden></span>' : '') +
+                    '</a>';
+                  }).join('') +
+                '</div>';
+            }
+            return '<a href="' + item.href + '"' + (item.key === activeKey ? ' class="active"' : '') + '>' +
+              '<span class="ic" aria-hidden="true">' + item.icon + '</span>' + PR.esc(item.label) +
+              (item.badge ? '<span class="badge-count" data-badge="' + item.badge + '" hidden></span>' : '') +
+            '</a>';
+          }).join('') +
           '<div class="spacer"></div>' +
           '<a href="/" target="_blank" rel="noopener"><span class="ic">↗</span>View Website</a>' +
           '<button type="button" class="logout" id="logoutBtn"><span class="ic">⏻</span>Logout</button>' +
@@ -153,6 +161,16 @@
     backdrop.addEventListener('click', closeMenu);
     document.getElementById('logoutBtn').addEventListener('click', function () {
       if (confirm('Sign out of the PowerRun admin panel?')) PRA.logout();
+    });
+
+    sidebar.querySelectorAll('[data-toggle-group]').forEach(function (btn) {
+      btn.addEventListener('click', function () {
+        var children = document.getElementById('navGroup-' + btn.getAttribute('data-toggle-group'));
+        var nowOpen = children.hidden;
+        children.hidden = !nowOpen;
+        btn.classList.toggle('open', nowOpen);
+        btn.querySelector('.nav-caret').textContent = nowOpen ? '▾' : '▸';
+      });
     });
 
     PRA.loadBadges();
