@@ -112,12 +112,11 @@
           '</div>' +
           NAV.map(function (item) {
             if (item.children) {
-              var isOpen = item.children.some(function (c) { return c.key === activeKey; });
-              return '<button type="button" class="nav-parent' + (isOpen ? ' open' : '') + '" data-toggle-group="' + item.key + '">' +
+              return '<button type="button" class="nav-parent" data-toggle-group="' + item.key + '">' +
                   '<span class="ic" aria-hidden="true">' + item.icon + '</span>' + PR.esc(item.label) +
-                  '<span class="nav-caret" aria-hidden="true">' + (isOpen ? '▾' : '▸') + '</span>' +
+                  '<span class="nav-caret" aria-hidden="true">▸</span>' +
                 '</button>' +
-                '<div class="nav-children" id="navGroup-' + item.key + '"' + (isOpen ? '' : ' hidden') + '>' +
+                '<div class="nav-children" id="navGroup-' + item.key + '" hidden>' +
                   item.children.map(function (c) {
                     return '<a href="' + c.href + '"' + (c.key === activeKey ? ' class="active"' : '') + '>' +
                       '<span class="ic" aria-hidden="true">' + c.icon + '</span>' + PR.esc(c.label) +
