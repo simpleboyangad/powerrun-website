@@ -392,6 +392,7 @@
           '<div class="form-grid">' +
             '<label>Customer <span class="req">*</span><select id="qf_customer" required>' +
               '<option value="">Select customer…</option>' +
+              '<option value="__new__">+ Add New Customer</option>' +
               customers.map(function (c) {
                 return '<option value="' + PR.esc(c.id) + '"' + (src.customer_id === c.id ? ' selected' : '') + '>' +
                   PR.esc(c.name) + ' (' + PR.esc(c.mobile || 'no mobile') + ')</option>';
@@ -400,6 +401,19 @@
               [7, 15, 30].map(function (d) { return '<option value="' + d + '"' + (validDays === d ? ' selected' : '') + '>' + d + ' Days</option>'; }).join('') +
               '<option value="custom"' + ([7, 15, 30].indexOf(validDays) === -1 ? ' selected' : '') + '>Custom</option>' +
             '</select></label>' +
+          '</div>' +
+          '<div id="qf_new_customer_fields" hidden>' +
+            '<div class="form-grid three">' +
+              '<label>New Customer Name <span class="req">*</span><input id="nc_name" maxlength="120"></label>' +
+              '<label>Mobile<input id="nc_mobile" maxlength="10"></label>' +
+              '<label>Email<input id="nc_email" type="email" maxlength="160"></label>' +
+            '</div>' +
+            '<div class="form-grid three">' +
+              '<label>Address<input id="nc_address" maxlength="200"></label>' +
+              '<label>City<input id="nc_city" maxlength="80"></label>' +
+              '<label>State<select id="nc_state"></select></label>' +
+            '</div>' +
+            '<label>Pincode<input id="nc_pincode" maxlength="6" style="max-width:160px"></label>' +
           '</div>' +
           '<div class="form-grid">' +
             '<label>Company Name<input id="qf_company" maxlength="160" value="' + PR.esc(src.company_name || (customer && customer.company_name) || '') + '"></label>' +
@@ -536,6 +550,7 @@
 
     if (editable) {
       applyTypeVisibility(body);
+      PR.fillStates(body.querySelector('#nc_state'));
       recompute(body);
       Array.prototype.forEach.call(body.querySelectorAll('input[name="qf_type"]'), function (r) {
         r.addEventListener('change', function () { applyTypeVisibility(body); });
@@ -566,7 +581,9 @@
           return;
         }
         if (e.target.closest('#qf_customer')) {
-          var c = customers.filter(function (x) { return x.id === body.querySelector('#qf_customer').value; })[0];
+          var custVal = body.querySelector('#qf_customer').value;
+          body.querySelector('#qf_new_customer_fields').hidden = custVal !== '__new__';
+          var c = customers.filter(function (x) { return x.id === custVal; })[0];
           if (c) {
             body.querySelector('#qf_company').value = c.company_name || '';
             body.querySelector('#qf_contact').value = c.contact_person || '';
@@ -630,7 +647,36 @@
 
     var customerId = document.getElementById('qf_customer').value;
     var customer = customers.filter(function (c) { return c.id === customerId; })[0];
-    if (!customerId || !customer) { PR.toast('Please select a customer.', 'error'); return; }
+    if (!customerId) { PR.toast('Please select a customer.', 'error'); return; }
+
+    if (customerId === '__new__') {
+      var newName = document.getElementById('nc_name').value.trim();
+      if (!newName) { PR.toast('Please enter the new customer’s name.', 'error'); return; }
+      PR.setBusy(button, true, 'SAVING…');
+      try {
+        var createdCustomer = await PR.call('create customer', function (sb) {
+          return sb.from('customers').insert({
+            name: newName,
+            mobile: document.getElementById('nc_mobile').value.trim() || null,
+            email: document.getElementById('nc_email').value.trim() || null,
+            address: document.getElementById('nc_address').value.trim() || null,
+            city: document.getElementById('nc_city').value.trim() || null,
+            state: document.getElementById('nc_state').value || null,
+            pincode: document.getElementById('nc_pincode').value.trim() || null,
+            customer_type: 'retail'
+          }).select('*').single();
+        });
+        customers.push(createdCustomer);
+        customerId = createdCustomer.id;
+        customer = createdCustomer;
+      } catch (err) {
+        PR.setBusy(button, false);
+        messageHost.innerHTML = '<div class="form-message error" role="alert">' + PR.esc(err.message) + '</div>';
+        PR.toast(err.message, 'error');
+        return;
+      }
+    }
+    if (!customer) { PR.toast('Please select a customer.', 'error'); return; }
 
     var items = readItems(body.querySelector('#quoteItemRows'));
     if (!items.length) { PR.toast('Add at least one product line.', 'error'); return; }
