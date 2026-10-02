@@ -110,10 +110,10 @@
             '<p>☎ ' + PR.esc(cfg.PHONE) + '<br>✉ ' + PR.esc(cfg.EMAIL) + '</p>' +
           '</div>' +
           '<div><h3>Products</h3><ul id="prFooterCats">' +
-            '<li><a href="/products/?category=hybrid-inverters">Hybrid Inverters</a></li>' +
-            '<li><a href="/products/?category=lithium-batteries">Lithium Batteries</a></li>' +
-            '<li><a href="/products/?category=solar-panels">Solar Panels</a></li>' +
-            '<li><a href="/products/?category=e-rickshaw-batteries">E-Rickshaw Batteries</a></li>' +
+            '<li><a href="/hybrid-inverters/">Hybrid Inverters</a></li>' +
+            '<li><a href="/lithium-batteries/">Lithium Batteries</a></li>' +
+            '<li><a href="/solar-panels/">Solar Panels</a></li>' +
+            '<li><a href="/e-rickshaw-batteries/">E-Rickshaw Batteries</a></li>' +
           '</ul></div>' +
           '<div><h3>Company</h3><ul>' +
             '<li><a href="/about/">About Us</a></li>' +

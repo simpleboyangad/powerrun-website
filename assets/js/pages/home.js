@@ -27,7 +27,7 @@
     }
     host.innerHTML = top.map(function (cat) {
       var count = products.filter(function (p) { return p.categoryId === cat.id; }).length;
-      return '<a class="cat" href="/products/?category=' + encodeURIComponent(cat.slug) + '">' +
+      return '<a class="cat" href="' + PR.categoryPath(cat.slug) + '">' +
         '<div class="pic">' + (ICONS[cat.slug] || '⚡') + '</div>' +
         '<h3>' + PR.esc(String(cat.name).toUpperCase()) + '</h3>' +
         '<p>' + PR.esc(cat.description || 'Explore the PowerRun range.') + '</p>' +

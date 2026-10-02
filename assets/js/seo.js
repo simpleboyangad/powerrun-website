@@ -128,7 +128,7 @@
   };
 
   seo.categoryUrl = function (slug) {
-    return (PR.config.SITE_URL || '').replace(/\/+$/, '') + '/products/?category=' + encodeURIComponent(slug);
+    return (PR.config.SITE_URL || '').replace(/\/+$/, '') + PR.categoryPath(slug);
   };
 
   /* --------------------------------------------------------------- JSON-LD */

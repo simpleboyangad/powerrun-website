@@ -32,7 +32,7 @@
       breadcrumbs: [
         { name: 'Home', url: '/' },
         { name: 'Products', url: '/products/' }
-      ].concat(p.categorySlug ? [{ name: p.category, url: '/products/?category=' + encodeURIComponent(p.categorySlug) }] : [])
+      ].concat(p.categorySlug ? [{ name: p.category, url: PR.categoryPath(p.categorySlug) }] : [])
        .concat([{ name: p.name, url: canonical }])
     });
   }
@@ -244,10 +244,10 @@
       '<b>Explore more</b>' +
       '<div class="link-chips">' +
         (p.categorySlug
-          ? '<a href="/products/?category=' + encodeURIComponent(p.categorySlug) + '">All ' + PR.esc(p.category) + '</a>'
+          ? '<a href="' + PR.categoryPath(p.categorySlug) + '">All ' + PR.esc(p.category) + '</a>'
           : '') +
         companions.map(function (c) {
-          return '<a href="/products/?category=' + PR.esc(c.slug) + '">' + PR.esc(c.name) + '</a>';
+          return '<a href="' + PR.categoryPath(c.slug) + '">' + PR.esc(c.name) + '</a>';
         }).join('') +
         '<a href="/products/">All products</a>' +
         '<a href="/warranty/">Warranty registration</a>' +
@@ -285,7 +285,7 @@
     host.innerHTML =
       '<nav class="breadcrumb" aria-label="Breadcrumb">' +
         '<a href="/">Home</a> / <a href="/products/">Products</a>' +
-        (p.categorySlug ? ' / <a href="/products/?category=' + encodeURIComponent(p.categorySlug) + '">' + PR.esc(p.category) + '</a>' : '') +
+        (p.categorySlug ? ' / <a href="' + PR.categoryPath(p.categorySlug) + '">' + PR.esc(p.category) + '</a>' : '') +
         ' / <span aria-current="page">' + PR.esc(p.name) + '</span>' +
       '</nav>' +
       '<div class="product-detail-view">' +

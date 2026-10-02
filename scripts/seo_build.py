@@ -19,6 +19,9 @@ to work properly:
          description already in the HTML, so the page has real content even
          before (or without) JavaScript - assets/js/pages/product.js then
          replaces it with the interactive version
+       - the product grid and FAQ schema on each category landing page
+         (/hybrid-inverters/, /lithium-batteries/, ...); the intro, buying
+         guide and FAQ text there are hand-written HTML and left as they are
        - sitemap.xml   every indexable page, non-empty category and product,
                        no duplicates, with product images for Google Images
        - robots.txt    from global_seo.robots_txt, or a safe default
@@ -31,6 +34,7 @@ Run it after changing SEO settings in the admin panel, then commit and push:
 Reads Supabase with the PUBLIC (publishable) key only - it needs no secrets.
 """
 import datetime
+from html import unescape as html_unescape
 import io
 import json
 import os
@@ -127,7 +131,7 @@ def head_block(title, description, canonical, image, site_name, keywords="",
     # The ids match the ones assets/js/seo.js uses, so the run-time script
     # UPDATES these blocks instead of adding a second copy.
     ids = {"Organization": "ld-organization", "WebSite": "ld-website",
-           "Product": "ld-product", "BreadcrumbList": "ld-breadcrumb"}
+           "Product": "ld-product", "BreadcrumbList": "ld-breadcrumb", "FAQPage": "ld-faq"}
     for node in (schema or []):
         lines.append('<script type="application/ld+json" id="%s">%s</script>'
                      % (ids.get(node.get("@type"), "ld-extra"),
@@ -184,6 +188,7 @@ PRODUCT_TEMPLATE = """<!doctype html>
     <section class="section" id="reviewsSection" style="padding-top:0">
       <div id="productReviews"></div>
     </section>
+{faq}
 </main>
 <div id="pr-footer"></div>
 
@@ -308,6 +313,21 @@ def spec_rows(specs):
     return [], str(specs or "")
 
 
+def category_path(slug):
+    """Same rule as PR.categoryPath() in catalog.js: a category with its own
+    landing page (a folder at the site root holding data-category="<slug>")
+    is linked there, any other one as the filtered catalogue."""
+    page = os.path.join(ROOT, slug, "index.html")
+    if os.path.isfile(page) and ('data-category="%s"' % slug) in io.open(page, encoding="utf-8").read():
+        return "/%s/" % urllib.parse.quote(slug)
+    return "/products/?category=" + urllib.parse.quote(slug)
+
+
+def images_of(product):
+    return [i["image_url"] for i in sorted(product.get("product_images") or [],
+                                           key=lambda x: x.get("sort_order") or 0)]
+
+
 def prerender_product(product, cat, images):
     """Static version of the product view in assets/js/pages/product.js, using
     the same classes so the page looks right before the script takes over.
@@ -316,8 +336,8 @@ def prerender_product(product, cat, images):
     alt = esc(product.get("image_alt") or product["name"])
     out = ['<nav class="breadcrumb" aria-label="Breadcrumb">'
            '<a href="/">Home</a> / <a href="/products/">Products</a>'
-           + (' / <a href="/products/?category=%s">%s</a>'
-              % (esc(urllib.parse.quote(cat["slug"])), esc(cat["name"])) if cat.get("slug") else "")
+           + (' / <a href="%s">%s</a>'
+              % (esc(category_path(cat["slug"])), esc(cat["name"])) if cat.get("slug") else "")
            + ' / <span aria-current="page">%s</span></nav>' % name,
            '<div class="product-detail-view">',
            '<div class="product-gallery-main"><div class="gallery-stage"><div class="gallery-track">']
@@ -360,12 +380,136 @@ def prerender_product(product, cat, images):
         out.append('<div class="spec-table-wrap"><b>Product Description</b><p class="prose">%s</p></div>'
                    % esc(product["description"]))
     out.append('<div class="internal-links"><b>Explore more</b><div class="link-chips">'
-               + ('<a href="/products/?category=%s">All %s</a>'
-                  % (esc(urllib.parse.quote(cat["slug"])), esc(cat["name"])) if cat.get("slug") else "")
+               + ('<a href="%s">All %s</a>'
+                  % (esc(category_path(cat["slug"])), esc(cat["name"])) if cat.get("slug") else "")
                + '<a href="/products/">All products</a><a href="/warranty/">Warranty registration</a>'
                '<a href="/service/">Service request</a></div></div>')
     out.append('</div></div>')
     return "\n".join("        " + line for line in out)
+
+
+def spec_value(product, *labels):
+    rows, _ = spec_rows(product.get("specifications"))
+    for label, value in rows:
+        if label.strip().lower() in labels:
+            return value
+    return ""
+
+
+def faq_schema(pairs):
+    return {
+        "@context": "https://schema.org",
+        "@type": "FAQPage",
+        "mainEntity": [
+            {"@type": "Question", "name": q,
+             "acceptedAnswer": {"@type": "Answer", "text": a}}
+            for q, a in pairs
+        ],
+    }
+
+
+def faq_html(pairs, heading):
+    """Same markup as the hand-written FAQ on the category landing pages."""
+    return ('    <section class="section faq" id="faqSection" style="padding-top:0">\n'
+            '      <div class="section-head"><h2>%s</h2></div>\n' % heading
+            + "".join('      <details class="faq-item"><summary>%s</summary><p>%s</p></details>\n'
+                      % (esc(q), esc(a)) for q, a in pairs)
+            + '    </section>')
+
+
+def faq_from_html(html):
+    """Question/answer pairs from the <details class="faq-item"> blocks of a
+    hand-written page, so the FAQ schema always matches what visitors see."""
+    def text(value):
+        return clean(html_unescape(re.sub(r"<[^>]+>", " ", value)))
+    return [(text(q), text(a)) for q, a in
+            re.findall(r'<details class="faq-item"><summary>(.*?)</summary>(.*?)</details>', html, re.S)]
+
+
+def product_faq(product, cat):
+    """Questions buyers ask before ordering, answered only from the product's
+    own data and the published shipping / replacement policy - nothing that is
+    not already stated on the site."""
+    name = product["name"]
+    slug = (cat or {}).get("slug") or ""
+    pairs = []
+    volts = spec_value(product, "nominal voltage", "battery voltage")
+    if slug == "lithium-batteries" and volts:
+        if volts.startswith("51.2"):
+            pairs.append(("Which inverter works with the %s?" % name,
+                          "It is a 51.2 V LiFePO4 battery, so it pairs with a 48 V inverter - for example the "
+                          "PowerRun 6.2 kW, 8.2 kW, 10.2 kW and 12 kW hybrid inverters."))
+        elif volts.startswith("25.6"):
+            pairs.append(("Which inverter works with the %s?" % name,
+                          "It is a 25.6 V LiFePO4 battery, so it pairs with a 24 V inverter - for example the "
+                          "PowerRun 3.6 kW and 4.2 kW hybrid inverters."))
+    if slug == "hybrid-inverters" and volts:
+        battery = {"48": "51.2 V", "24": "25.6 V"}.get(volts.split()[0])
+        if battery:
+            pairs.append(("Which battery do I need for the %s?" % name,
+                          "It runs on a %s battery bank. PowerRun %s LiFePO4 lithium batteries are a direct "
+                          "match; choose the capacity (Ah) by how many hours of backup you need." % (volts, battery)))
+    if slug == "solar-panels":
+        watts = re.match(r"(\d+)", spec_value(product, "peak power"))
+        if watts:
+            w = int(watts.group(1))
+            pairs.append(("How many %d Wp panels do I need for a 5 kW system?" % w,
+                          "About %d panels (5,000 W / %d Wp, rounded up). Our team can check the string "
+                          "design against your inverter's PV voltage range." % (-(-5000 // w), w)))
+    if slug == "e-rickshaw-batteries" and volts:
+        pairs.append(("Will the %s fit my e-rickshaw?" % name,
+                      "It is a %s LiFePO4 pack for 48 V / 51.2 V e-rickshaw and e-loader systems. Share your "
+                      "vehicle model and controller voltage on WhatsApp and we will confirm the fit before you "
+                      "order." % volts))
+    cycles = spec_value(product, "cycle life")
+    if cycles:
+        pairs.append(("How long does the %s last?" % name, "It is rated for %s." % cycles.rstrip(".")))
+    if product.get("warranty"):
+        pairs.append(("What warranty does it come with?",
+                      "%s. Register the product at powerrun.in/warranty after delivery."
+                      % product["warranty"].rstrip(".")))
+    pairs.append(("How long does delivery take?",
+                  "Orders are dispatched in 1-2 working days and delivered in 3-7 working days across India, "
+                  "with online order tracking."))
+    pairs.append(("What if the product arrives damaged or defective?",
+                  "Damaged, defective or wrong items are replaced within 7 days of delivery - see our refund "
+                  "policy for details."))
+    pairs.append(("Can you help me choose the right model?",
+                  "Yes. Message us on WhatsApp or call +91 87003 07676 with your load and backup needs and our "
+                  "team will suggest the right size."))
+    return pairs
+
+
+def static_card(product, cat, images):
+    """No-JavaScript version of PR.productCard() in catalog.js."""
+    url = "/products/%s/" % urllib.parse.quote(product["slug"])
+    if images:
+        # the 500px copy at thumb/<path> that PR.thumbImg() uses, falling back
+        # to the full listing image if the thumbnail is missing
+        full = images[0]
+        thumb = full.replace("/object/public/product-images/", "/object/public/product-images/thumb/", 1)
+        img = ('<img src="%s" data-full="%s" alt="%s"%s loading="lazy" width="400" height="400">'
+               % (esc(thumb), esc(full), esc(product["name"]),
+                  ' onerror="this.onerror=null;this.src=this.dataset.full"' if thumb != full else ""))
+    else:
+        img = '<div class="ph">%s</div>' % esc("".join(w[0] for w in product["name"].split()[:2]).upper())
+    price, mrp = product.get("price"), product.get("mrp")
+    if price:
+        block = '<div class="card-price"><span class="price">%s</span>' % money(price)
+        if mrp and float(mrp) > float(price):
+            block += ('<span class="card-mrp">%s</span><span class="card-off">%d%% OFF</span></div>'
+                      '<div class="card-save">You save %s</div>'
+                      % (money(mrp), round((1 - float(price) / float(mrp)) * 100), money(float(mrp) - float(price))))
+        else:
+            block += '</div>'
+    else:
+        block = '<div class="card-price"><span class="price">Price on request</span></div>'
+    sku = '<div class="card-sku">%s</div>' % esc(product["sku"]) if product.get("sku") else ""
+    return ('<article class="card"><a class="card-img" href="%s" aria-label="%s">%s</a>'
+            '<div class="card-body"><span class="catname">%s</span><h3><a href="%s">%s</a></h3><p>%s</p>%s%s'
+            '<div class="card-actions"><a class="btn orange" href="%s">VIEW DETAILS</a></div></div></article>'
+            % (url, esc(product["name"]), img, esc((cat or {}).get("name") or "PowerRun"), url,
+               esc(product["name"]), esc(product.get("short_description")), block, sku, url))
 
 
 def asset_stamp():
@@ -494,8 +638,49 @@ def main():
     for cat in categories:
         if cat.get("parent_id") or cat.get("seo_index") is False or cat["id"] not in stocked:
             continue
-        add_url(cat.get("canonical_url") or (site + "/products/?category=" + urllib.parse.quote(cat["slug"])),
-                priority="0.8")
+        add_url(cat.get("canonical_url") or (site + category_path(cat["slug"])), priority="0.8")
+
+    # category landing pages (/hybrid-inverters/ ...): SEO block, a static
+    # product grid and FAQ schema. The intro, guide and FAQ text are
+    # hand-written in the page and never touched here.
+    for cat in categories:
+        if cat.get("parent_id") or category_path(cat["slug"]).startswith("/products/"):
+            continue
+        rel = cat["slug"] + "/index.html"
+        target = os.path.join(ROOT, cat["slug"], "index.html")
+        html = io.open(target, encoding="utf-8").read()
+        canonical = cat.get("canonical_url") or (site + category_path(cat["slug"]))
+        title_now = re.search(r"<title>(.*?)</title>", html, re.S)
+        desc_now = re.search(r'<meta name="description" content="(.*?)"', html)
+        members = [p for p in products if p.get("category_id") == cat["id"]
+                   or (cat_by_id.get(p.get("category_id")) or {}).get("parent_id") == cat["id"]]
+        indexable = cat.get("seo_index") is not False
+        robots = ("index," if indexable else "noindex,") + ("follow" if cat.get("seo_follow") is not False else "nofollow")
+        if indexable:
+            robots += ",max-image-preview:large"
+        schema = [org, breadcrumb_schema([("Home", site + "/"), ("Products", site + "/products/"),
+                                          (cat["name"], canonical)])]
+        pairs = faq_from_html(html)
+        if pairs:
+            schema.append(faq_schema(pairs))
+        first_images = images_of(members[0]) if members else []
+        block = head_block(
+            title=cat.get("meta_title") or (html_unescape(title_now.group(1)) if title_now else cat["name"]),
+            description=clean(cat.get("meta_description") or (html_unescape(desc_now.group(1)) if desc_now else ""), 300),
+            canonical=canonical,
+            image=cat.get("og_image") or (first_images[0] if first_images else default_image),
+            site_name=site_name, keywords=cat.get("focus_keyword") or "",
+            robots=robots, gsc=gsc, schema=schema)
+        html = replace_head(html, block)
+        if members:
+            cards = "\n".join(static_card(p, cat, images_of(p)) for p in members)
+            html = re.sub(r"<!-- GRID:START -->.*?<!-- GRID:END -->",
+                          lambda m: "<!-- GRID:START -->\n" + cards + "\n<!-- GRID:END -->", html, flags=re.S)
+        html = versioned(re.sub(r'(/assets/[^"\']+?\.(?:js|css))\?v=[0-9a-f]+"', r'\1"', html), stamp)
+        io.open(target, "w", encoding="utf-8").write(html)
+        written.append(rel)
+        if indexable and members:
+            add_url(canonical, priority="0.8")
 
     # ------------------------------------------------------------- products
     product_dir = os.path.join(ROOT, "products")
@@ -512,7 +697,7 @@ def main():
         cat = cat_by_id.get(product.get("category_id")) or {}
         crumbs = [("Home", site + "/"), ("Products", site + "/products/")]
         if cat.get("slug"):
-            crumbs.append((cat["name"], site + "/products/?category=" + urllib.parse.quote(cat["slug"])))
+            crumbs.append((cat["name"], site + category_path(cat["slug"])))
         crumbs.append((product["name"], canonical))
         indexable = product.get("seo_index", True)
         robots = ("index," if indexable else "noindex,") + ("follow" if product.get("seo_follow", True) else "nofollow")
@@ -525,11 +710,14 @@ def main():
             keywords=", ".join(x for x in [product.get("focus_keyword"), product.get("secondary_keywords")] if x),
             robots=robots, og_type="product", gsc=gsc,
             schema=[org, product_schema(product, canonical, images, site_name,
-                                         reviews_by_product.get(product["id"]), site), breadcrumb_schema(crumbs)])
+                                         reviews_by_product.get(product["id"]), site), breadcrumb_schema(crumbs),
+                    faq_schema(product_faq(product, cat))])
         folder = os.path.join(product_dir, slug)
         os.makedirs(folder, exist_ok=True)
         io.open(os.path.join(folder, "index.html"), "w", encoding="utf-8").write(
-            versioned(PRODUCT_TEMPLATE.format(head=block, content=prerender_product(product, cat, images)),
+            versioned(PRODUCT_TEMPLATE.format(head=block, content=prerender_product(product, cat, images),
+                                              faq=faq_html(product_faq(product, cat),
+                                                           "FREQUENTLY ASKED <span>QUESTIONS</span>")),
                       stamp))
         written.append("products/%s/index.html" % slug)
         if indexable:
