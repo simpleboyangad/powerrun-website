@@ -12,6 +12,9 @@
 <body class="invoice-body">
 <div class="invoice-toolbar no-print">
   <a class="outline" href="/admin/quotations/">&larr; Back to quotations</a>
+  <label id="dealerMarginToggleWrap" hidden style="display:inline-flex;align-items:center;gap:6px;margin:0 10px">
+    <input type="checkbox" id="dealerMarginToggle"> Include dealer-internal pricing
+  </label>
   <button class="btn orange" type="button" id="printBtn">PRINT / SAVE AS PDF</button>
 </div>
 <div id="quoteContent"><p class="small-note" style="padding:40px">Loading the quotation…</p></div>

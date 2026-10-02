@@ -105,16 +105,17 @@
   async function quotationsTab() {
     if (!cache.quotations) {
       cache.quotations = await PR.call('load customer quotations', function (sb) {
-        return sb.from('quotations').select('id,quote_number,status,total_amount,created_at,converted_order_id')
+        return sb.from('quotations').select('id,quote_number,quotation_type,status,total_amount,created_at,converted_order_id')
           .eq('customer_id', customerId).order('created_at', { ascending: false });
       });
     }
     var rows = cache.quotations;
     if (!rows.length) return PRA.empty('No quotations yet', '');
     return '<div class="table-scroll"><table class="grid"><thead><tr>' +
-      '<th>Quote #</th><th>Date</th><th>Total</th><th>Status</th><th></th>' +
+      '<th>Quote #</th><th>Type</th><th>Date</th><th>Total</th><th>Status</th><th></th>' +
     '</tr></thead><tbody>' + rows.map(function (q) {
       return '<tr><td class="nowrap">' + PR.esc(q.quote_number || '-') + '</td>' +
+        '<td>' + PRA.pill(q.quotation_type || 'customer') + '</td>' +
         '<td class="nowrap">' + PR.formatDate(q.created_at) + '</td>' +
         '<td class="nowrap">' + PR.money(q.total_amount) + '</td>' +
         '<td>' + PRA.pill(q.status) + (q.converted_order_id ? ' <small>Converted</small>' : '') + '</td>' +

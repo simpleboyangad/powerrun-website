@@ -25,6 +25,7 @@
     var payments = settings.payments || { razorpay_enabled: false, cod_enabled: true };
     var store = settings.store || {};
     var company = settings.company || {};
+    var quoteDefaults = settings.quotation_defaults || {};
     var razorpayConfigured = !!PR.config.RAZORPAY_KEY_ID;
 
     host.innerHTML =
@@ -115,8 +116,50 @@
           '</div>' +
           '<p class="hint">GST only appears on an invoice when the product carries a GST rate. ' +
             'Set that per product in Products &rarr; Edit.</p>' +
+          '<div class="form-grid">' +
+            '<label>PAN<input id="co_pan" maxlength="10" value="' + PR.esc(company.pan || '') +
+              '"><span class="hint">Shown on quotations only, leave blank if not needed.</span></label>' +
+            '<label>Authorised Signatory<input id="co_signatory" maxlength="80" value="' +
+              PR.esc(company.signatory_name || '') + '"></label>' +
+          '</div>' +
+          '<div class="form-grid three">' +
+            '<label>Bank Name<input id="co_bank_name" maxlength="100" value="' + PR.esc(company.bank_name || '') + '"></label>' +
+            '<label>Account Name<input id="co_bank_account_name" maxlength="100" value="' + PR.esc(company.bank_account_name || '') + '"></label>' +
+            '<label>Account Number<input id="co_bank_account_number" maxlength="30" value="' + PR.esc(company.bank_account_number || '') + '"></label>' +
+          '</div>' +
+          '<div class="form-grid">' +
+            '<label>IFSC<input id="co_bank_ifsc" maxlength="15" value="' + PR.esc(company.bank_ifsc || '') + '"></label>' +
+            '<label>Branch<input id="co_bank_branch" maxlength="100" value="' + PR.esc(company.bank_branch || '') + '"></label>' +
+          '</div>' +
+          '<p class="hint">Bank details and signatory are only used on the Quotation PDF, not on order invoices.</p>' +
           '<div class="page-actions" style="justify-content:flex-end">' +
             '<button class="btn" type="submit" id="saveCompanyBtn">SAVE COMPANY DETAILS</button></div>' +
+        '</form>' +
+      '</div>' +
+
+      '<div class="panel">' +
+        '<h2>Quotation Settings</h2>' +
+        '<form class="form" id="quoteSettingsForm">' +
+          '<div id="quoteSettingsMessage"></div>' +
+          '<div class="form-grid">' +
+            '<label>Default Validity (days)<select id="qs_valid_days">' +
+              [7, 15, 30].map(function (d) {
+                return '<option value="' + d + '"' + (Number(quoteDefaults.valid_days) === d ? ' selected' : '') + '>' + d + ' Days</option>';
+              }).join('') + '</select></label>' +
+            '<label>Default Payment Terms<input id="qs_payment_terms" maxlength="200" value="' +
+              PR.esc(quoteDefaults.payment_terms || '') + '" placeholder="e.g. 50% Advance / 50% Before Dispatch"></label>' +
+          '</div>' +
+          '<label>Default Delivery Terms<input id="qs_delivery_terms" maxlength="200" value="' +
+            PR.esc(quoteDefaults.delivery_terms || '') + '" placeholder="e.g. 7-10 working days from confirmation"></label>' +
+          '<label>Default Warranty Terms<textarea id="qs_warranty_terms" maxlength="2000">' +
+            PR.esc(quoteDefaults.warranty_terms || '') + '</textarea></label>' +
+          '<label>Default Terms &amp; Conditions<textarea id="qs_terms" maxlength="4000">' +
+            PR.esc(quoteDefaults.terms || '') + '</textarea></label>' +
+          '<label>PDF Footer Note<input id="qs_footer" maxlength="300" value="' + PR.esc(quoteDefaults.pdf_footer || '') + '"></label>' +
+          '<p class="hint">These prefill every new quotation. Each quotation can still be edited individually ' +
+            'without changing these defaults.</p>' +
+          '<div class="page-actions" style="justify-content:flex-end">' +
+            '<button class="btn" type="submit" id="saveQuoteSettingsBtn">SAVE QUOTATION SETTINGS</button></div>' +
         '</form>' +
       '</div>' +
 
@@ -222,8 +265,27 @@
         address_line2: document.getElementById('co_addr2').value.trim(),
         city: document.getElementById('co_city').value.trim(),
         state: document.getElementById('co_state').value,
-        pincode: document.getElementById('co_pincode').value.trim()
+        pincode: document.getElementById('co_pincode').value.trim(),
+        pan: document.getElementById('co_pan').value.trim().toUpperCase(),
+        signatory_name: document.getElementById('co_signatory').value.trim(),
+        bank_name: document.getElementById('co_bank_name').value.trim(),
+        bank_account_name: document.getElementById('co_bank_account_name').value.trim(),
+        bank_account_number: document.getElementById('co_bank_account_number').value.trim(),
+        bank_ifsc: document.getElementById('co_bank_ifsc').value.trim().toUpperCase(),
+        bank_branch: document.getElementById('co_bank_branch').value.trim()
       }, document.getElementById('saveCompanyBtn'), 'companyMessage');
+    });
+
+    document.getElementById('quoteSettingsForm').addEventListener('submit', function (event) {
+      event.preventDefault();
+      saveSetting('quotation_defaults', {
+        valid_days: Number(document.getElementById('qs_valid_days').value) || 15,
+        payment_terms: document.getElementById('qs_payment_terms').value.trim(),
+        delivery_terms: document.getElementById('qs_delivery_terms').value.trim(),
+        warranty_terms: document.getElementById('qs_warranty_terms').value.trim(),
+        terms: document.getElementById('qs_terms').value.trim(),
+        pdf_footer: document.getElementById('qs_footer').value.trim()
+      }, document.getElementById('saveQuoteSettingsBtn'), 'quoteSettingsMessage');
     });
 
     document.getElementById('settingsLogout').addEventListener('click', function () {

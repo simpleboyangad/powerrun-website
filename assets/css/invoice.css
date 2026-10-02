@@ -75,5 +75,5 @@ table.invoice-items .num { text-align: right; white-space: nowrap; }
   .invoice-sheet {
     box-shadow: none; margin: 0; width: auto; min-height: 0; padding: 0;
   }
-  @page { size: A4; margin: 14mm; }
+  @page { size: A4; margin: 14mm 14mm 20mm; @bottom-right { content: "Page " counter(page) " of " counter(pages); font-size: 9px; color: #999; } }
 }

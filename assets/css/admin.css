@@ -211,6 +211,9 @@ table.grid td small { color: var(--muted); display: block; margin-top: 3px; }
 .pill.sent { background: #e7f0ff; color: #1a4b9c; }
 .pill.accepted { background: #e7f6ed; color: #14663a; }
 .pill.draft, .pill.expired { background: #eceef1; color: #444; }
+.pill.customer { background: #eceef1; color: #444; }
+.pill.dealer { background: #fff4e0; color: #96590a; }
+.pill.project { background: #efe7ff; color: #5b2ea6; }
 
 .empty {
   text-align: center; padding: 44px 20px; color: var(--muted);
