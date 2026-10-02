@@ -397,87 +397,157 @@ def spec_value(product, *labels):
 
 
 def faq_schema(pairs):
+    """FAQPage schema from (question, answer[, question_hi, answer_hi]) tuples.
+    Both languages go in, the same as visitors see on the page."""
+    def both(en, hi):
+        return en + (" / " + hi if hi else "")
     return {
         "@context": "https://schema.org",
         "@type": "FAQPage",
+        "inLanguage": ["en-IN", "hi-IN"],
         "mainEntity": [
-            {"@type": "Question", "name": q,
-             "acceptedAnswer": {"@type": "Answer", "text": a}}
-            for q, a in pairs
+            {"@type": "Question", "name": both(p[0], p[2] if len(p) > 2 else ""),
+             "acceptedAnswer": {"@type": "Answer", "text": both(p[1], p[3] if len(p) > 3 else "")}}
+            for p in pairs
         ],
     }
 
 
-def faq_html(pairs, heading):
+FAQ_HEADING = 'FREQUENTLY ASKED <span>QUESTIONS</span>'
+FAQ_HEADING_HI = 'अक्सर पूछे जाने वाले सवाल'
+
+
+def faq_item(q, a, q_hi="", a_hi="", raw=False):
+    """One FAQ entry: English first, Hindi under it. raw=True keeps links in
+    hand-written answers; generated text is escaped."""
+    e = (lambda v: v) if raw else esc
+    return ('<details class="faq-item"><summary><span class="faq-q">%s%s</span></summary>'
+            '<p>%s</p>%s</details>'
+            % (e(q), '<span class="faq-hi" lang="hi">%s</span>' % e(q_hi) if q_hi else "",
+               e(a), '<p class="faq-hi" lang="hi">%s</p>' % e(a_hi) if a_hi else ""))
+
+
+def faq_html(pairs, heading=FAQ_HEADING):
     """Same markup as the hand-written FAQ on the category landing pages."""
     return ('    <section class="section faq" id="faqSection" style="padding-top:0">\n'
-            '      <div class="section-head"><h2>%s</h2></div>\n' % heading
-            + "".join('      <details class="faq-item"><summary>%s</summary><p>%s</p></details>\n'
-                      % (esc(q), esc(a)) for q, a in pairs)
+            '      <div class="section-head"><div><h2>%s</h2>'
+            '<p class="section-sub" lang="hi">%s</p></div></div>\n' % (heading, FAQ_HEADING_HI)
+            + "".join("      " + faq_item(*p) + "\n" for p in pairs)
             + '    </section>')
 
 
 def faq_from_html(html):
-    """Question/answer pairs from the <details class="faq-item"> blocks of a
+    """(question, answer, question_hi, answer_hi) from the FAQ blocks of a
     hand-written page, so the FAQ schema always matches what visitors see."""
     def text(value):
-        return clean(html_unescape(re.sub(r"<[^>]+>", " ", value)))
-    return [(text(q), text(a)) for q, a in
+        return clean(html_unescape(re.sub(r"<[^>]+>", " ", value or "")))
+
+    def hindi(block):
+        found = re.search(r'class="faq-hi" lang="hi">(.*?)</(?:span|p)>', block, re.S)
+        return text(found.group(1)) if found else ""
+
+    def english(block):
+        return text(re.sub(r'<(span|p) class="faq-hi" lang="hi">.*?</\1>', "", block, flags=re.S))
+
+    return [(english(q), english(a), hindi(q), hindi(a)) for q, a in
             re.findall(r'<details class="faq-item"><summary>(.*?)</summary>(.*?)</details>', html, re.S)]
 
 
+def warranty_hi(text):
+    for en, hi in (("Years", "साल"), ("Year", "साल"), ("Product", "प्रोडक्ट"),
+                   ("Performance", "परफ़ॉर्मेंस"), ("Warranty", "वारंटी")):
+        text = text.replace(en, hi)
+    return text
+
+
+def cycles_hi(text):
+    return (text.replace("cycles at 80% DoD", "साइकिल (80% DoD पर)")
+                .replace("cycles", "साइकिल"))
+
+
 def product_faq(product, cat):
-    """Questions buyers ask before ordering, answered only from the product's
-    own data and the published shipping / replacement policy - nothing that is
-    not already stated on the site."""
+    """Questions buyers ask before ordering, in English and Hindi, answered only
+    from the product's own data and the published shipping / replacement
+    policy - nothing that is not already stated on the site."""
     name = product["name"]
     slug = (cat or {}).get("slug") or ""
-    pairs = []
+    faq = []
     volts = spec_value(product, "nominal voltage", "battery voltage")
     if slug == "lithium-batteries" and volts:
         if volts.startswith("51.2"):
-            pairs.append(("Which inverter works with the %s?" % name,
-                          "It is a 51.2 V LiFePO4 battery, so it pairs with a 48 V inverter - for example the "
-                          "PowerRun 6.2 kW, 8.2 kW, 10.2 kW and 12 kW hybrid inverters."))
+            faq.append(("Which inverter works with the %s?" % name,
+                        "It is a 51.2 V LiFePO4 battery, so it pairs with a 48 V inverter - for example the "
+                        "PowerRun 6.2 kW, 8.2 kW, 10.2 kW and 12 kW hybrid inverters.",
+                        "%s किस इन्वर्टर के साथ चलेगी?" % name,
+                        "यह 51.2 V की LiFePO4 बैटरी है, इसलिए यह 48 V इन्वर्टर के साथ चलती है - जैसे PowerRun "
+                        "के 6.2 kW, 8.2 kW, 10.2 kW और 12 kW हाइब्रिड इन्वर्टर।"))
         elif volts.startswith("25.6"):
-            pairs.append(("Which inverter works with the %s?" % name,
-                          "It is a 25.6 V LiFePO4 battery, so it pairs with a 24 V inverter - for example the "
-                          "PowerRun 3.6 kW and 4.2 kW hybrid inverters."))
+            faq.append(("Which inverter works with the %s?" % name,
+                        "It is a 25.6 V LiFePO4 battery, so it pairs with a 24 V inverter - for example the "
+                        "PowerRun 3.6 kW and 4.2 kW hybrid inverters.",
+                        "%s किस इन्वर्टर के साथ चलेगी?" % name,
+                        "यह 25.6 V की LiFePO4 बैटरी है, इसलिए यह 24 V इन्वर्टर के साथ चलती है - जैसे PowerRun "
+                        "के 3.6 kW और 4.2 kW हाइब्रिड इन्वर्टर।"))
     if slug == "hybrid-inverters" and volts:
         battery = {"48": "51.2 V", "24": "25.6 V"}.get(volts.split()[0])
         if battery:
-            pairs.append(("Which battery do I need for the %s?" % name,
-                          "It runs on a %s battery bank. PowerRun %s LiFePO4 lithium batteries are a direct "
-                          "match; choose the capacity (Ah) by how many hours of backup you need." % (volts, battery)))
+            faq.append(("Which battery do I need for the %s?" % name,
+                        "It runs on a %s battery bank. PowerRun %s LiFePO4 lithium batteries are a direct "
+                        "match; choose the capacity (Ah) by how many hours of backup you need." % (volts, battery),
+                        "%s के साथ कौन सी बैटरी लगेगी?" % name,
+                        "यह %s बैटरी बैंक पर चलता है। PowerRun की %s LiFePO4 लिथियम बैटरी इसके साथ सीधे लग "
+                        "जाती है; आपको कितने घंटे का बैकअप चाहिए, उसके हिसाब से क्षमता (Ah) चुनें।"
+                        % (volts, battery)))
     if slug == "solar-panels":
         watts = re.match(r"(\d+)", spec_value(product, "peak power"))
         if watts:
             w = int(watts.group(1))
-            pairs.append(("How many %d Wp panels do I need for a 5 kW system?" % w,
-                          "About %d panels (5,000 W / %d Wp, rounded up). Our team can check the string "
-                          "design against your inverter's PV voltage range." % (-(-5000 // w), w)))
+            n = -(-5000 // w)
+            faq.append(("How many %d Wp panels do I need for a 5 kW system?" % w,
+                        "About %d panels (5,000 W / %d Wp, rounded up). Our team can check the string "
+                        "design against your inverter's PV voltage range." % (n, w),
+                        "5 kW सिस्टम के लिए %d Wp के कितने पैनल चाहिए?" % w,
+                        "लगभग %d पैनल (5,000 W / %d Wp, ऊपर की ओर पूरा करके)। हमारी टीम आपके इन्वर्टर की "
+                        "PV वोल्टेज रेंज के हिसाब से स्ट्रिंग डिज़ाइन भी चेक कर देगी।" % (n, w)))
     if slug == "e-rickshaw-batteries" and volts:
-        pairs.append(("Will the %s fit my e-rickshaw?" % name,
-                      "It is a %s LiFePO4 pack for 48 V / 51.2 V e-rickshaw and e-loader systems. Share your "
-                      "vehicle model and controller voltage on WhatsApp and we will confirm the fit before you "
-                      "order." % volts))
+        faq.append(("Will the %s fit my e-rickshaw?" % name,
+                    "It is a %s LiFePO4 pack for 48 V / 51.2 V e-rickshaw and e-loader systems. Share your "
+                    "vehicle model and controller voltage on WhatsApp and we will confirm the fit before you "
+                    "order." % volts,
+                    "क्या %s मेरे ई-रिक्शा में लगेगी?" % name,
+                    "यह %s की LiFePO4 बैटरी है, जो 48 V / 51.2 V ई-रिक्शा और ई-लोडर के लिए बनी है। ऑर्डर से "
+                    "पहले अपनी गाड़ी का मॉडल और कंट्रोलर वोल्टेज WhatsApp पर भेजें, हम कन्फ़र्म कर देंगे।" % volts))
     cycles = spec_value(product, "cycle life")
     if cycles:
-        pairs.append(("How long does the %s last?" % name, "It is rated for %s." % cycles.rstrip(".")))
+        faq.append(("How long does the %s last?" % name,
+                    "It is rated for %s." % cycles.rstrip("."),
+                    "%s कितने समय तक चलती है?" % name,
+                    "इसकी रेटिंग %s है।" % cycles_hi(cycles.rstrip("."))))
     if product.get("warranty"):
-        pairs.append(("What warranty does it come with?",
-                      "%s. Register the product at powerrun.in/warranty after delivery."
-                      % product["warranty"].rstrip(".")))
-    pairs.append(("How long does delivery take?",
-                  "Orders are dispatched in 1-2 working days and delivered in 3-7 working days across India, "
-                  "with online order tracking."))
-    pairs.append(("What if the product arrives damaged or defective?",
-                  "Damaged, defective or wrong items are replaced within 7 days of delivery - see our refund "
-                  "policy for details."))
-    pairs.append(("Can you help me choose the right model?",
-                  "Yes. Message us on WhatsApp or call +91 87003 07676 with your load and backup needs and our "
-                  "team will suggest the right size."))
-    return pairs
+        warranty = product["warranty"].rstrip(".")
+        faq.append(("What warranty does it come with?",
+                    "%s. Register the product at powerrun.in/warranty after delivery." % warranty,
+                    "इसके साथ कितनी वारंटी मिलती है?",
+                    "%s। डिलीवरी के बाद powerrun.in/warranty पर प्रोडक्ट रजिस्टर करें।" % warranty_hi(warranty)))
+    faq.append(("How long does delivery take?",
+                "Orders are dispatched in 1-2 working days and delivered in 3-7 working days across India, "
+                "with online order tracking.",
+                "डिलीवरी में कितना समय लगता है?",
+                "ऑर्डर 1-2 वर्किंग दिनों में डिस्पैच होता है और पूरे भारत में 3-7 वर्किंग दिनों में डिलीवर हो "
+                "जाता है। आप ऑर्डर को ऑनलाइन ट्रैक भी कर सकते हैं।"))
+    faq.append(("What if the product arrives damaged or defective?",
+                "Damaged, defective or wrong items are replaced within 7 days of delivery - see our refund "
+                "policy for details.",
+                "अगर प्रोडक्ट टूटा हुआ या ख़राब निकले तो?",
+                "टूटा हुआ, ख़राब या ग़लत प्रोडक्ट डिलीवरी के 7 दिन के अंदर बदल दिया जाता है। पूरी जानकारी "
+                "हमारी रिफ़ंड पॉलिसी में है।"))
+    faq.append(("Can you help me choose the right model?",
+                "Yes. Message us on WhatsApp or call +91 87003 07676 with your load and backup needs and our "
+                "team will suggest the right size.",
+                "क्या आप सही मॉडल चुनने में मदद करेंगे?",
+                "हाँ। अपना लोड और कितने घंटे का बैकअप चाहिए, यह WhatsApp पर भेजें या +91 87003 07676 पर कॉल "
+                "करें - हमारी टीम सही साइज़ बताएगी।"))
+    return faq
 
 
 def static_card(product, cat, images):
@@ -716,8 +786,7 @@ def main():
         os.makedirs(folder, exist_ok=True)
         io.open(os.path.join(folder, "index.html"), "w", encoding="utf-8").write(
             versioned(PRODUCT_TEMPLATE.format(head=block, content=prerender_product(product, cat, images),
-                                              faq=faq_html(product_faq(product, cat),
-                                                           "FREQUENTLY ASKED <span>QUESTIONS</span>")),
+                                              faq=faq_html(product_faq(product, cat))),
                       stamp))
         written.append("products/%s/index.html" % slug)
         if indexable:
