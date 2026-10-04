@@ -364,6 +364,56 @@
     }
   }
 
+  function renderQuoteRequest(p) {
+    var section = document.getElementById('productSection');
+    if (!section || document.getElementById('quoteRequest')) return;
+    section.insertAdjacentHTML('afterend',
+      '<section class="section" id="quoteRequest" style="padding-top:0"><div class="panel" id="quoteRequestBox">' +
+        '<h2>Quote chahiye?</h2>' +
+        '<p class="small-note">Apna naam aur mobile daalein, aapko is product ka quotation turant mil jayega (7 din valid).</p>' +
+        '<form class="form" id="quoteRequestForm" novalidate>' +
+          '<div class="form-grid">' +
+            '<label>Naam <span class="req">*</span><input id="qr_name" maxlength="80" required></label>' +
+            '<label>Mobile <span class="req">*</span><input id="qr_mobile" inputmode="numeric" maxlength="10" required placeholder="10-digit"></label>' +
+          '</div>' +
+          '<button class="btn orange" id="quoteRequestBtn" type="submit">QUOTE PAAYE</button>' +
+        '</form>' +
+        '<div id="quoteRequestResult"></div>' +
+      '</div></section>');
+
+    document.getElementById('quoteRequestForm').addEventListener('submit', async function (event) {
+      event.preventDefault();
+      var name = document.getElementById('qr_name').value.trim();
+      var mobile = document.getElementById('qr_mobile').value.replace(/\D/g, '');
+      var button = document.getElementById('quoteRequestBtn');
+      if (name.length < 2) { PR.toast('Naam daalein.', 'error'); return; }
+      if (!/^[6-9]\d{9}$/.test(mobile)) { PR.toast('Sahi 10-digit mobile number daalein.', 'error'); return; }
+
+      PR.setBusy(button, true, 'BANA RAHE HAIN…');
+      try {
+        var q = await PR.call('create quote', function (sb) {
+          return sb.rpc('submit_product_quote_request', { p_name: name, p_mobile: mobile, p_product_id: p.id });
+        });
+        PR.setBusy(button, false);
+        var quoteUrl = '/quote/?no=' + encodeURIComponent(q.quote_number) + '&mobile=' + mobile;
+        var waText = 'Quote No: ' + q.quote_number + ' (' + q.product_name + ') ke baare me baat karni hai.';
+        document.getElementById('quoteRequestResult').innerHTML =
+          '<div class="form-message success" style="margin-top:14px">' +
+            (q.existing ? 'Aapka quote pehle se bana hua hai.' : 'Aapka quote ban gaya hai.') + '</div>' +
+          '<div class="summary-row"><span>Quote No</span><b>' + PR.esc(q.quote_number) + '</b></div>' +
+          '<div class="summary-row"><span>Total (GST sahit)</span><b>' + PR.money(q.total_amount) + '</b></div>' +
+          '<div class="summary-row"><span>Valid Until</span><b>' + PR.formatDate(q.valid_until) + '</b></div>' +
+          '<div class="detail-actions" style="margin-top:14px">' +
+            '<a class="btn orange" href="' + quoteUrl + '">POORA QUOTE DEKHEIN</a>' +
+            '<a class="outline" href="' + PR.esc(PR.whatsapp(waText)) + '" target="_blank" rel="noopener">WHATSAPP PAR BAAT KAREIN</a>' +
+          '</div>';
+      } catch (err) {
+        PR.setBusy(button, false);
+        PR.toast(err.message, 'error');
+      }
+    });
+  }
+
   async function renderRelated(p) {
     try {
       await PR.loadProducts();
@@ -547,6 +597,7 @@
       render(product);
       renderRelated(product);
       renderReviews(product);
+      renderQuoteRequest(product);
     } catch (err) {
       PR.toast(err.message, 'error');
       host.innerHTML = '<div class="empty-state"><h3>Product could not be loaded</h3>' +
