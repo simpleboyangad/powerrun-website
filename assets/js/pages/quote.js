@@ -34,7 +34,7 @@
         '</div>' +
         (q.warranty_terms ? '<h2 style="margin:22px 0 8px;font-size:17px">Warranty</h2><p class="prose">' + PR.esc(q.warranty_terms) + '</p>' : '') +
         (q.terms ? '<h2 style="margin:22px 0 8px;font-size:17px">Terms &amp; Conditions</h2><p class="prose" style="white-space:pre-line">' + PR.esc(q.terms) + '</p>' : '') +
-        '<div class="detail-actions" style="margin-top:18px">' +
+        '<div class="detail-actions no-print" style="margin-top:18px">' +
           '<a class="btn orange" href="' + PR.esc(PR.whatsapp('Quote No: ' + q.quote_number + ' ke baare me baat karni hai.')) + '" target="_blank" rel="noopener">WHATSAPP PAR BAAT KAREIN</a>' +
           '<button class="outline" type="button" id="quotePdfBtn">PDF DOWNLOAD</button>' +
         '</div>' +
