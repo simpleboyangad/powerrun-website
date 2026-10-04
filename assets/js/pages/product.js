@@ -387,7 +387,7 @@
             '<label>State <span class="req">*</span><select id="qr_state" required></select></label>' +
             '<label>Pincode <span class="req">*</span><input id="qr_pincode" inputmode="numeric" maxlength="6" required></label>' +
           '</div>' +
-          '<label class="inline" style="margin-top:6px"><input type="checkbox" id="qr_same" checked> Shipping address billing jaisa hi hai</label>' +
+          '<label style="display:flex;align-items:center;gap:8px;margin-top:6px;font-weight:600"><input type="checkbox" id="qr_same" checked style="width:18px;height:18px;margin:0;flex:none"> Shipping address billing jaisa hi hai</label>' +
           '<div id="qr_ship" hidden>' +
             '<b style="display:block;margin-top:6px">Shipping Address</b>' +
             '<label>Address <span class="req">*</span><input id="qr_s_address" maxlength="200"></label>' +
