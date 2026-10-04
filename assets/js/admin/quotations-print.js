@@ -128,10 +128,6 @@
           (quote.commissioning_included ? 'Commissioning included.<br>' : '') +
         '</div>' +
 
-        (quote.warranty_terms
-          ? '<div class="invoice-note"><b>Warranty</b><br>' + PR.esc(quote.warranty_terms).replace(/\n/g, '<br>') + '</div>'
-          : '') +
-
         (quote.terms
           ? '<div class="invoice-note"><b>Terms &amp; Conditions</b><br>' + PR.esc(quote.terms).replace(/\n/g, '<br>') + '</div>'
           : '<div class="invoice-note">This quotation is valid until the date shown above. Prices and availability are subject to change thereafter.</div>') +

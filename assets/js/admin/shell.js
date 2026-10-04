@@ -189,14 +189,14 @@
   // Polls for records created since the last check and alerts the admin with
   // a popup, a short beep and (if allowed) a browser notification.
   var NOTIFY_SOURCES = [
-    { table: 'orders', label: 'Naya order', select: 'id,order_number,customer_name,total_amount,created_at',
+    { table: 'orders', label: 'New order', select: 'id,order_number,customer_name,total_amount,created_at',
       text: function (r) { return r.order_number + ' · ' + r.customer_name + ' · ' + PR.money(r.total_amount); },
       link: function (r) { return '/admin/orders/?order=' + encodeURIComponent(r.id); } },
     { table: 'quotations', label: 'New quote request', select: 'id,quote_number,customer_name,total_amount,created_at',
       filter: function (q) { return q.eq('created_by_name', 'Website enquiry'); },
       text: function (r) { return r.quote_number + ' · ' + r.customer_name + ' · ' + PR.money(r.total_amount) + ' (approve karna hai)'; },
       link: function (r) { return '/admin/quotations/?id=' + encodeURIComponent(r.id); } },
-    { table: 'leads', label: 'Nayi enquiry', select: 'id,name,mobile,created_at',
+    { table: 'leads', label: 'New enquiry', select: 'id,name,mobile,created_at',
       filter: function (q) { return q.or('message.is.null,message.not.like.Quote requested*'); },
       text: function (r) { return r.name + ' · ' + (r.mobile || ''); },
       link: function () { return '/admin/leads/'; } },
