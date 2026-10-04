@@ -145,7 +145,7 @@
   }
 
   function collect() {
-    return PR.validateForm(document.getElementById('checkoutForm'), [
+    var values = PR.validateForm(document.getElementById('checkoutForm'), [
       { el: 'ck_name', name: 'name', label: 'Full name', required: true },
       { el: 'ck_mobile', name: 'mobile', label: 'Mobile number', required: true, type: 'mobile' },
       { el: 'ck_email', name: 'email', label: 'Email address', type: 'email' },
@@ -154,6 +154,20 @@
       { el: 'ck_state', name: 'state', label: 'State', required: true },
       { el: 'ck_pincode', name: 'pincode', label: 'Pincode', required: true, type: 'pincode' }
     ]);
+    if (!values) return null;
+    var same = document.getElementById('ck_ship_same').checked;
+    values.shipping_same = same;
+    if (!same) {
+      var ship = PR.validateForm(document.getElementById('checkoutForm'), [
+        { el: 'ck_s_address', name: 'shipping_address', label: 'Shipping address', required: true },
+        { el: 'ck_s_city', name: 'shipping_city', label: 'Shipping city', required: true },
+        { el: 'ck_s_state', name: 'shipping_state', label: 'Shipping state', required: true },
+        { el: 'ck_s_pincode', name: 'shipping_pincode', label: 'Shipping pincode', required: true, type: 'pincode' }
+      ]);
+      if (!ship) return null;
+      Object.assign(values, ship);
+    }
+    return values;
   }
 
   function goToConfirmation(orderNumber, mobile) {
@@ -363,6 +377,10 @@
   async function init() {
     PR.mountLayout('products');
     PR.fillStates(document.getElementById('ck_state'));
+    PR.fillStates(document.getElementById('ck_s_state'));
+    document.getElementById('ck_ship_same').addEventListener('change', function (e) {
+      document.getElementById('ck_ship').hidden = e.target.checked;
+    });
 
     try {
       settings = await PR.getSettings();

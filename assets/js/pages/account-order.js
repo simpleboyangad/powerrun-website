@@ -76,8 +76,9 @@
             '<h2>Delivery Address</h2>' +
             '<p class="small-note" style="margin:0;line-height:1.8">' +
               '<b>' + PR.esc(order.customer_name) + '</b><br>' +
-              PR.esc(order.address || '') + '<br>' +
-              PR.esc([order.city, order.state, order.pincode].filter(Boolean).join(', ')) + '<br>' +
+              PR.esc(order.shipping_address || order.address || '') + '<br>' +
+              PR.esc([order.shipping_city || order.city, order.shipping_state || order.state,
+                      order.shipping_pincode || order.pincode].filter(Boolean).join(', ')) + '<br>' +
               '☎ ' + PR.esc(order.customer_mobile) +
             '</p>' +
           '</div>' +

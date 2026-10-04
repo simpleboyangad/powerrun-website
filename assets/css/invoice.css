@@ -27,7 +27,7 @@
 .invoice-title .meta { font-size: 12.5px; color: #555; margin-top: 8px; line-height: 1.8; }
 .invoice-title .meta b { color: #171717; }
 
-.invoice-parties { display: grid; grid-template-columns: 1fr 1fr; gap: 26px; margin-bottom: 24px; }
+.invoice-parties { display: grid; grid-template-columns: repeat(auto-fit, minmax(180px, 1fr)); gap: 26px; margin-bottom: 24px; }
 .invoice-parties h3 {
   margin: 0 0 7px; font-size: 11px; text-transform: uppercase; letter-spacing: .09em; color: #888;
 }

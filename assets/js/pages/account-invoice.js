@@ -61,6 +61,14 @@
             '</p>' +
           '</div>' +
           '<div>' +
+            '<h3>Shipped to</h3>' +
+            '<p><b>' + PR.esc(order.customer_name) + '</b><br>' +
+              PR.esc([order.shipping_address || order.address, order.shipping_city || order.city,
+                      order.shipping_state || order.state, order.shipping_pincode || order.pincode]
+                     .filter(Boolean).join(', ')) +
+            '</p>' +
+          '</div>' +
+          '<div>' +
             '<h3>Order details</h3>' +
             '<p>' +
               'Status: <b style="text-transform:capitalize">' + PR.esc(order.order_status) + '</b><br>' +

@@ -24,7 +24,7 @@
 <meta name="theme-color" content="#ff5a00">
 <link rel="icon" href="/assets/powerrun-logo.png">
 <link rel="preconnect" href="https://nnkopxkyxcmtiunftlgr.supabase.co" crossorigin>
-<link rel="stylesheet" href="/assets/css/site.css?v=8bc65c5f">
+<link rel="stylesheet" href="/assets/css/site.css?v=7bb311d5">
 
 </head>
 <body>
@@ -72,6 +72,24 @@
                        maxlength="6" placeholder="6-digit pincode" style="max-width:220px">
               </label>
 
+              <label style="display:flex;align-items:center;gap:8px;margin-top:6px;font-weight:600">
+                <input type="checkbox" id="ck_ship_same" checked style="width:18px;height:18px;margin:0;flex:none">
+                Delivery address upar wale address jaisa hi hai
+              </label>
+              <div id="ck_ship" hidden>
+                <h2 style="margin-top:10px;font-size:16px">Shipping / Delivery Address</h2>
+                <label>Address <span class="req">*</span>
+                  <textarea id="ck_s_address" rows="2" maxlength="300" placeholder="House / flat no., street, area, landmark"></textarea>
+                </label>
+                <div class="form-grid">
+                  <label>City <span class="req">*</span><input id="ck_s_city" maxlength="80"></label>
+                  <label>State <span class="req">*</span><select id="ck_s_state"></select></label>
+                </div>
+                <label>Pincode <span class="req">*</span>
+                  <input id="ck_s_pincode" inputmode="numeric" maxlength="6" placeholder="6-digit pincode" style="max-width:220px">
+                </label>
+              </div>
+
               <h2 style="margin-top:14px;font-size:18px">Payment Method</h2>
               <div class="radio-row" id="paymentMethods"></div>
 
@@ -87,13 +105,13 @@
 </main>
 <div id="pr-footer"></div>
 <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2.48.0/dist/umd/supabase.js"></script>
-<script src="/assets/js/config.js?v=8bc65c5f"></script>
-<script src="/assets/js/core.js?v=8bc65c5f"></script>
-<script src="/assets/js/seo.js?v=8bc65c5f"></script>
-<script src="/assets/js/cart.js?v=8bc65c5f"></script>
-<script src="/assets/js/layout.js?v=8bc65c5f"></script>
-<script src="/assets/js/catalog.js?v=8bc65c5f"></script>
-<script src="/assets/js/account.js?v=8bc65c5f"></script>
-<script src="/assets/js/pages/checkout.js?v=8bc65c5f"></script>
+<script src="/assets/js/config.js?v=7bb311d5"></script>
+<script src="/assets/js/core.js?v=7bb311d5"></script>
+<script src="/assets/js/seo.js?v=7bb311d5"></script>
+<script src="/assets/js/cart.js?v=7bb311d5"></script>
+<script src="/assets/js/layout.js?v=7bb311d5"></script>
+<script src="/assets/js/catalog.js?v=7bb311d5"></script>
+<script src="/assets/js/account.js?v=7bb311d5"></script>
+<script src="/assets/js/pages/checkout.js?v=7bb311d5"></script>
 </body>
 </html>

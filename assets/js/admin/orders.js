@@ -97,10 +97,16 @@
               ? '✉ <a href="mailto:' + PR.esc(order.customer_email) + '">' + PR.esc(order.customer_email) + '</a>'
               : '') +
           '</p></div>' +
-        '<div><b style="font-size:12px;color:#6d6d6d">DELIVERY ADDRESS</b>' +
+        '<div><b style="font-size:12px;color:#6d6d6d">BILLING ADDRESS</b>' +
           '<p style="margin:6px 0 0;line-height:1.7">' +
             PR.esc(order.address || '-') + '<br>' +
             PR.esc([order.city, order.state, order.pincode].filter(Boolean).join(', ')) +
+          '</p>' +
+          '<b style="font-size:12px;color:#6d6d6d;display:block;margin-top:10px">SHIPPING / DELIVERY ADDRESS</b>' +
+          '<p style="margin:6px 0 0;line-height:1.7">' +
+            PR.esc(order.shipping_address || order.address || '-') + '<br>' +
+            PR.esc([order.shipping_city || order.city, order.shipping_state || order.state,
+                    order.shipping_pincode || order.pincode].filter(Boolean).join(', ')) +
           '</p></div>' +
       '</div>' +
 
