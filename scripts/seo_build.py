@@ -328,7 +328,7 @@ def images_of(product):
                                            key=lambda x: x.get("sort_order") or 0)]
 
 
-def prerender_product(product, cat, images):
+def prerender_product(product, cat, images, related=None):
     """Static version of the product view in assets/js/pages/product.js, using
     the same classes so the page looks right before the script takes over.
     Only content that does not go stale between builds (no stock counts)."""
@@ -383,7 +383,12 @@ def prerender_product(product, cat, images):
                + ('<a href="%s">All %s</a>'
                   % (esc(category_path(cat["slug"])), esc(cat["name"])) if cat.get("slug") else "")
                + '<a href="/products/">All products</a><a href="/warranty/">Warranty registration</a>'
-               '<a href="/service/">Service request</a></div></div>')
+               '<a href="/service/">Service request</a></div>'
+               + ('<b>Similar products</b><div class="link-chips">'
+                  + "".join('<a href="/products/%s/">%s</a>' % (esc(urllib.parse.quote(r["slug"])), esc(r["name"]))
+                            for r in (related or []))
+                  + '</div>' if related else '')
+               + '</div>')
     out.append('</div></div>')
     return "\n".join("        " + line for line in out)
 
@@ -782,10 +787,13 @@ def main():
             schema=[org, product_schema(product, canonical, images, site_name,
                                          reviews_by_product.get(product["id"]), site), breadcrumb_schema(crumbs),
                     faq_schema(product_faq(product, cat))])
+        same_cat = [p for p in products if p["id"] != product["id"] and p.get("category_id") == product.get("category_id")]
+        same_sub = [p for p in same_cat if p.get("subcategory_id") and p.get("subcategory_id") == product.get("subcategory_id")]
+        related = (same_sub + [p for p in same_cat if p not in same_sub])[:4]
         folder = os.path.join(product_dir, slug)
         os.makedirs(folder, exist_ok=True)
         io.open(os.path.join(folder, "index.html"), "w", encoding="utf-8").write(
-            versioned(PRODUCT_TEMPLATE.format(head=block, content=prerender_product(product, cat, images),
+            versioned(PRODUCT_TEMPLATE.format(head=block, content=prerender_product(product, cat, images, related),
                                               faq=faq_html(product_faq(product, cat))),
                       stamp))
         written.append("products/%s/index.html" % slug)
