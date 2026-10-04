@@ -12,7 +12,23 @@
     } catch (err) { return null; }
   }
 
+  // GA4 purchase, once per order per browser (reloads don't count twice).
+  function trackPurchase(order) {
+    var key = 'pr_ga_purchase_' + order.order_number;
+    try { if (localStorage.getItem(key)) return; localStorage.setItem(key, '1'); } catch (err) { /* still send */ }
+    PR.track('purchase', {
+      transaction_id: order.order_number, currency: 'INR', value: Number(order.total_amount) || 0,
+      tax: Number(order.gst_amount) || 0, shipping: Number(order.shipping_cost) || 0,
+      coupon: order.coupon_code || undefined,
+      items: (order.items || []).map(function (item) {
+        return { item_id: item.product_sku || item.product_name, item_name: item.product_name,
+                 item_brand: 'PowerRun', price: Number(item.unit_price) || 0, quantity: item.quantity };
+      })
+    });
+  }
+
   function renderOrder(order) {
+    trackPurchase(order);
     var host = document.getElementById('confirmContent');
     var paid = order.payment_status === 'paid';
 

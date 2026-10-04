@@ -439,6 +439,10 @@
           return sb.rpc('submit_product_quote_request', { p_data: data });
         });
         PR.setBusy(button, false);
+        if (!q.existing) {
+          PR.track('generate_lead', { lead_source: 'quote_request', currency: 'INR', value: p.price || 0,
+                                      items: [PR.gaItem(p, 1)] });
+        }
         document.getElementById('quoteRequestForm').hidden = true;
         var waText = p.name + ' ka quote chahiye. Naam: ' + name + ', Mobile: ' + mobile;
         document.getElementById('quoteRequestResult').innerHTML =

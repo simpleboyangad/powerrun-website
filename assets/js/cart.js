@@ -79,6 +79,7 @@
       else items.push({ id: String(product.id), qty: wanted });
 
       write(items);
+      PR.track('add_to_cart', { currency: 'INR', value: product.price * qty, items: [PR.gaItem(product, qty)] });
       PR.toast(product.name + ' added to cart.', 'success');
       return true;
     },

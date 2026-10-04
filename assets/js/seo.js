@@ -301,5 +301,6 @@
     window.gtag = function () { window.dataLayer.push(arguments); };
     window.gtag('js', new Date());
     window.gtag('config', id);
+    if (PR.flushTracking) PR.flushTracking();
   }
 })();

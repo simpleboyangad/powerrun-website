@@ -399,6 +399,24 @@
     return 'https://wa.me/' + cfg.WHATSAPP + '?text=' + encodeURIComponent(text);
   };
 
+  /* GA4 events. Queued until seo.js has loaded Analytics with the configured
+     id (PR.flushTracking), then sent; never throws. */
+  var gaQueue = [];
+  PR.track = function (name, params) {
+    try {
+      if (window.__prGaReady && window.gtag) window.gtag('event', name, params || {});
+      else if (gaQueue.length < 50) gaQueue.push([name, params || {}]);
+    } catch (err) { /* analytics must never break the page */ }
+  };
+  PR.flushTracking = function () {
+    window.__prGaReady = true;
+    gaQueue.splice(0).forEach(function (e) { PR.track(e[0], e[1]); });
+  };
+  PR.gaItem = function (product, qty) {
+    return { item_id: product.sku || product.id, item_name: product.name, item_brand: 'PowerRun',
+             item_category: product.category || undefined, price: product.price, quantity: qty || 1 };
+  };
+
   /* WhatsApp link to a customer's own number (admin side). '' when the
      mobile is not a usable 10-digit Indian number. */
   PR.whatsappTo = function (mobile, text) {
