@@ -166,6 +166,60 @@
     }
   };
 
+  /* Same line maths as create_website_order(): an inclusive price carries its
+     GST inside it, an exclusive price has GST added on top. Display only - the
+     database recomputes everything when the order is placed. */
+  cart.breakdown = function (lines, state, companyState) {
+    var mrpTotal = 0, subtotal = 0, taxable = 0, gst = 0, gstAdded = 0;
+    lines.forEach(function (line) {
+      var raw = line.product.raw || {};
+      var rate = Number(raw.gst_rate) || 0;
+      var incl = raw.price_includes_gst !== false;
+      var amount = line.product.price * line.qty;
+      var mrp = Math.max(Number(line.product.mrp) || line.product.price, line.product.price);
+      subtotal += amount;
+      mrpTotal += mrp * line.qty;
+      var t = rate === 0 ? amount : (incl ? amount / (1 + rate / 100) : amount);
+      var g = rate === 0 ? 0 : (incl ? amount - t : amount * rate / 100);
+      taxable += t;
+      gst += g;
+      if (!incl) gstAdded += g;
+    });
+    var r2 = function (n) { return Math.round(n * 100) / 100; };
+    var intra = !state || !companyState || String(state).toLowerCase() === String(companyState).toLowerCase();
+    gst = r2(gst);
+    return {
+      mrpTotal: r2(mrpTotal), subtotal: r2(subtotal), discount: r2(Math.max(mrpTotal - subtotal, 0)),
+      taxable: r2(taxable), gst: gst, gstAdded: r2(gstAdded), intra: intra,
+      cgst: intra ? r2(gst / 2) : 0, sgst: intra ? r2(gst - r2(gst / 2)) : 0, igst: intra ? 0 : gst
+    };
+  };
+
+  cart.breakdownHtml = function (b, stateKnown) {
+    var row = function (label, value, style) {
+      return '<div class="summary-row"' + (style ? ' style="' + style + '"' : '') + '><span>' + label + '</span><b>' + value + '</b></div>';
+    };
+    var html = '';
+    if (b.discount > 0.5) {
+      html += row('MRP Total', PR.money(b.mrpTotal)) +
+              row('Discount', '- ' + PR.money(b.discount), 'color:var(--green)');
+    }
+    html += row('Subtotal', PR.money(b.subtotal), 'border-top:1px solid #eee;margin-top:6px;padding-top:12px');
+    if (b.gst > 0) {
+      html += row('Taxable Value', PR.money2(b.taxable), 'font-size:13px;color:#666');
+      if (b.intra) {
+        html += row('CGST', PR.money2(b.cgst), 'font-size:13px;color:#666') +
+                row('SGST', PR.money2(b.sgst), 'font-size:13px;color:#666');
+      } else {
+        html += row('IGST', PR.money2(b.igst), 'font-size:13px;color:#666');
+      }
+      html += '<p class="small-note" style="margin:2px 0 6px">' +
+        (b.gstAdded > 0 ? 'GST is added to the price above.' : 'Prices include GST.') +
+        (stateKnown ? '' : ' CGST + SGST shown for Uttar Pradesh; other states pay IGST.') + '</p>';
+    }
+    return html;
+  };
+
   PR.cart = cart;
 
   // Keep the badge in step across tabs.

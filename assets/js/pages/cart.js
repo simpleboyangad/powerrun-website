@@ -63,18 +63,18 @@
 
     var settings = await PR.getSettings();
     var shipping = PR.shippingFor(resolved.subtotal, settings.shipping);
-    var total = resolved.subtotal + shipping;
+    var b = PR.cart.breakdown(resolved.lines, '', ((settings && settings.company) || {}).state);
+    var total = resolved.subtotal + b.gstAdded + shipping;
 
     summaryHost.innerHTML =
       '<div class="panel">' +
         '<h2>Order Summary</h2>' +
-        '<div class="summary-row"><span>Subtotal</span><b>' + PR.money(resolved.subtotal) + '</b></div>' +
+        PR.cart.breakdownHtml(b, false) +
         '<div class="summary-row"><span>Shipping</span><b>' +
           (shipping > 0 ? PR.money(shipping) : 'Free') + '</b></div>' +
         '<div class="summary-row total"><span>Total</span><span>' + PR.money(total) + '</span></div>' +
         '<a class="btn orange block" href="/checkout/" style="margin-top:12px">PROCEED TO CHECKOUT</a>' +
-        '<p class="small-note" style="margin-top:10px">Taxes, if applicable, are confirmed on your invoice. ' +
-        'Prices and stock are re-checked when you place the order.</p>' +
+        '<p class="small-note" style="margin-top:10px">Prices and stock are re-checked when you place the order.</p>' +
       '</div>';
 
     var clear = document.getElementById('clearCartBtn');

@@ -18,7 +18,10 @@
     var host = document.getElementById('checkoutSummary');
     var shipping = PR.shippingFor(current.subtotal, settings.shipping);
     var discount = appliedCoupon ? appliedCoupon.discount_amount : 0;
-    var total = Math.max(current.subtotal + shipping - discount, 0);
+    var stateEl = document.getElementById('ck_state');
+    var state = stateEl ? stateEl.value : '';
+    var b = PR.cart.breakdown(current.lines, state, ((settings && settings.company) || {}).state);
+    var total = Math.max(current.subtotal + b.gstAdded + shipping - discount, 0);
 
     host.innerHTML =
       '<div class="panel">' +
@@ -27,8 +30,7 @@
           return '<div class="summary-row"><span>' + PR.esc(line.product.name) +
                  ' × ' + line.qty + '</span><b>' + PR.money(line.lineTotal) + '</b></div>';
         }).join('') +
-        '<div class="summary-row" style="border-top:1px solid #eee;margin-top:6px;padding-top:12px">' +
-          '<span>Subtotal</span><b>' + PR.money(current.subtotal) + '</b></div>' +
+        PR.cart.breakdownHtml(b, !!state) +
         '<div class="summary-row"><span>Shipping</span><b>' +
           (shipping > 0 ? PR.money(shipping) : 'Free') + '</b></div>' +
         (appliedCoupon
@@ -378,6 +380,9 @@
     PR.mountLayout('products');
     PR.fillStates(document.getElementById('ck_state'));
     PR.fillStates(document.getElementById('ck_s_state'));
+    document.getElementById('ck_state').addEventListener('change', function () {
+      if (current && current.lines && current.lines.length) renderSummary();
+    });
     document.getElementById('ck_ship_same').addEventListener('change', function (e) {
       document.getElementById('ck_ship').hidden = e.target.checked;
     });
