@@ -430,3 +430,6 @@ table.grid td small { color: var(--muted); display: block; margin-top: 3px; }
   border-left: 5px solid var(--orange); animation: notifyIn .25s ease-out; }
 .notify-toast button { position: absolute; top: 8px; right: 10px; background: none; border: 0; color: #bbb; font-size: 20px; cursor: pointer; }
 @keyframes notifyIn { from { transform: translateY(16px); opacity: 0; } to { transform: none; opacity: 1; } }
+@media (max-width: 560px) {
+  .notify-panel { position: fixed; left: 12px; right: 12px; top: 64px; width: auto; max-width: none; }
+}
