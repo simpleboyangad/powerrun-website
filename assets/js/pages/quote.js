@@ -32,7 +32,6 @@
             : '') +
           '<div class="summary-row" style="font-size:17px"><span>Total</span><b>' + PR.money(q.total_amount) + '</b></div>' +
         '</div>' +
-        (q.warranty_terms ? '<h2 style="margin:22px 0 8px;font-size:17px">Warranty</h2><p class="prose">' + PR.esc(q.warranty_terms) + '</p>' : '') +
         (q.terms ? '<h2 style="margin:22px 0 8px;font-size:17px">Terms &amp; Conditions</h2><p class="prose" style="white-space:pre-line">' + PR.esc(q.terms) + '</p>' : '') +
         '<div class="detail-actions no-print" style="margin-top:18px">' +
           '<a class="btn orange" href="' + PR.esc(PR.whatsapp('Quote No: ' + q.quote_number + ' ke baare me baat karni hai.')) + '" target="_blank" rel="noopener">WHATSAPP PAR BAAT KAREIN</a>' +
@@ -133,7 +132,6 @@
       lines.forEach(function (ln) { doc.text(ln, L, y); y += 4.5; });
       y += 5;
     }
-    block('WARRANTY', q.warranty_terms);
     block('TERMS & CONDITIONS', q.terms);
 
     var pages = doc.getNumberOfPages();
