@@ -852,6 +852,8 @@ def main():
     print("product pages   : %d  (removed %d)" % (len([w for w in written if w.startswith("products/")]), len(removed)))
     print("sitemap URLs    : %d" % len(sitemap))
     print("robots.txt      : %d bytes" % len(robots_txt))
+    import merchant_feed
+    merchant_feed.build()
     print("\nNext: python scripts/stamp_assets.py, then commit and push.")
 
 

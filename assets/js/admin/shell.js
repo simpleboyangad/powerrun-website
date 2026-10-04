@@ -208,7 +208,18 @@
       link: function () { return '/admin/warranty/'; } },
     { table: 'dealer_enquiries', label: 'Dealer enquiry', select: 'id,enquiry_number,name,created_at',
       text: function (r) { return (r.enquiry_number || '') + ' · ' + r.name; },
-      link: function () { return '/admin/dealers/'; } }
+      link: function () { return '/admin/dealers/'; } },
+    { table: 'product_reviews', label: 'New review', select: 'id,rating,customer_name,products(name),created_at',
+      text: function (r) {
+        return '★'.repeat(r.rating || 0) + ' · ' + (r.customer_name || 'Customer') + ' · ' +
+          ((r.products && r.products.name) || '') + ' (approve karna hai)';
+      },
+      link: function () { return '/admin/reviews/'; } },
+    // created by the daily quotation-expiry job (sql/27)
+    { table: 'follow_ups', label: 'Quote expiry follow-up', select: 'id,title,notes,created_at',
+      filter: function (q) { return q.like('title', 'Quote %expire%'); },
+      text: function (r) { return r.title; },
+      link: function () { return '/admin/followups/'; } }
   ];
   var SINCE_KEY = 'pra_notify_since';
   var LIST_KEY = 'pra_notify_list';

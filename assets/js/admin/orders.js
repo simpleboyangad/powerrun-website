@@ -85,6 +85,17 @@
 
   function detail(order) {
     var items = order.order_items || [];
+    var customerWa = PR.whatsappTo(order.customer_mobile,
+      'Hello ' + (order.customer_name || '') + ', this is PowerRun Industries regarding your order ' +
+      order.order_number + '.');
+    // Only delivered orders can be reviewed (get_review_request enforces it too).
+    var reviewWa = order.order_status === 'delivered' && order.review_token
+      ? PR.whatsappTo(order.customer_mobile,
+          'Namaste ' + (order.customer_name || '').split(' ')[0] + ' ji, PowerRun Industries se order ' +
+          order.order_number + ' lene ke liye dhanyavaad! 🙏\n\n' +
+          'Product kaisa laga? 1 minute nikaal kar apna review zaroor dein, isse doosre customers ki madad hogi:\n' +
+          PR.config.SITE_URL + '/review/?t=' + order.review_token)
+      : '';
     PRA.openDrawer('Order ' + order.order_number,
       '<div id="orderDetailMessage"></div>' +
 
@@ -173,9 +184,13 @@
         '<label>Internal Notes<textarea id="od_notes" maxlength="1000">' +
           PR.esc(order.notes || '') + '</textarea></label>' +
         '<div class="page-actions" style="justify-content:flex-end">' +
-          '<a class="btn gray" href="' + PR.esc(PR.whatsapp(
-              'Hello ' + (order.customer_name || '') + ', this is PowerRun Industries regarding your order ' +
-              order.order_number + '.')) + '" target="_blank" rel="noopener">WhatsApp Customer</a>' +
+          (customerWa
+            ? '<a class="btn gray" href="' + PR.esc(customerWa) + '" target="_blank" rel="noopener">WhatsApp Customer</a>'
+            : '') +
+          (reviewWa
+            ? '<a class="btn gray" href="' + PR.esc(reviewWa) + '" target="_blank" rel="noopener" ' +
+                'title="Customer ko review link bhejein">⭐ Review Link Bhejein</a>'
+            : '') +
           '<button class="btn" type="submit" id="saveOrderBtn">SAVE ORDER</button>' +
         '</div>' +
       '</form>');

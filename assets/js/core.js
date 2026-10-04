@@ -398,4 +398,12 @@
   PR.whatsapp = function (text) {
     return 'https://wa.me/' + cfg.WHATSAPP + '?text=' + encodeURIComponent(text);
   };
+
+  /* WhatsApp link to a customer's own number (admin side). '' when the
+     mobile is not a usable 10-digit Indian number. */
+  PR.whatsappTo = function (mobile, text) {
+    var digits = String(mobile || '').replace(/\D/g, '').slice(-10);
+    if (digits.length !== 10) return '';
+    return 'https://wa.me/91' + digits + '?text=' + encodeURIComponent(text);
+  };
 })();

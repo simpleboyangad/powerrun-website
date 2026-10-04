@@ -464,7 +464,7 @@
     <g:additional_image_link>https://nnkopxkyxcmtiunftlgr.supabase.co/storage/v1/object/public/product-images/085355e7-5b64-4648-89c9-9faa54715b82/1790966323718-2-3-specifications.jpg</g:additional_image_link>
     <g:additional_image_link>https://nnkopxkyxcmtiunftlgr.supabase.co/storage/v1/object/public/product-images/085355e7-5b64-4648-89c9-9faa54715b82/1790966323718-3-4-why-lithium.jpg</g:additional_image_link>
     <g:additional_image_link>https://nnkopxkyxcmtiunftlgr.supabase.co/storage/v1/object/public/product-images/085355e7-5b64-4648-89c9-9faa54715b82/1790966323718-4-5-build.jpg</g:additional_image_link>
-    <g:availability>out_of_stock</g:availability>
+    <g:availability>in_stock</g:availability>
     <g:condition>new</g:condition>
     <g:brand>PowerRun Industries</g:brand>
     <g:identifier_exists>no</g:identifier_exists>
@@ -482,7 +482,7 @@
     <g:additional_image_link>https://nnkopxkyxcmtiunftlgr.supabase.co/storage/v1/object/public/product-images/aee3d47c-e263-4624-be07-62273135811a/1790966334668-2-3-specifications.jpg</g:additional_image_link>
     <g:additional_image_link>https://nnkopxkyxcmtiunftlgr.supabase.co/storage/v1/object/public/product-images/aee3d47c-e263-4624-be07-62273135811a/1790966334668-3-4-why-lithium.jpg</g:additional_image_link>
     <g:additional_image_link>https://nnkopxkyxcmtiunftlgr.supabase.co/storage/v1/object/public/product-images/aee3d47c-e263-4624-be07-62273135811a/1790966334668-4-5-build.jpg</g:additional_image_link>
-    <g:availability>out_of_stock</g:availability>
+    <g:availability>in_stock</g:availability>
     <g:condition>new</g:condition>
     <g:brand>PowerRun Industries</g:brand>
     <g:identifier_exists>no</g:identifier_exists>

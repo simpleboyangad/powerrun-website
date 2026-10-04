@@ -9,13 +9,16 @@ since Merchant Center rejects items without an image.
 Usage
 -----
   python scripts/merchant_feed.py            write merchant-feed.xml
+
+scripts/seo_build.py also calls build() on every run, so the feed's prices
+and stock never drift from the site. Only public (anon) data is read.
 """
 import html
 import os
 import sys
 
 sys.path.insert(0, os.path.dirname(os.path.abspath(__file__)))
-import pr_data as pd  # noqa: E402
+from seo_build import fetch  # noqa: E402
 
 ROOT = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
 SITE = "https://powerrun.in"
@@ -27,11 +30,10 @@ def esc(s):
 
 
 def build():
-    rows = pd.rest(
-        "products",
-        "select=sku,name,slug,short_description,description,price,mrp,stock,"
+    rows = fetch(
+        "products?select=sku,name,slug,short_description,description,price,mrp,stock,"
         "categories!products_category_id_fkey(name),product_images(image_url,sort_order)"
-        "&order=sku"
+        "&is_active=eq.true&order=sku"
     )
 
     items = []
