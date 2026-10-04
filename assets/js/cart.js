@@ -9,6 +9,9 @@
 
   var PR = window.PR;
   var KEY = 'pr_cart';
+  // Carts saved by the old site used numeric ids ("24"); those products no
+  // longer exist, and a non-uuid id makes the whole cart query fail.
+  var UUID = /^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$/i;
 
   function read() {
     try {
@@ -20,6 +23,7 @@
         var qty = entry && typeof entry === 'object' ? Number(entry.qty) || 1 : 1;
         if (id === null || id === undefined || id === '') return;
         var key = String(id);
+        if (!UUID.test(key)) return;
         map.set(key, Math.max(1, (map.get(key) || 0) + Math.max(1, qty)));
       });
       return Array.from(map.entries()).map(function (pair) {
