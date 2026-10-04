@@ -638,12 +638,15 @@
   function sendWhatsApp(q) {
     var digits = (q.customer_mobile || '').replace(/\D/g, '').slice(-10);
     if (digits.length !== 10) { PR.toast('This customer has no valid mobile number on file.', 'error'); return; }
+    if (q.status === 'draft') { PR.toast('Pehle "Mark Sent" se quotation approve karein, phir WhatsApp bhejein.', 'error'); return; }
+    var link = PR.config.SITE_URL + '/quote/?no=' + encodeURIComponent(q.quote_number || '') + '&mobile=' + digits;
     var message = 'Dear ' + (q.customer_name || 'Customer') + ',\n' +
       'Thank you for your interest in PowerRun Industries.\n' +
       'Please find your quotation:\n' +
       'Quotation No: ' + (q.quote_number || '') + '\n' +
       'Total Amount: ' + PR.money(q.total_amount) + '\n' +
       (q.valid_until ? ('Valid Until: ' + PR.formatDate(q.valid_until) + '\n') : '') +
+      'View / download: ' + link + '\n' +
       'Regards,\nPowerRun Industries';
     window.open('https://wa.me/91' + digits + '?text=' + encodeURIComponent(message), '_blank', 'noopener');
   }

@@ -370,42 +370,86 @@
     section.insertAdjacentHTML('afterend',
       '<section class="section" id="quoteRequest" style="padding-top:0"><div class="panel" id="quoteRequestBox">' +
         '<h2>Quote chahiye?</h2>' +
-        '<p class="small-note">Apna naam aur mobile daalein, aapko is product ka quotation turant mil jayega (7 din valid).</p>' +
+        '<p class="small-note">Apni details bharein. Hamari team price check karke quotation aapke WhatsApp par bhejegi.</p>' +
         '<form class="form" id="quoteRequestForm" novalidate>' +
           '<div class="form-grid">' +
             '<label>Naam <span class="req">*</span><input id="qr_name" maxlength="80" required></label>' +
             '<label>Mobile <span class="req">*</span><input id="qr_mobile" inputmode="numeric" maxlength="10" required placeholder="10-digit"></label>' +
           '</div>' +
-          '<button class="btn orange" id="quoteRequestBtn" type="submit">QUOTE PAAYE</button>' +
+          '<div class="form-grid">' +
+            '<label>Email<input id="qr_email" type="email" maxlength="120"></label>' +
+            '<label>GSTIN (agar ho)<input id="qr_gstin" maxlength="15" style="text-transform:uppercase"></label>' +
+          '</div>' +
+          '<b style="display:block;margin-top:6px">Billing Address</b>' +
+          '<label>Address <span class="req">*</span><input id="qr_address" maxlength="200" required placeholder="House/Shop no, street, area"></label>' +
+          '<div class="form-grid three">' +
+            '<label>City <span class="req">*</span><input id="qr_city" maxlength="80" required></label>' +
+            '<label>State <span class="req">*</span><select id="qr_state" required></select></label>' +
+            '<label>Pincode <span class="req">*</span><input id="qr_pincode" inputmode="numeric" maxlength="6" required></label>' +
+          '</div>' +
+          '<label class="inline" style="margin-top:6px"><input type="checkbox" id="qr_same" checked> Shipping address billing jaisa hi hai</label>' +
+          '<div id="qr_ship" hidden>' +
+            '<b style="display:block;margin-top:6px">Shipping Address</b>' +
+            '<label>Address <span class="req">*</span><input id="qr_s_address" maxlength="200"></label>' +
+            '<div class="form-grid three">' +
+              '<label>City <span class="req">*</span><input id="qr_s_city" maxlength="80"></label>' +
+              '<label>State <span class="req">*</span><select id="qr_s_state"></select></label>' +
+              '<label>Pincode <span class="req">*</span><input id="qr_s_pincode" inputmode="numeric" maxlength="6"></label>' +
+            '</div>' +
+          '</div>' +
+          '<button class="btn orange" id="quoteRequestBtn" type="submit" style="margin-top:8px">QUOTE REQUEST BHEJEIN</button>' +
         '</form>' +
         '<div id="quoteRequestResult"></div>' +
       '</div></section>');
 
+    PR.fillStates(document.getElementById('qr_state'));
+    PR.fillStates(document.getElementById('qr_s_state'));
+    document.getElementById('qr_same').addEventListener('change', function (e) {
+      document.getElementById('qr_ship').hidden = e.target.checked;
+    });
+
     document.getElementById('quoteRequestForm').addEventListener('submit', async function (event) {
       event.preventDefault();
-      var name = document.getElementById('qr_name').value.trim();
-      var mobile = document.getElementById('qr_mobile').value.replace(/\D/g, '');
+      function v(id) { return document.getElementById(id).value.trim(); }
+      var name = v('qr_name');
+      var mobile = v('qr_mobile').replace(/\D/g, '');
+      var same = document.getElementById('qr_same').checked;
       var button = document.getElementById('quoteRequestBtn');
+      var pin = /^[1-9]\d{5}$/;
       if (name.length < 2) { PR.toast('Naam daalein.', 'error'); return; }
       if (!/^[6-9]\d{9}$/.test(mobile)) { PR.toast('Sahi 10-digit mobile number daalein.', 'error'); return; }
+      if (!v('qr_address') || !v('qr_city') || !v('qr_state')) { PR.toast('Poora billing address bharein.', 'error'); return; }
+      if (!pin.test(v('qr_pincode'))) { PR.toast('Sahi 6-digit billing pincode daalein.', 'error'); return; }
+      if (!same) {
+        if (!v('qr_s_address') || !v('qr_s_city') || !v('qr_s_state')) { PR.toast('Poora shipping address bharein.', 'error'); return; }
+        if (!pin.test(v('qr_s_pincode'))) { PR.toast('Sahi 6-digit shipping pincode daalein.', 'error'); return; }
+      }
 
-      PR.setBusy(button, true, 'BANA RAHE HAIN…');
+      var data = {
+        product_id: p.id, name: name, mobile: mobile, email: v('qr_email'), gstin: v('qr_gstin'),
+        address: v('qr_address'), city: v('qr_city'), state: v('qr_state'), pincode: v('qr_pincode'),
+        shipping_same: same,
+        shipping_address: v('qr_s_address'), shipping_city: v('qr_s_city'),
+        shipping_state: v('qr_s_state'), shipping_pincode: v('qr_s_pincode')
+      };
+
+      PR.setBusy(button, true, 'BHEJ RAHE HAIN…');
       try {
-        var q = await PR.call('create quote', function (sb) {
-          return sb.rpc('submit_product_quote_request', { p_name: name, p_mobile: mobile, p_product_id: p.id });
+        var q = await PR.call('send quote request', function (sb) {
+          return sb.rpc('submit_product_quote_request', { p_data: data });
         });
         PR.setBusy(button, false);
-        var quoteUrl = '/quote/?no=' + encodeURIComponent(q.quote_number) + '&mobile=' + mobile;
-        var waText = 'Quote No: ' + q.quote_number + ' (' + q.product_name + ') ke baare me baat karni hai.';
+        document.getElementById('quoteRequestForm').hidden = true;
+        var waText = p.name + ' ka quote chahiye. Naam: ' + name + ', Mobile: ' + mobile;
         document.getElementById('quoteRequestResult').innerHTML =
           '<div class="form-message success" style="margin-top:14px">' +
-            (q.existing ? 'Aapka quote pehle se bana hua hai.' : 'Aapka quote ban gaya hai.') + '</div>' +
-          '<div class="summary-row"><span>Quote No</span><b>' + PR.esc(q.quote_number) + '</b></div>' +
-          '<div class="summary-row"><span>Total (GST sahit)</span><b>' + PR.money(q.total_amount) + '</b></div>' +
-          '<div class="summary-row"><span>Valid Until</span><b>' + PR.formatDate(q.valid_until) + '</b></div>' +
+            (q.existing
+              ? 'Aapki request pehle se hamare paas hai.'
+              : 'Aapki request mil gayi hai.') +
+            ' PowerRun team price check karke aapka quotation WhatsApp par ' + PR.esc(mobile) + ' par bhejegi.' +
+          '</div>' +
           '<div class="detail-actions" style="margin-top:14px">' +
-            '<a class="btn orange" href="' + quoteUrl + '">POORA QUOTE DEKHEIN</a>' +
-            '<a class="outline" href="' + PR.esc(PR.whatsapp(waText)) + '" target="_blank" rel="noopener">WHATSAPP PAR BAAT KAREIN</a>' +
+            '<a class="outline" href="' + PR.esc(PR.whatsapp(waText)) + '" target="_blank" rel="noopener">JALDI CHAHIYE? WHATSAPP KAREIN</a>' +
           '</div>';
       } catch (err) {
         PR.setBusy(button, false);

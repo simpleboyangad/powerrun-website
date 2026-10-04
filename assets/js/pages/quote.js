@@ -10,6 +10,12 @@
       '<div class="panel" style="margin-top:18px">' +
         '<h2>Quotation ' + PR.esc(q.quote_number) + '</h2>' +
         '<div class="summary-row"><span>Customer</span><b>' + PR.esc(q.customer_name) + '</b></div>' +
+        '<div class="summary-row"><span>Billing Address</span><b style="text-align:right">' +
+          PR.esc([q.address, q.city, q.state, q.pincode].filter(Boolean).join(', ')) + '</b></div>' +
+        '<div class="summary-row"><span>Shipping Address</span><b style="text-align:right">' +
+          PR.esc([q.shipping_address || q.address, q.shipping_city || q.city, q.shipping_state || q.state,
+                  q.shipping_pincode || q.pincode].filter(Boolean).join(', ')) + '</b></div>' +
+        (q.gstin ? '<div class="summary-row"><span>GSTIN</span><b>' + PR.esc(q.gstin) + '</b></div>' : '') +
         '<div class="summary-row"><span>Date</span><b>' + PR.formatDate(q.created_at) + '</b></div>' +
         '<div class="summary-row"><span>Valid Until</span><b>' + PR.formatDate(q.valid_until) + '</b></div>' +
         '<div class="table-scroll"><table class="data-table"><thead><tr>' +
@@ -72,14 +78,35 @@
     text(q.quote_number, R, 22, 10, WHITE, 'bold', 'right');
     text('Date: ' + PR.formatDate(q.created_at), R, 28, 8, WHITE, 'normal', 'right');
 
-    y = 46;
-    fill(LIGHT); doc.rect(L, y, 85, 28, 'F'); doc.rect(105, y, 90, 28, 'F');
-    text('QUOTED TO', L + 4, y + 6, 8, ORANGE, 'bold');
-    text(q.customer_name, L + 4, y + 13, 11, DARK, 'bold');
-    text('Valid until: ' + PR.formatDate(q.valid_until), 109, y + 6, 8, ORANGE, 'bold');
-    text('Quote status: ' + String(q.status || 'sent').toUpperCase(), 109, y + 13, 9, DARK);
-    text('Ye quotation 7 din ke liye valid hai.', 109, y + 20, 8, GREY);
-    y += 36;
+    y = 44;
+    text('Valid until: ' + PR.formatDate(q.valid_until), L, y, 8, ORANGE, 'bold');
+    text('Ye quotation 7 din ke liye valid hai.', R, y, 8, GREY, 'normal', 'right');
+    y += 4;
+
+    function addressBox(x, title, lines) {
+      doc.setFont('helvetica', 'normal'); doc.setFontSize(8.5);
+      var wrapped = [];
+      lines.filter(Boolean).forEach(function (ln) { wrapped = wrapped.concat(doc.splitTextToSize(String(ln), 80)); });
+      return { x: x, title: title, lines: wrapped };
+    }
+    var bill = addressBox(L, 'BILL TO', [
+      q.address, [q.city, q.state, q.pincode].filter(Boolean).join(', '),
+      'Mobile: ' + (q.customer_mobile || ''), q.customer_email ? 'Email: ' + q.customer_email : '',
+      q.gstin ? 'GSTIN: ' + q.gstin : ''
+    ]);
+    var ship = addressBox(105, 'SHIP TO', [
+      q.shipping_address || q.address,
+      [q.shipping_city || q.city, q.shipping_state || q.state, q.shipping_pincode || q.pincode].filter(Boolean).join(', ')
+    ]);
+    var boxH = 16 + Math.max(bill.lines.length, ship.lines.length) * 4.2;
+    [bill, ship].forEach(function (b) {
+      fill(LIGHT); doc.rect(b.x, y, b === bill ? 85 : 90, boxH, 'F');
+      text(b.title, b.x + 4, y + 6, 8, ORANGE, 'bold');
+      text(q.customer_name, b.x + 4, y + 11.5, 10, DARK, 'bold');
+      var ly = y + 16;
+      b.lines.forEach(function (ln) { text(ln, b.x + 4, ly, 8.5, DARK); ly += 4.2; });
+    });
+    y += boxH + 8;
 
     fill(DARK); doc.rect(L, y, 180, 8, 'F');
     text('PRODUCT', L + 3, y + 5.5, 8, WHITE, 'bold');
