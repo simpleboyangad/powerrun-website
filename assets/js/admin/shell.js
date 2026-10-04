@@ -192,7 +192,7 @@
     { table: 'orders', label: 'Naya order', select: 'id,order_number,customer_name,total_amount,created_at',
       text: function (r) { return r.order_number + ' · ' + r.customer_name + ' · ' + PR.money(r.total_amount); },
       link: function (r) { return '/admin/orders/?order=' + encodeURIComponent(r.id); } },
-    { table: 'quotations', label: 'Nayi quote request', select: 'id,quote_number,customer_name,total_amount,created_at',
+    { table: 'quotations', label: 'New quote request', select: 'id,quote_number,customer_name,total_amount,created_at',
       filter: function (q) { return q.eq('created_by_name', 'Website enquiry'); },
       text: function (r) { return r.customer_name + ' · ' + PR.money(r.total_amount) + ' (approve karna hai)'; },
       link: function (r) { return '/admin/quotations/?id=' + encodeURIComponent(r.id); } },
