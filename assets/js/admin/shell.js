@@ -141,8 +141,15 @@
               '<button class="menu-toggle" type="button" id="menuToggle" aria-label="Open menu">☰</button>' +
               '<h1>' + PR.esc(title) + '</h1>' +
             '</div>' +
-            '<div class="who"><b>' + PR.esc(name) + '</b>' +
-              PR.esc((PRA.admin && PRA.admin.role) || 'admin') + '</div>' +
+            '<div style="display:flex;align-items:center;gap:14px">' +
+              '<div class="notify-wrap">' +
+                '<button type="button" class="notify-bell" id="notifyBell" aria-label="Notifications">🔔' +
+                  '<span class="notify-count" id="notifyCount" hidden>0</span></button>' +
+                '<div class="notify-panel" id="notifyPanel" hidden></div>' +
+              '</div>' +
+              '<div class="who"><b>' + PR.esc(name) + '</b>' +
+                PR.esc((PRA.admin && PRA.admin.role) || 'admin') + '</div>' +
+            '</div>' +
           '</div>' +
           '<div class="content" id="adminContent"></div>' +
         '</div>' +
@@ -174,7 +181,188 @@
     });
 
     PRA.loadBadges();
+    PRA.startNotifier();
     return document.getElementById('adminContent');
+  };
+
+  /* --------------------------------------------------------- notifications */
+  // Polls for records created since the last check and alerts the admin with
+  // a popup, a short beep and (if allowed) a browser notification.
+  var NOTIFY_SOURCES = [
+    { table: 'orders', label: 'Naya order', select: 'id,order_number,customer_name,total_amount,created_at',
+      text: function (r) { return r.order_number + ' · ' + r.customer_name + ' · ' + PR.money(r.total_amount); },
+      link: function (r) { return '/admin/orders/?order=' + encodeURIComponent(r.id); } },
+    { table: 'quotations', label: 'Nayi quote request', select: 'id,quote_number,customer_name,total_amount,created_at',
+      filter: function (q) { return q.eq('created_by_name', 'Website enquiry'); },
+      text: function (r) { return r.customer_name + ' · ' + PR.money(r.total_amount) + ' (approve karna hai)'; },
+      link: function (r) { return '/admin/quotations/?id=' + encodeURIComponent(r.id); } },
+    { table: 'leads', label: 'Nayi enquiry', select: 'id,name,mobile,created_at',
+      filter: function (q) { return q.or('message.is.null,message.not.like.Quote requested*'); },
+      text: function (r) { return r.name + ' · ' + (r.mobile || ''); },
+      link: function () { return '/admin/leads/'; } },
+    { table: 'service_tickets', label: 'Service request', select: 'id,ticket_number,name,created_at',
+      text: function (r) { return (r.ticket_number || '') + ' · ' + r.name; },
+      link: function () { return '/admin/service/'; } },
+    { table: 'warranties', label: 'Warranty registration', select: 'id,warranty_number,name,created_at',
+      text: function (r) { return (r.warranty_number || '') + ' · ' + r.name; },
+      link: function () { return '/admin/warranty/'; } },
+    { table: 'dealer_enquiries', label: 'Dealer enquiry', select: 'id,enquiry_number,name,created_at',
+      text: function (r) { return (r.enquiry_number || '') + ' · ' + r.name; },
+      link: function () { return '/admin/dealers/'; } }
+  ];
+  var SINCE_KEY = 'pra_notify_since';
+  var LIST_KEY = 'pra_notify_list';
+  var notifyTimer = null;
+  var audioCtx = null;
+  var baseTitle = '';
+
+  function store(key, value) { try { localStorage.setItem(key, value); } catch (e) { /* storage blocked */ } }
+  function load(key) { try { return localStorage.getItem(key); } catch (e) { return null; } }
+
+  function notifyList() {
+    try { return JSON.parse(load(LIST_KEY) || '[]'); } catch (e) { return []; }
+  }
+
+  function beep() {
+    try {
+      if (!audioCtx) return;
+      [0, 0.18].forEach(function (offset) {
+        var osc = audioCtx.createOscillator();
+        var gain = audioCtx.createGain();
+        osc.frequency.value = 880;
+        gain.gain.setValueAtTime(0.18, audioCtx.currentTime + offset);
+        gain.gain.exponentialRampToValueAtTime(0.001, audioCtx.currentTime + offset + 0.15);
+        osc.connect(gain); gain.connect(audioCtx.destination);
+        osc.start(audioCtx.currentTime + offset);
+        osc.stop(audioCtx.currentTime + offset + 0.16);
+      });
+    } catch (e) { /* audio unavailable */ }
+  }
+
+  function renderNotifyUi() {
+    var list = notifyList();
+    var unseen = list.filter(function (n) { return !n.seen; }).length;
+    var count = document.getElementById('notifyCount');
+    if (count) { count.textContent = String(unseen); count.hidden = unseen === 0; }
+    document.title = (unseen ? '(' + unseen + ') ' : '') + baseTitle;
+    var panel = document.getElementById('notifyPanel');
+    if (!panel) return;
+    panel.innerHTML =
+      '<div class="notify-head"><b>Notifications</b>' +
+        ('Notification' in window && Notification.permission !== 'granted'
+          ? '<button type="button" id="notifyEnable">Alerts on karein</button>' : '') +
+      '</div>' +
+      (list.length
+        ? list.slice(0, 20).map(function (n) {
+            return '<a class="notify-item' + (n.seen ? '' : ' unseen') + '" href="' + PR.esc(n.link) + '">' +
+              '<b>' + PR.esc(n.label) + '</b><span>' + PR.esc(n.text) + '</span>' +
+              '<small>' + PR.formatDateTime(n.at) + '</small></a>';
+          }).join('') +
+          '<button type="button" class="notify-clear" id="notifyClear">Sab clear karein</button>'
+        : '<p class="notify-empty">Abhi koi naya alert nahi hai.</p>');
+    var enable = document.getElementById('notifyEnable');
+    if (enable) enable.addEventListener('click', function (e) {
+      e.stopPropagation();
+      Notification.requestPermission().then(renderNotifyUi);
+    });
+    var clear = document.getElementById('notifyClear');
+    if (clear) clear.addEventListener('click', function (e) {
+      e.stopPropagation();
+      store(LIST_KEY, '[]');
+      renderNotifyUi();
+    });
+  }
+
+  function popup(n) {
+    var el = document.createElement('a');
+    el.className = 'notify-toast';
+    el.href = n.link;
+    el.innerHTML = '<b>🔔 ' + PR.esc(n.label) + '</b><span>' + PR.esc(n.text) + '</span>' +
+      '<button type="button" aria-label="Close">×</button>';
+    el.querySelector('button').addEventListener('click', function (e) { e.preventDefault(); el.remove(); });
+    var stack = document.getElementById('notifyStack');
+    if (!stack) {
+      stack = document.createElement('div');
+      stack.id = 'notifyStack';
+      stack.className = 'notify-stack';
+      document.body.appendChild(stack);
+    }
+    stack.appendChild(el);
+    setTimeout(function () { el.remove(); }, 60000);
+  }
+
+  async function checkNew() {
+    var since = load(SINCE_KEY);
+    var now = new Date().toISOString();
+    if (!since) { store(SINCE_KEY, now); return; }
+    var fresh = [];
+    var newest = since;
+    await Promise.all(NOTIFY_SOURCES.map(async function (src) {
+      try {
+        var rows = await PR.call('check ' + src.table, function (sb) {
+          var q = sb.from(src.table).select(src.select).gt('created_at', since).order('created_at').limit(10);
+          return src.filter ? src.filter(q) : q;
+        });
+        (rows || []).forEach(function (r) {
+          if (r.created_at > newest) newest = r.created_at;
+          fresh.push({ key: src.table + ':' + r.id, label: src.label, text: src.text(r), link: src.link(r), at: r.created_at });
+        });
+      } catch (err) {
+        console.warn('[PowerRun] notification check failed for ' + src.table + ':', err.message);
+      }
+    }));
+    if (newest > since) store(SINCE_KEY, newest);
+    if (!fresh.length) return;
+
+    var list = notifyList();
+    var known = {};
+    list.forEach(function (n) { known[n.key] = true; });
+    fresh = fresh.filter(function (n) { return !known[n.key]; })
+      .sort(function (a, b) { return a.at < b.at ? 1 : -1; });
+    if (!fresh.length) return;
+    store(LIST_KEY, JSON.stringify(fresh.concat(list).slice(0, 50)));
+
+    fresh.forEach(function (n) {
+      popup(n);
+      if ('Notification' in window && Notification.permission === 'granted') {
+        try {
+          var bn = new Notification('PowerRun: ' + n.label, { body: n.text, tag: n.key });
+          bn.onclick = function () { window.focus(); window.location.href = n.link; };
+        } catch (e) { /* notification blocked */ }
+      }
+    });
+    beep();
+    renderNotifyUi();
+    PRA.loadBadges();
+  }
+
+  PRA.startNotifier = function () {
+    if (notifyTimer) return;
+    baseTitle = document.title.replace(/^\(\d+\)\s*/, '');
+    var bell = document.getElementById('notifyBell');
+    var panel = document.getElementById('notifyPanel');
+    if (bell && panel) {
+      bell.addEventListener('click', function (e) {
+        e.stopPropagation();
+        panel.hidden = !panel.hidden;
+        if (!panel.hidden) {
+          var list = notifyList().map(function (n) { n.seen = true; return n; });
+          store(LIST_KEY, JSON.stringify(list));
+          renderNotifyUi();
+        }
+      });
+      panel.addEventListener('click', function (e) { e.stopPropagation(); });
+      document.addEventListener('click', function () { panel.hidden = true; });
+    }
+    // Browsers only allow sound after the admin has interacted with the page.
+    document.addEventListener('click', function unlock() {
+      try { audioCtx = audioCtx || new (window.AudioContext || window.webkitAudioContext)(); } catch (e) { /* no audio */ }
+      document.removeEventListener('click', unlock);
+    });
+    window.addEventListener('storage', function (e) { if (e.key === LIST_KEY) renderNotifyUi(); });
+    renderNotifyUi();
+    checkNew();
+    notifyTimer = setInterval(checkNew, 30000);
   };
 
   PRA.loadBadges = async function () {

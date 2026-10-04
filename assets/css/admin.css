@@ -406,3 +406,27 @@ table.grid td small { color: var(--muted); display: block; margin-top: 3px; }
 .calc-result-row.big { font-size: 18px; padding-top: 8px; border-top: 1px solid var(--line); margin-top: 2px; }
 .calc-result.profit .calc-result-row.big b { color: var(--green); }
 .calc-result.loss .calc-result-row.big b { color: var(--red); }
+
+/* ---------------------------------------------------------- notifications */
+.notify-wrap { position: relative; }
+.notify-bell { position: relative; background: #f3f4f6; border: 0; border-radius: 50%; width: 38px; height: 38px;
+  font-size: 18px; cursor: pointer; line-height: 38px; padding: 0; }
+.notify-count { position: absolute; top: -4px; right: -4px; background: var(--orange); color: #fff; font-size: 11px;
+  font-weight: 800; min-width: 18px; height: 18px; line-height: 18px; border-radius: 9px; padding: 0 5px; }
+.notify-panel { position: absolute; right: 0; top: 46px; width: 320px; max-width: 86vw; max-height: 420px; overflow: auto;
+  background: #fff; border-radius: 12px; box-shadow: 0 12px 40px rgba(0,0,0,.18); z-index: 60; }
+.notify-head { display: flex; justify-content: space-between; align-items: center; padding: 12px 14px;
+  border-bottom: 1px solid #eef0f3; font-size: 14px; }
+.notify-head button, .notify-clear { background: none; border: 0; color: var(--orange); font-weight: 800; cursor: pointer; font-size: 12px; }
+.notify-clear { display: block; width: 100%; padding: 10px; }
+.notify-item { display: grid; gap: 2px; padding: 10px 14px; border-bottom: 1px solid #f3f4f6; color: inherit; text-decoration: none; font-size: 13px; }
+.notify-item:hover { background: #fff8f2; }
+.notify-item.unseen { background: #fff4e0; }
+.notify-item small { color: #888; font-size: 11px; }
+.notify-empty { padding: 18px 14px; color: #888; font-size: 13px; margin: 0; }
+.notify-stack { position: fixed; right: 16px; bottom: 16px; display: grid; gap: 10px; z-index: 9999; width: 320px; max-width: calc(100vw - 32px); }
+.notify-toast { position: relative; display: grid; gap: 3px; background: #171717; color: #fff; padding: 14px 40px 14px 16px;
+  border-radius: 12px; box-shadow: 0 12px 30px rgba(0,0,0,.3); text-decoration: none; font-size: 13px;
+  border-left: 5px solid var(--orange); animation: notifyIn .25s ease-out; }
+.notify-toast button { position: absolute; top: 8px; right: 10px; background: none; border: 0; color: #bbb; font-size: 20px; cursor: pointer; }
+@keyframes notifyIn { from { transform: translateY(16px); opacity: 0; } to { transform: none; opacity: 1; } }
