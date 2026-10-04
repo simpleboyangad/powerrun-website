@@ -36,9 +36,73 @@
         (q.terms ? '<h2 style="margin:22px 0 8px;font-size:17px">Terms &amp; Conditions</h2><p class="prose" style="white-space:pre-line">' + PR.esc(q.terms) + '</p>' : '') +
         '<div class="detail-actions" style="margin-top:18px">' +
           '<a class="btn orange" href="' + PR.esc(PR.whatsapp('Quote No: ' + q.quote_number + ' ke baare me baat karni hai.')) + '" target="_blank" rel="noopener">WHATSAPP PAR BAAT KAREIN</a>' +
-          '<button class="outline" type="button" onclick="window.print()">PRINT / PDF</button>' +
+          '<button class="outline" type="button" id="quotePdfBtn">PDF DOWNLOAD</button>' +
         '</div>' +
       '</div>';
+    document.getElementById('quotePdfBtn').addEventListener('click', function () { downloadPdf(q); });
+  }
+
+  function money(n) {
+    return 'Rs. ' + Number(n || 0).toLocaleString('en-IN', { minimumFractionDigits: 2, maximumFractionDigits: 2 });
+  }
+
+  function downloadPdf(q) {
+    if (!window.jspdf) { PR.toast('PDF tool load nahi hua, page refresh karke dobara try karein.', 'error'); return; }
+    var doc = new window.jspdf.jsPDF({ unit: 'mm', format: 'a4' });
+    var y = 15;
+    function line(text, size, gap) {
+      doc.setFontSize(size || 10);
+      var parts = doc.splitTextToSize(String(text), 180);
+      parts.forEach(function (p) {
+        if (y > 280) { doc.addPage(); y = 15; }
+        doc.text(p, 15, y);
+        y += (size || 10) * 0.45 + 1;
+      });
+      y += gap || 0;
+    }
+    line('PowerRun Industries', 16, 1);
+    line('Plot-23, Gadi Road, Dholna, Nagla Bhood, Kasganj, Uttar Pradesh 207124', 9);
+    line('GSTIN: 09GTVPS7660P1ZZ | +91 87003 07676 | service@powerrun.in | powerrun.in', 9, 6);
+    line('QUOTATION ' + q.quote_number, 13, 2);
+    line('Customer: ' + q.customer_name, 10);
+    line('Date: ' + PR.formatDate(q.created_at) + '    Valid until: ' + PR.formatDate(q.valid_until), 10, 5);
+
+    doc.setFontSize(9);
+    doc.text('Product', 15, y); doc.text('Qty', 120, y); doc.text('Price', 140, y); doc.text('Total', 175, y);
+    y += 2; doc.line(15, y, 195, y); y += 4;
+    (q.items || []).forEach(function (it) {
+      if (y > 275) { doc.addPage(); y = 15; }
+      doc.setFontSize(9);
+      doc.text(String(it.product_name).slice(0, 60), 15, y);
+      if (it.sku) { doc.setFontSize(7); doc.text(String(it.sku), 15, y + 3.5); doc.setFontSize(9); }
+      doc.text(String(it.quantity), 120, y);
+      doc.text(money(it.unit_price), 140, y);
+      doc.text(money(it.total_price), 175, y);
+      y += it.sku ? 9 : 6;
+    });
+    y += 2; doc.line(15, y, 195, y); y += 6;
+
+    function row(label, value, bold) {
+      if (y > 275) { doc.addPage(); y = 15; }
+      doc.setFontSize(10);
+      doc.setFont(undefined, bold ? 'bold' : 'normal');
+      doc.text(label, 120, y);
+      doc.text(value, 195, y, { align: 'right' });
+      doc.setFont(undefined, 'normal');
+      y += 6;
+    }
+    if (Number(q.discount_amount) > 0) { row('MRP', money(q.mrp_total)); row('Discount', '- ' + money(q.discount_amount)); }
+    row('Taxable value', money(q.taxable_amount));
+    if (Number(q.cgst_amount) > 0) { row('CGST', money(q.cgst_amount)); row('SGST', money(q.sgst_amount)); }
+    else if (Number(q.igst_amount) > 0) { row('IGST', money(q.igst_amount)); }
+    row('Grand total', money(q.total_amount), true);
+    y += 4;
+
+    if (q.warranty_terms) { line('Warranty: ' + q.warranty_terms, 9, 3); }
+    if (q.terms) { line('Terms & Conditions:', 10, 1); line(q.terms, 9, 3); }
+    line('This is a computer-generated quotation.', 8);
+
+    doc.save(q.quote_number.replace(/\//g, '-') + '.pdf');
   }
 
   async function submit(event) {
