@@ -59,6 +59,8 @@ Disallow: /account/
 Disallow: /set-password/
 Disallow: /youtube/
 Disallow: /track-order/
+Disallow: /internal-tools/
+Disallow: /sidebar.html
 Disallow: /*?add-to-cart=
 Disallow: /*&add-to-cart=
 

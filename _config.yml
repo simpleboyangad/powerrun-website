@@ -1,0 +1,14 @@
+# GitHub Pages (Jekyll) settings. The site is plain static HTML; this file only
+# keeps internal files off powerrun.in. They stay in the repository.
+exclude:
+  - README.md
+  - POWERRUN-GUIDE.md
+  - POWERRUN-GUIDE.html
+  - price-list.txt
+  - publish-seo.bat
+  - docs/
+  - scripts/
+  - sql/
+  - supabase/
+  - youtube/
+  - x/
