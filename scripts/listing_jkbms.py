@@ -215,10 +215,69 @@ def parse(src):
     raise ValueError("unrecognised JK item: " + src["supplier_name"])
 
 
+def identity(p):
+    """PowerRun SKU and name for a parsed item, with no JK model code anywhere.
+
+    The owner does not want JK's model codes (BD6A24S4PD, DZ08..., LY, V19)
+    on the listing: not in the name, SKU, URL, specs or images. The SKU reads
+    JK-BMS-<low>S-<high>S-<amps>A-<type>, type being SEMI (semi-smart),
+    SMART (0.4-0.6 A balancing), PRO (1-2 A balancing, JK's B1A/B2A series)
+    or ESS. Two items that would otherwise share a name get "(Variant B)".
+    p["model"] stays as an internal key (icons, balance current); it is never
+    shown."""
+    code = p["model"]
+    p["specs"] = [(k, v) for k, v in p["specs"] if k != "Model"]
+    if p["sub"] == "smart":
+        lo, hi = re.search(r"(\d+)S-(\d+)S", p["name"]).groups()
+        amps = re.search(r" (\d+)A", p["name"]).group(1)
+        label = re.match(r"JK (.*?) \d+S-", p["name"]).group(1)
+        bal = balance_current(code.split()[0])
+        bal_amps = float(bal.split()[0]) if bal else 0.0
+        kind = ("SEMI" if "Semi" in label else "ESS" if "ESS" in label else
+                "PRO" if bal_amps >= 1 else "SMART")
+        name = "JK %s %sS-%sS %sA" % (label, lo, hi, amps)
+        if kind == "PRO":
+            name += " (%dA Balance)" % bal_amps
+        sku = "JK-BMS-%sS-%sS-%sA-%s" % (lo, hi, amps, kind)
+    elif p["sub"] == "hv":
+        if "Master" in p["name"]:
+            name, sku = p["name"], "JK-BMS-HV-MASTER-%sA" % re.search(r"(\d+)A", p["name"]).group(1)
+        elif "Slave" in p["name"]:
+            cells = re.search(r"(\d+)S", p["name"]).group(1)
+            name, sku = "JK High Voltage Slave BMS %sS" % cells, "JK-BMS-HV-SLAVE-%sS" % cells
+            p["card_big"] = "%sS" % cells
+        else:
+            cells, volts, amps = re.search(r"(\d+)S (\d+)V (\d+)A", p["name"]).groups()
+            name, sku = "JK Relay BMS %sS %sV %sA" % (cells, volts, amps), "JK-BMS-RELAY-%sS-%sA" % (cells, amps)
+    elif p["sub"] == "balancer":
+        cells, amps = re.search(r"(\d+)S (\d+)A", p["name"]).groups()
+        name, sku = "JK Smart Active Balancer %sS %sA" % (cells, amps), "JK-BAL-%sS-%sA" % (cells, amps)
+        if code.startswith("DZ"):
+            name, sku = name + " (Variant B)", sku + "-B"
+    elif "SOC Display" in p["name"]:
+        size, variant = re.search(r"([\d.]+) inch ?(.*)$", p["name"]).groups()
+        usb = variant.upper() == "USB"                  # a feature, not a model code
+        name = "JK BMS SOC Display %s inch%s" % (size, " USB" if usb else "")
+        sku = "JK-DISPLAY-%sIN%s" % (size.replace(".", "-"), "-USB" if usb else "")
+        if variant.upper() == "V19":                    # the other 4.3" screen
+            name, sku = name + " (Variant B)", sku + "-B"
+        p["specs"] = [(k, v) for k, v in p["specs"] if k != "Version" or usb]
+        p["chips"] = [c for c in p["chips"] if c in ("LCD", "USB") or "inch" in c]
+        p["card_big"] = '%s"%s' % (size, "  |  USB" if usb else "")
+    elif "Connect Board" in p["name"]:
+        cells, amps = re.search(r"(\d+)S (\d+)A", p["name"]).groups()
+        name, sku = p["name"], "JK-BCB-%sS-%sA" % (cells, amps)
+    else:                                               # parallel module
+        name, sku = "JK BMS Parallel Module 5A", "JK-PARALLEL-5A"
+        p["card_big"] = "5A"
+        p["short"] = "JK parallel module for running battery packs with JK BMS in parallel, 5 A."
+    p["name"], p["sku"] = name, sku
+    return p
+
+
 def finish(p):
-    """Slug, SKU, price and the shared copy."""
+    """Slug, price and the shared copy (SKU comes from identity())."""
     p["slug"] = re.sub(r"[^a-z0-9]+", "-", p["name"].lower()).strip("-")
-    p["sku"] = "JK-" + re.sub(r"[^A-Z0-9]+", "-", p["model"].upper()).strip("-")
     p["price"] = selling_price(p["cost"])
     p["description"] = (
         "The %s is a JK BMS part for %s. %s\n\n"
@@ -288,7 +347,7 @@ def card_main(p):
     (screen_icon if "SOC" in p["model"] else board_icon)(d, S // 2, 760, 820)
     f = heavy(150 if len(p["card_big"]) < 16 else 110)
     d.text((S // 2, 1210), p["card_big"], font=f, fill=ORANGE, anchor="mm")
-    d.text((S // 2, 1350), "Model: " + p["model"], font=bold(54), fill=INK, anchor="mm")
+    d.text((S // 2, 1350), "SKU: " + p["sku"], font=bold(54), fill=INK, anchor="mm")
     lx.chips_centred(d, 1480, p["chips"][:4])
     d.rectangle([0, 1640, S, 1860], fill=(246, 246, 246))
     d.text((S // 2, 1715), "Free pan-India delivery  •  7-day replacement", font=bold(46), fill=INK, anchor="mm")
@@ -405,7 +464,7 @@ def main():
     rows = json.load(io.open(SOURCE, encoding="utf-8"))
     products, seen = [], set()
     for src in rows:
-        p = finish(parse(src))
+        p = finish(identity(parse(src)))
         if p["sku"] in seen:
             raise SystemExit("duplicate SKU " + p["sku"])
         seen.add(p["sku"])
