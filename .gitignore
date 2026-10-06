@@ -12,3 +12,6 @@ __pycache__/
 
 # Supplier source photos (edited listing images live in photos/listing/)
 photos/original/
+
+# Private research files (not for the website)
+private/

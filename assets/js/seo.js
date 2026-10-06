@@ -205,7 +205,7 @@
       name: p.name,
       description: clean(p.metaDescription || p.shortDescription || p.description, 500) || undefined,
       sku: p.sku || undefined,
-      brand: { '@type': 'Brand', name: PR.config.COMPANY },
+      brand: { '@type': 'Brand', name: p.brand || PR.config.COMPANY },
       url: canonical,
       image: (p.images || []).map(function (img) { return img.url; })
     };

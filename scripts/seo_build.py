@@ -55,7 +55,7 @@ GOOGLE_BUSINESS_PROFILE = "https://maps.google.com/?cid=2490524210981875388"
 
 # category icons on the home page, same as ICONS in assets/js/pages/home.js
 HOME_ICONS = {
-    "hybrid-inverters": "⚡", "lithium-batteries": "🔋", "solar-panels": "☀️", "e-rickshaw-batteries": "🛺",
+    "hybrid-inverters": "⚡", "lithium-batteries": "🔋", "solar-panels": "☀️", "e-rickshaw-batteries": "🛺", "bms-balancers": "🔌",
     "home-energy-storage": "🏠", "commercial-energy-storage": "🏢", "industrial-energy-solutions": "🏭",
     "ev-batteries": "🚗", "ups-power-backup": "🔌", "accessories-spare-parts": "🧰",
 }
@@ -227,7 +227,7 @@ def product_schema(product, canonical, images, site_name, reviews=None, site="")
         "@type": "Product",
         "name": product["name"],
         "sku": product.get("sku") or None,
-        "brand": {"@type": "Brand", "name": site_name},
+        "brand": {"@type": "Brand", "name": product.get("brand") or site_name},
         "url": canonical,
     }
     description = clean(product.get("meta_description") or product.get("short_description")
@@ -543,7 +543,8 @@ def product_faq(product, cat):
                     "It is rated for %s." % cycles.rstrip("."),
                     "%s कितने समय तक चलती है?" % name,
                     "इसकी रेटिंग %s है।" % cycles_hi(cycles.rstrip("."))))
-    if product.get("warranty"):
+    # resold parts (brand set) carry no PowerRun warranty, only the 7-day replacement below
+    if product.get("warranty") and not product.get("brand"):
         warranty = product["warranty"].rstrip(".")
         faq.append(("What warranty does it come with?",
                     "%s. Register the product at powerrun.in/warranty after delivery." % warranty,
@@ -638,7 +639,7 @@ def main():
     categories = fetch("categories?select=id,name,slug,parent_id,is_active,description,meta_title,meta_description,"
                        "focus_keyword,canonical_url,og_image,seo_index,seo_follow&is_active=eq.true"
                        "&order=sort_order,name")
-    products = fetch("products?select=id,name,slug,sku,price,mrp,stock,warranty,specifications,features,availability,short_description,description,is_featured,"
+    products = fetch("products?select=id,name,slug,sku,brand,price,mrp,stock,warranty,specifications,features,availability,short_description,description,is_featured,"
                      "meta_title,meta_description,focus_keyword,secondary_keywords,canonical_url,og_title,"
                      "og_description,og_image,image_alt,seo_index,seo_follow,category_id,updated_at,"
                      "product_images(image_url,sort_order)&is_active=eq.true&order=sort_order")

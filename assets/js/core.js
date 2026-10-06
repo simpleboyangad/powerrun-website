@@ -429,7 +429,7 @@
     gaQueue.splice(0).forEach(function (e) { PR.track(e[0], e[1]); });
   };
   PR.gaItem = function (product, qty) {
-    return { item_id: product.sku || product.id, item_name: product.name, item_brand: 'PowerRun',
+    return { item_id: product.sku || product.id, item_name: product.name, item_brand: product.brand || 'PowerRun',
              item_category: product.category || undefined, price: product.price, quantity: qty || 1 };
   };
 

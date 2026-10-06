@@ -31,13 +31,15 @@ def esc(s):
 
 def build():
     rows = fetch(
-        "products?select=sku,name,slug,short_description,description,price,mrp,stock,"
+        "products?select=sku,name,slug,brand,short_description,description,price,mrp,stock,"
         "categories!products_category_id_fkey(name),product_images(image_url,sort_order)"
         "&is_active=eq.true&order=sku"
     )
 
     items = []
     for p in rows:
+        if p.get("brand"):
+            continue  # resold parts only have PowerRun spec cards, not product photos, so keep them off Shopping
         images = sorted(p["product_images"], key=lambda x: x["sort_order"])
         if not images:
             continue  # Merchant Center requires an image; skip products without one yet

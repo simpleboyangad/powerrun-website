@@ -8,6 +8,7 @@
     'lithium-batteries': '🔋',
     'solar-panels': '☀️',
     'e-rickshaw-batteries': '🛺',
+    'bms-balancers': '🔌',
     'home-energy-storage': '🏠',
     'commercial-energy-storage': '🏢',
     'industrial-energy-solutions': '🏭',

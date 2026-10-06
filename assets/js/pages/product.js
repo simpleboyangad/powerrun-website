@@ -324,9 +324,14 @@
             : '') +
           '<div class="trust-badges">' +
             '<div class="trust-badge"><span class="ic">🚚</span><div><b>Pan India Delivery</b><small>Safely packed, tracked online</small></div></div>' +
-            '<div class="trust-badge"><span class="ic">🛡️</span><div><b>Manufacturer Warranty</b><small>Register online after delivery</small></div></div>' +
-            '<div class="trust-badge"><span class="ic">🎧</span><div><b>Technical Support</b><small>Sizing and installation help</small></div></div>' +
-            '<div class="trust-badge"><span class="ic">✅</span><div><b>Quality Checked</b><small>Every unit tested before dispatch</small></div></div>' +
+            // Resold parts (p.brand set) carry no PowerRun warranty; only the
+            // 7-day replacement from the refund policy applies to them.
+            (p.brand
+              ? '<div class="trust-badge"><span class="ic">🔁</span><div><b>7-Day Replacement</b><small>Damaged, defective or wrong item</small></div></div>' +
+                '<div class="trust-badge"><span class="ic">🎧</span><div><b>Technical Support</b><small>Help choosing the right model</small></div></div>'
+              : '<div class="trust-badge"><span class="ic">🛡️</span><div><b>Manufacturer Warranty</b><small>Register online after delivery</small></div></div>' +
+                '<div class="trust-badge"><span class="ic">🎧</span><div><b>Technical Support</b><small>Sizing and installation help</small></div></div>' +
+                '<div class="trust-badge"><span class="ic">✅</span><div><b>Quality Checked</b><small>Every unit tested before dispatch</small></div></div>') +
           '</div>' +
           PR.googleRatingLink('google-rating google-rating-product') +
           specs(p) +

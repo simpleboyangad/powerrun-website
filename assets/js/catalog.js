@@ -86,6 +86,7 @@
       name: row.name,
       slug: row.slug || PR.slugify(row.name),
       sku: row.sku || '',
+      brand: row.brand || '',  // empty = PowerRun's own product
       categoryId: row.category_id,
       category: (categoryOf(row.category_id) || {}).name || '',
       categorySlug: (categoryOf(row.category_id) || {}).slug || '',
