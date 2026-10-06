@@ -27,8 +27,39 @@
     });
   }
 
+  // Google Customer Reviews: Google emails the customer a short survey after
+  // the estimated delivery date. Needs an email; the opt-in dialog is Google's.
+  // Estimated delivery = order date + 12 days (1-2 working days to dispatch,
+  // 3-7 working days in transit).
+  function offerGoogleReviewSurvey(order) {
+    var merchantId = Number(window.PR_CONFIG.GOOGLE_MERCHANT_ID);
+    if (!merchantId || !order.customer_email || order.order_status === 'cancelled') return;
+    var key = 'pr_gcr_' + order.order_number;
+    try { if (localStorage.getItem(key)) return; localStorage.setItem(key, '1'); } catch (err) { /* still offer */ }
+    var delivery = new Date(order.created_at || Date.now());
+    delivery.setDate(delivery.getDate() + 12);
+    window.renderOptIn = function () {
+      window.gapi.load('surveyoptin', function () {
+        window.gapi.surveyoptin.render({
+          merchant_id: merchantId,
+          order_id: order.order_number,
+          email: order.customer_email,
+          delivery_country: 'IN',
+          estimated_delivery_date: delivery.toISOString().slice(0, 10),
+          opt_in_style: 'CENTER_DIALOG'
+        });
+      });
+    };
+    var script = document.createElement('script');
+    script.src = 'https://apis.google.com/js/platform.js?onload=renderOptIn';
+    script.async = true;
+    script.defer = true;
+    document.head.appendChild(script);
+  }
+
   function renderOrder(order) {
     trackPurchase(order);
+    offerGoogleReviewSurvey(order);
     var host = document.getElementById('confirmContent');
     var paid = order.payment_status === 'paid';
 
