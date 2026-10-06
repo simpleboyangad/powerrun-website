@@ -250,7 +250,7 @@
           return '<a href="' + PR.categoryPath(c.slug) + '">' + PR.esc(c.name) + '</a>';
         }).join('') +
         '<a href="/products/">All products</a>' +
-        '<a href="/warranty/">Warranty registration</a>' +
+        (p.brand ? '' : '<a href="/warranty/">Warranty registration</a>') +
         '<a href="/service/">Service request</a>' +
       '</div>' +
     '</div>';
@@ -300,6 +300,13 @@
             ? '<div class="emi-note">⚡ <b>EMI options available on request</b> · ask us on WhatsApp or call</div>'
             : '') +
           PR.stockLine(p) +
+          // Resold parts (p.brand set) have no warranty at all - say so before
+          // the buy buttons, not only in small print.
+          (p.brand
+            ? '<div class="no-warranty" role="note"><b>⚠️ No Warranty</b>' +
+                '<p>This product is sold without any warranty. Only damaged, defective or wrong items are replaced within 7 days of delivery.</p>' +
+                '<p lang="hi">इस प्रोडक्ट पर कोई वारंटी नहीं है। सिर्फ़ टूटा हुआ, ख़राब या ग़लत प्रोडक्ट डिलीवरी के 7 दिन के अंदर बदला जाता है।</p></div>'
+            : '') +
           (p.orderable
             ? '<div class="qty-stepper">' +
                 '<button type="button" id="qtyMinus" aria-label="Decrease quantity">−</button>' +
@@ -314,7 +321,7 @@
                 '<a class="btn orange" href="' + PR.esc(PR.whatsapp('Hello PowerRun Industries, I would like a quote for ' + p.name + (p.sku ? ' (' + p.sku + ')' : '') + '.')) + '" target="_blank" rel="noopener">REQUEST A QUOTE</a>' +
                 '<a class="outline" href="/contact/">CONTACT US</a>' +
               '</div>') +
-          (p.warranty ? '<p class="small-note" style="margin-top:14px">🛡️ ' + PR.esc(p.warranty) + '</p>' : '') +
+          (p.warranty && !p.brand ? '<p class="small-note" style="margin-top:14px">🛡️ ' + PR.esc(p.warranty) + '</p>' : '') +
           (p.datasheetUrl
             ? '<a class="datasheet-btn" href="' + PR.esc(p.datasheetUrl) + '" target="_blank" rel="noopener" ' +
                 'title="' + PR.esc(p.datasheetName || 'Datasheet') + '">' +
@@ -327,7 +334,8 @@
             // Resold parts (p.brand set) carry no PowerRun warranty; only the
             // 7-day replacement from the refund policy applies to them.
             (p.brand
-              ? '<div class="trust-badge"><span class="ic">🔁</span><div><b>7-Day Replacement</b><small>Damaged, defective or wrong item</small></div></div>' +
+              ? '<div class="trust-badge trust-badge-warn"><span class="ic">⚠️</span><div><b>No Warranty</b><small>Sold without warranty</small></div></div>' +
+                '<div class="trust-badge"><span class="ic">🔁</span><div><b>7-Day Replacement</b><small>Only if damaged, defective or wrong</small></div></div>' +
                 '<div class="trust-badge"><span class="ic">🎧</span><div><b>Technical Support</b><small>Help choosing the right model</small></div></div>'
               : '<div class="trust-badge"><span class="ic">🛡️</span><div><b>Manufacturer Warranty</b><small>Register online after delivery</small></div></div>' +
                 '<div class="trust-badge"><span class="ic">🎧</span><div><b>Technical Support</b><small>Sizing and installation help</small></div></div>' +

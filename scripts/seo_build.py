@@ -51,6 +51,10 @@ END = "<!-- SEO:END -->"
 # "% OFF" on public pages until the MRPs are ones products really sold at.
 SHOW_MRP = False
 
+# resold parts (products.brand set, e.g. JK BMS): shown on the product page and in its FAQ
+NO_WARRANTY_EN = "This product is sold without any warranty. Only damaged, defective or wrong items are replaced within 7 days of delivery."
+NO_WARRANTY_HI = "इस प्रोडक्ट पर कोई वारंटी नहीं है। सिर्फ़ टूटा हुआ, ख़राब या ग़लत प्रोडक्ट डिलीवरी के 7 दिन के अंदर बदला जाता है।"
+
 GOOGLE_BUSINESS_PROFILE = "https://maps.google.com/?cid=2490524210981875388"
 
 # category icons on the home page, same as ICONS in assets/js/pages/home.js
@@ -377,7 +381,11 @@ def prerender_product(product, cat, images, related=None):
         out.append(row + '</div>')
     else:
         out.append('<div class="price-row"><span class="price-now">Price on request</span></div>')
-    if product.get("warranty"):
+    if product.get("brand"):
+        # resold part: no warranty at all, said plainly (same box as product.js)
+        out.append('<div class="no-warranty" role="note"><b>⚠️ No Warranty</b><p>%s</p><p lang="hi">%s</p></div>'
+                   % (NO_WARRANTY_EN, NO_WARRANTY_HI))
+    elif product.get("warranty"):
         out.append('<p class="small-note" style="margin-top:14px">%s</p>' % esc(product["warranty"]))
     rows, text = spec_rows(product.get("specifications"))
     if rows:
@@ -397,8 +405,9 @@ def prerender_product(product, cat, images, related=None):
     out.append('<div class="internal-links"><b>Explore more</b><div class="link-chips">'
                + ('<a href="%s">All %s</a>'
                   % (esc(category_path(cat["slug"])), esc(cat["name"])) if cat.get("slug") else "")
-               + '<a href="/products/">All products</a><a href="/warranty/">Warranty registration</a>'
-               '<a href="/service/">Service request</a></div>'
+               + '<a href="/products/">All products</a>'
+               + ('' if product.get("brand") else '<a href="/warranty/">Warranty registration</a>')
+               + '<a href="/service/">Service request</a></div>'
                + ('<b>Similar products</b><div class="link-chips">'
                   + "".join('<a href="/products/%s/">%s</a>' % (esc(urllib.parse.quote(r["slug"])), esc(r["name"]))
                             for r in (related or []))
@@ -543,8 +552,11 @@ def product_faq(product, cat):
                     "It is rated for %s." % cycles.rstrip("."),
                     "%s कितने समय तक चलती है?" % name,
                     "इसकी रेटिंग %s है।" % cycles_hi(cycles.rstrip("."))))
-    # resold parts (brand set) carry no PowerRun warranty, only the 7-day replacement below
-    if product.get("warranty") and not product.get("brand"):
+    # resold parts (brand set) carry no warranty at all, only the 7-day replacement below
+    if product.get("brand"):
+        faq.append(("Is there a warranty on this product?", "No. " + NO_WARRANTY_EN,
+                    "क्या इस प्रोडक्ट पर वारंटी है?", "नहीं। " + NO_WARRANTY_HI))
+    elif product.get("warranty"):
         warranty = product["warranty"].rstrip(".")
         faq.append(("What warranty does it come with?",
                     "%s. Register the product at powerrun.in/warranty after delivery." % warranty,
