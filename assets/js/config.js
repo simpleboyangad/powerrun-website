@@ -18,6 +18,8 @@ window.PR_CONFIG = {
   PHONE: '+91 87003 07676',
   EMAIL: 'service@powerrun.in',
   COMPANY: 'PowerRun Industries',
+  ADDRESS: 'Plot 23, Gadi Road, Nagla Bhood, Dholna, Kasganj, Uttar Pradesh 207124, India',
+  GSTIN: '09GTVPS7660P1ZZ',
   SITE_URL: 'https://powerrun.in',
 
   // Google Merchant Center account ID (digits only). When set, the order

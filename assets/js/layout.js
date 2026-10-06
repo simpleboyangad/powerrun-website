@@ -109,6 +109,7 @@
             '<p>Powering today, sustaining tomorrow. High-performance lithium batteries, ' +
             'hybrid inverters and complete energy solutions.</p>' +
             '<p>☎ ' + PR.esc(cfg.PHONE) + '<br>✉ ' + PR.esc(cfg.EMAIL) + '</p>' +
+            '<p>📍 ' + PR.esc(cfg.ADDRESS) + '<br>GSTIN: ' + PR.esc(cfg.GSTIN) + '</p>' +
           '</div>' +
           '<div><h3>Products</h3><ul id="prFooterCats">' +
             '<li><a href="/hybrid-inverters/">Hybrid Inverters</a></li>' +
