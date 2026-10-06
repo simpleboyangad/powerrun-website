@@ -553,10 +553,10 @@ def product_faq(product, cat):
                 "टूटा हुआ, ख़राब या ग़लत प्रोडक्ट डिलीवरी के 7 दिन के अंदर बदल दिया जाता है। पूरी जानकारी "
                 "हमारी रिफ़ंड पॉलिसी में है।"))
     faq.append(("Can you help me choose the right model?",
-                "Yes. Message us on WhatsApp or call +91 87003 07676 with your load and backup needs and our "
+                "Yes. Message us on WhatsApp or call +91 97596 14433 with your load and backup needs and our "
                 "team will suggest the right size.",
                 "क्या आप सही मॉडल चुनने में मदद करेंगे?",
-                "हाँ। अपना लोड और कितने घंटे का बैकअप चाहिए, यह WhatsApp पर भेजें या +91 87003 07676 पर कॉल "
+                "हाँ। अपना लोड और कितने घंटे का बैकअप चाहिए, यह WhatsApp पर भेजें या +91 97596 14433 पर कॉल "
                 "करें - हमारी टीम सही साइज़ बताएगी।"))
     return faq
 
@@ -652,7 +652,7 @@ def main():
     org = {
         "@context": "https://schema.org", "@type": "Organization",
         "@id": site + "/#organization", "name": site_name, "url": site + "/",
-        "logo": default_image, "email": "service@powerrun.in", "telephone": "+91 87003 07676",
+        "logo": default_image, "email": "service@powerrun.in", "telephone": "+91 97596 14433",
         "areaServed": "IN",
         "sameAs": ["https://www.youtube.com/@PowerRunIndustries"],
     }

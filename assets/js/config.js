@@ -13,9 +13,9 @@ window.PR_CONFIG = {
   // The matching KEY SECRET must be set ONLY as a Supabase Edge Function secret.
   RAZORPAY_KEY_ID: 'rzp_live_TeVizhEm73jmxI',
 
-  WHATSAPP: '918700307676',
+  WHATSAPP: '919759614433',
   YOUTUBE: 'https://www.youtube.com/@PowerRunIndustries',
-  PHONE: '+91 87003 07676',
+  PHONE: '+91 97596 14433',
   EMAIL: 'service@powerrun.in',
   COMPANY: 'PowerRun Industries',
   ADDRESS: 'Plot 23, Gadi Road, Nagla Bhood, Dholna, Kasganj, Uttar Pradesh 207124, India',
