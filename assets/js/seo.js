@@ -196,8 +196,8 @@
     };
   };
 
-  /* Only fields that really exist in the database are published. No ratings or
-     reviews are emitted, because the site does not collect them yet. */
+  /* Only fields that really exist in the database are published. Ratings come
+     only from approved reviews, carried over from the static page. */
   seo.productSchema = function (p, canonical) {
     var node = {
       '@context': 'https://schema.org',
@@ -216,10 +216,42 @@
         priceCurrency: 'INR',
         price: String(p.price),
         url: canonical,
+        itemCondition: 'https://schema.org/NewCondition',
         availability: p.orderable ? 'https://schema.org/InStock' : 'https://schema.org/OutOfStock',
-        seller: { '@type': 'Organization', name: PR.config.COMPANY }
+        seller: { '@type': 'Organization', name: PR.config.COMPANY },
+        // Same policy as scripts/seo_build.py product_schema(): free pan-India
+        // shipping, 1-2 day dispatch + 3-7 day transit, 7-day replacement.
+        hasMerchantReturnPolicy: {
+          '@type': 'MerchantReturnPolicy',
+          applicableCountry: 'IN',
+          returnPolicyCategory: 'https://schema.org/MerchantReturnFiniteReturnWindow',
+          merchantReturnDays: 7,
+          returnFees: 'https://schema.org/FreeReturn',
+          returnMethod: 'https://schema.org/ReturnByMail',
+          merchantReturnLink: PR.config.SITE_URL + '/refund-policy/'
+        },
+        shippingDetails: {
+          '@type': 'OfferShippingDetails',
+          shippingRate: { '@type': 'MonetaryAmount', value: '0', currency: 'INR' },
+          shippingDestination: { '@type': 'DefinedRegion', addressCountry: 'IN' },
+          deliveryTime: {
+            '@type': 'ShippingDeliveryTime',
+            handlingTime: { '@type': 'QuantitativeValue', minValue: 1, maxValue: 2, unitCode: 'DAY' },
+            transitTime: { '@type': 'QuantitativeValue', minValue: 3, maxValue: 7, unitCode: 'DAY' }
+          }
+        }
       };
     }
+    // Keep the approved-review rating that seo_build.py wrote into the static
+    // page; this runtime copy has no review data of its own.
+    try {
+      var old = document.getElementById('ld-product');
+      var prev = old && JSON.parse(old.textContent);
+      if (prev && prev.aggregateRating) {
+        node.aggregateRating = prev.aggregateRating;
+        if (prev.review) node.review = prev.review;
+      }
+    } catch (err) { /* malformed static block: publish without rating */ }
     return node;
   };
 
