@@ -74,7 +74,7 @@
     } catch (err) {
       console.error('[PowerRun] reset email failed:', err);
       message(/rate limit/i.test(err.message)
-        ? 'Too many emails have been sent recently. Please try again in an hour, or call us on +91 97596 14433.'
+        ? 'Too many emails have been sent recently. Please try again in an hour, or call us on +91 86075 65520.'
         : err.message);
     }
   }

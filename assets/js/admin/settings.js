@@ -82,7 +82,7 @@
           '<div class="form-grid">' +
             '<label>Phone<input id="st_phone" value="' + PR.esc(store.phone || '') + '"></label>' +
             '<label>WhatsApp Number<input id="st_whatsapp" value="' + PR.esc(store.whatsapp || '') +
-              '"><span class="hint">Country code, no + (e.g. 919759614433).</span></label>' +
+              '"><span class="hint">Country code, no + (e.g. 918607565520).</span></label>' +
           '</div>' +
           '<label>Email<input id="st_email" type="email" value="' + PR.esc(store.email || '') + '"></label>' +
           '<p class="hint">These are used by the admin panel. The storefront header and footer read ' +
