@@ -417,6 +417,19 @@
              item_category: product.category || undefined, price: product.price, quantity: qty || 1 };
   };
 
+  // Clicks on WhatsApp / call links count as contact leads (public site only).
+  document.addEventListener('click', function (event) {
+    if (/^\/admin\//.test(window.location.pathname)) return;
+    var link = event.target.closest && event.target.closest('a[href]');
+    if (!link) return;
+    var href = link.getAttribute('href') || '';
+    if (/wa\.me|api\.whatsapp\.com/.test(href)) {
+      PR.track('contact_click', { method: 'whatsapp', page_path: window.location.pathname });
+    } else if (/^tel:/.test(href)) {
+      PR.track('contact_click', { method: 'phone', page_path: window.location.pathname });
+    }
+  }, true);
+
   /* WhatsApp link to a customer's own number (admin side). '' when the
      mobile is not a usable 10-digit Indian number. */
   PR.whatsappTo = function (mobile, text) {

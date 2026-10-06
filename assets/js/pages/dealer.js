@@ -44,6 +44,7 @@
       var result = await PR.call('submit dealer enquiry', function (sb) {
         return sb.rpc('submit_dealer_enquiry', { p_data: values });
       });
+      PR.track('generate_lead', { lead_source: 'dealer_enquiry' });
       PR.toast('Dealer enquiry submitted: ' + result.enquiry_number, 'success');
       success(result);
     } catch (err) {

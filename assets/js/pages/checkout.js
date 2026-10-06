@@ -403,6 +403,7 @@
 
       renderSummary();
       renderPaymentMethods();
+      PR.track('begin_checkout', PR.cart.gaPayload(resolved.lines));
 
       if (razorpayAvailable()) {
         var script = document.createElement('script');

@@ -643,6 +643,9 @@
       }
       setMeta(product);
       render(product);
+      if (product.price > 0) {
+        PR.track('view_item', { currency: 'INR', value: product.price, items: [PR.gaItem(product, 1)] });
+      }
       renderRelated(product);
       renderReviews(product);
       renderQuoteRequest(product);

@@ -41,6 +41,7 @@
         return sb.rpc('submit_contact_lead', { p_data: values });
       });
       PR.setBusy(button, false);
+      PR.track('generate_lead', { lead_source: 'contact_form' });
       form.reset();
       PR.toast('Thank you. Your enquiry has been sent.', 'success');
       var box = document.createElement('div');

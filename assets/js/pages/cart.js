@@ -26,6 +26,8 @@
     '</div>';
   }
 
+  var viewTracked = false;
+
   async function render() {
     var host = document.getElementById('cartContent');
     var summaryHost = document.getElementById('cartSummary');
@@ -51,6 +53,11 @@
         '<p>Add products to continue to checkout.</p>' +
         '<a class="btn orange" href="/products/">Browse products</a></div>';
       return;
+    }
+
+    if (!viewTracked) {
+      viewTracked = true;
+      PR.track('view_cart', PR.cart.gaPayload(resolved.lines));
     }
 
     host.innerHTML =

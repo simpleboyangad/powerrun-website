@@ -221,6 +221,15 @@
     return html;
   };
 
+  /* GA4 payload for a resolved cart: { currency, value, items } */
+  cart.gaPayload = function (lines) {
+    return {
+      currency: 'INR',
+      value: lines.reduce(function (sum, line) { return sum + line.lineTotal; }, 0),
+      items: lines.map(function (line) { return PR.gaItem(line.product, line.qty); })
+    };
+  };
+
   PR.cart = cart;
 
   // Keep the badge in step across tabs.

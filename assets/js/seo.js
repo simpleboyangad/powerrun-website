@@ -29,7 +29,8 @@
   function readCache() {
     try {
       var raw = JSON.parse(sessionStorage.getItem(CACHE_KEY) || 'null');
-      if (raw && raw.at && Date.now() - raw.at < CACHE_MS) return raw.value;
+      if (raw && raw.at && Date.now() - raw.at < CACHE_MS && raw.value &&
+          raw.value.global && raw.value.global.id) return raw.value;
     } catch (err) { /* private mode or damaged cache */ }
     return null;
   }
@@ -53,7 +54,10 @@
       var pages = {};
       (results[1].data || []).forEach(function (row) { pages[row.page_key] = row; });
       data = { global: (results[0].data || {}), pages: pages };
-      writeCache(data);
+      // Never cache a failed or empty read: it would hide the GA id and the
+      // stored SEO for the rest of the browser session.
+      if (!results[0].error && !results[1].error && results[0].data) writeCache(data);
+      else { loading = null; data = null; return { global: (results[0].data || {}), pages: pages }; }
       return data;
     }).catch(function (err) {
       console.warn('[PowerRun] SEO settings unavailable:', err.message);
