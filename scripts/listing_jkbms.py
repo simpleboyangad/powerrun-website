@@ -9,11 +9,14 @@ Source  private/jk_bms_source.json  (gitignored: the supplier's name, page and
 
 Selling price = supplier price incl. GST x 1.20, rounded up to end in 9.
 
-PowerRun has no photos of these parts yet, so each product gets two spec
-cards (no drawn product) that say plainly they are illustrations. The rows
-carry brand = 'JK BMS', which keeps them off the Merchant Center feed and
-out of PowerRun's warranty wording (see merchant_feed.py, seo_build.py).
-Everything shown is read from the model name; nothing is invented.
+A source row with "photo" (a supplier photo of that exact model, checked for
+watermarks, used with the supplier's permission) gets that photo first and a
+specifications card second. Rows without one get two spec cards (no drawn
+product) that say plainly they are illustrations. Photos are re-encoded on
+white, which also drops their metadata. The rows carry brand = 'JK BMS',
+which keeps them off the Merchant Center feed and out of PowerRun's warranty
+wording (see merchant_feed.py, seo_build.py). Everything shown is read from
+the model name; nothing is invented.
 """
 import io
 import json
@@ -74,8 +77,8 @@ def lfp_range(lo, hi):
 # ---------------------------------------------------------------- parsing
 def parse(src):
     """One supplier row -> one PowerRun product dict (without ids)."""
-    raw = re.sub(r"\s+", " ", src["arb_name"].upper().replace("SAMART", "SMART")).strip()
-    p = {"cost": src["arb_final_incl_gst"], "chips": [], "specs": [], "features": []}
+    raw = re.sub(r"\s+", " ", src["supplier_name"].upper().replace("SAMART", "SMART")).strip()
+    p = {"cost": src["supplier_price_incl_gst"], "photo": src.get("photo"), "chips": [], "specs": [], "features": []}
 
     m = re.match(r"JK (SEMI SMART |SMART )(ESS )?BMS (\d+)-(\d+)S (\d+)A(?:MP)? (\w+)( PTMC)?$", raw) or \
         re.match(r"JK BMS (\d+)-(\d+)S (\d+)AMP SEMI SMART\((\w+)\)$", raw)
@@ -209,7 +212,7 @@ def parse(src):
         p["short"] = "JK smart active balancer, up to %dS, %d A balancing current." % (cells, amps)
         return p
 
-    raise ValueError("unrecognised JK item: " + src["arb_name"])
+    raise ValueError("unrecognised JK item: " + src["supplier_name"])
 
 
 def finish(p):
@@ -269,9 +272,11 @@ def brand_badge(d, y):
     d.text((S - 80 - w / 2, y + 60), BRAND, font=f, fill=WHITE, anchor="mm")
 
 
-def footnote(d):
-    d.text((S // 2, 1935), "Illustration - not a product photo.  Sold & shipped by PowerRun Industries.",
-           font=regular(30), fill=GREY, anchor="mm")
+def footnote(d, illustration=True):
+    text = "Sold & shipped by PowerRun Industries."
+    if illustration:
+        text = "Illustration - not a product photo.  " + text
+    d.text((S // 2, 1935), text, font=regular(30), fill=GREY, anchor="mm")
 
 
 def card_main(p):
@@ -309,15 +314,30 @@ def card_specs(p):
         d.text((210, mid), label, font=regular(42), fill=GREY, anchor="lm")
         d.text((S - 190, mid), value, font=bold(46 if len(value) < 30 else 36), fill=INK, anchor="rm")
         y += step
-    footnote(d)
+    footnote(d, illustration=False)
     return img
+
+
+def photo(url):
+    """Supplier photo -> square JPEG on white, metadata dropped."""
+    req = urllib.request.Request(urllib.parse.quote(url, safe=":/"), headers={"User-Agent": "Mozilla/5.0"})
+    im = Image.open(io.BytesIO(urllib.request.urlopen(req, timeout=60).read()))
+    im = im.convert("RGBA")
+    side = max(im.size)
+    sq = Image.new("RGBA", (side, side), WHITE)
+    sq.alpha_composite(im, ((side - im.width) // 2, (side - im.height) // 2))
+    return sq
 
 
 def render(p):
     out = os.path.join(OUT_ROOT, p["slug"])
     os.makedirs(out, exist_ok=True)
+    for old in os.listdir(out):
+        os.remove(os.path.join(out, old))
+    slides = [("1-main.jpg", card_main(p))] if not p.get("photo") else [("0-photo.jpg", photo(p["photo"]))]
+    slides.append(("2-specifications.jpg", card_specs(p)))
     files = []
-    for name, img in (("1-main.jpg", card_main(p)), ("2-specifications.jpg", card_specs(p))):
+    for name, img in slides:
         path = os.path.join(out, name)
         img.convert("RGB").resize((OUT_SIZE, OUT_SIZE), Image.LANCZOS).save(path, quality=88, optimize=True)
         files.append(path)
