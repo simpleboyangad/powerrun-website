@@ -482,10 +482,10 @@ def product_faq(product, cat):
         if volts.startswith("51.2"):
             faq.append(("Which inverter works with the %s?" % name,
                         "It is a 51.2 V LiFePO4 battery, so it pairs with a 48 V inverter - for example the "
-                        "PowerRun 6.2 kW, 8.2 kW, 10.2 kW and 12 kW hybrid inverters.",
+                        "PowerRun 6.2 kW, 8.2 kW, 11 kW and 12 kW hybrid inverters.",
                         "%s किस इन्वर्टर के साथ चलेगी?" % name,
                         "यह 51.2 V की LiFePO4 बैटरी है, इसलिए यह 48 V इन्वर्टर के साथ चलती है - जैसे PowerRun "
-                        "के 6.2 kW, 8.2 kW, 10.2 kW और 12 kW हाइब्रिड इन्वर्टर।"))
+                        "के 6.2 kW, 8.2 kW, 11 kW और 12 kW हाइब्रिड इन्वर्टर।"))
         elif volts.startswith("25.6"):
             faq.append(("Which inverter works with the %s?" % name,
                         "It is a 25.6 V LiFePO4 battery, so it pairs with a 24 V inverter - for example the "
@@ -653,7 +653,7 @@ def main():
     if company.get("address_line1") or company.get("city"):
         org["address"] = {k: v for k, v in {
             "@type": "PostalAddress",
-            "streetAddress": clean(" ".join(x for x in [company.get("address_line1"), company.get("address_line2")] if x)),
+            "streetAddress": clean(", ".join(x for x in [company.get("address_line1"), company.get("address_line2")] if x)),
             "addressLocality": company.get("city") or None,
             "addressRegion": company.get("state") or None,
             "postalCode": company.get("pincode") or None,
