@@ -51,6 +51,15 @@ END = "<!-- SEO:END -->"
 # "% OFF" on public pages until the MRPs are ones products really sold at.
 SHOW_MRP = False
 
+GOOGLE_BUSINESS_PROFILE = "https://maps.google.com/?cid=2490524210981875388"
+
+# category icons on the home page, same as ICONS in assets/js/pages/home.js
+HOME_ICONS = {
+    "hybrid-inverters": "⚡", "lithium-batteries": "🔋", "solar-panels": "☀️", "e-rickshaw-batteries": "🛺",
+    "home-energy-storage": "🏠", "commercial-energy-storage": "🏢", "industrial-energy-solutions": "🏭",
+    "ev-batteries": "🚗", "ups-power-backup": "🔌", "accessories-spare-parts": "🧰",
+}
+
 DEFAULT_ROBOTS = """User-agent: *
 Allow: /
 
@@ -626,9 +635,10 @@ def main():
     gsc = g.get("gsc_verification")
 
     pages = fetch("page_seo?select=*&order=sort_order")
-    categories = fetch("categories?select=id,name,slug,parent_id,is_active,meta_title,meta_description,"
-                       "focus_keyword,canonical_url,og_image,seo_index,seo_follow&is_active=eq.true")
-    products = fetch("products?select=id,name,slug,sku,price,mrp,stock,warranty,specifications,features,availability,short_description,description,"
+    categories = fetch("categories?select=id,name,slug,parent_id,is_active,description,meta_title,meta_description,"
+                       "focus_keyword,canonical_url,og_image,seo_index,seo_follow&is_active=eq.true"
+                       "&order=sort_order,name")
+    products = fetch("products?select=id,name,slug,sku,price,mrp,stock,warranty,specifications,features,availability,short_description,description,is_featured,"
                      "meta_title,meta_description,focus_keyword,secondary_keywords,canonical_url,og_title,"
                      "og_description,og_image,image_alt,seo_index,seo_follow,category_id,updated_at,"
                      "product_images(image_url,sort_order)&is_active=eq.true&order=sort_order")
@@ -654,7 +664,8 @@ def main():
         "@id": site + "/#organization", "name": site_name, "url": site + "/",
         "logo": default_image, "email": "service@powerrun.in", "telephone": "+91 86075 65520",
         "areaServed": "IN",
-        "sameAs": ["https://www.youtube.com/@PowerRunIndustries"],
+        # every official profile, so Google ties the brand together
+        "sameAs": ["https://www.youtube.com/@PowerRunIndustries", GOOGLE_BUSINESS_PROFILE],
     }
     if company.get("address_line1") or company.get("city"):
         org["address"] = {k: v for k, v in {
@@ -718,6 +729,10 @@ def main():
             stocked.add(parent)
     for cat in categories:
         if cat.get("parent_id") or cat.get("seo_index") is False or cat["id"] not in stocked:
+            continue
+        # /products/?category=x canonicalises to /products/ - listing it would
+        # send Google a URL that points somewhere else
+        if "?" in category_path(cat["slug"]) and not cat.get("canonical_url"):
             continue
         add_url(cat.get("canonical_url") or (site + category_path(cat["slug"])), priority="0.8")
 
@@ -806,6 +821,37 @@ def main():
         if indexable:
             add_url(canonical, lastmod=(product.get("updated_at") or today)[:10], priority="0.7",
                     images=images)
+
+    # ------------------------------------------- home + /products/ grids
+    # The same cards home.js / products.js render, written into the page so
+    # Google sees every category and product link without running JavaScript.
+    top = [c for c in categories if not c.get("parent_id")]
+    cat_cards = "\n".join(
+        '<a class="cat" href="%s"><div class="pic">%s</div><h3>%s</h3><p>%s</p><small>%d product%s</small>'
+        '<span class="cat-link">View Products →</span></a>'
+        % (category_path(c["slug"]), HOME_ICONS.get(c["slug"], "⚡"), esc(c["name"].upper()),
+           esc(c.get("description") or "Explore the PowerRun range."), n, "" if n == 1 else "s")
+        for c in top for n in [len([p for p in products if p.get("category_id") == c["id"]])])
+    featured = [p for p in products if p.get("is_featured")]
+    if len(featured) < 4:
+        featured = products[:8]
+    featured = featured[:8]
+
+    def cards_for(items):
+        return "\n".join(static_card(p, cat_by_id.get(p.get("category_id")), images_of(p)) for p in items)
+
+    grids = {
+        "index.html": {"homeCategories": cat_cards, "featuredGrid": cards_for(featured)},
+        os.path.join("products", "index.html"): {"productGrid": cards_for(products)},
+    }
+    for rel, slots in grids.items():
+        target = os.path.join(ROOT, rel)
+        html = io.open(target, encoding="utf-8").read()
+        for slot_id, cards in slots.items():
+            html = re.sub(r'(<div[^>]*\bid="%s"[^>]*>)(?:<!-- GRID:START -->.*?<!-- GRID:END -->)?(</div>)' % slot_id,
+                          lambda m: m.group(1) + "<!-- GRID:START -->\n" + cards + "\n<!-- GRID:END -->" + m.group(2),
+                          html, count=1, flags=re.S)
+        io.open(target, "w", encoding="utf-8").write(html)
 
     # ----------------------------------------------------------------- blog
     # pages written by scripts/blog_build.py (no database involved)

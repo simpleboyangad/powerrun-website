@@ -141,6 +141,7 @@ def main():
     stamp = b.asset_stamp()
     posts = load_posts()
     blog_url = site + "/blog/"
+    slugs = {p["slug"] for p in posts}
 
     # ------------------------------------------------------------- articles
     for post in posts:
@@ -162,6 +163,14 @@ def main():
                             schema=[s for s in (org, crumbs) if s])
         if post.get("lang") == "hi":
             head = head.replace('content="en_IN"', 'content="hi_IN"')
+        # an English article and its Hindi version (<slug>-hi) point at each other
+        base = post["slug"][:-3] if post["slug"].endswith("-hi") else post["slug"]
+        if base in slugs and base + "-hi" in slugs:
+            alt = ('<link rel="alternate" hreflang="en-IN" href="%s">\n'
+                   '<link rel="alternate" hreflang="hi-IN" href="%s">\n'
+                   '<link rel="alternate" hreflang="x-default" href="%s">\n'
+                   % (blog_url + base + "/", blog_url + base + "-hi/", blog_url + base + "/"))
+            head = head.replace(b.END, alt + b.END)
         head = head.replace(b.END, '<meta property="article:published_time" content="%s">\n'
                                    '<script type="application/ld+json" id="ld-article">%s</script>\n%s'
                             % (post["date"], json.dumps(article, ensure_ascii=False, separators=(",", ":")), b.END))

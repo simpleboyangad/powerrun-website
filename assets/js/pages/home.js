@@ -58,7 +58,8 @@
     var rating = document.getElementById('homeGoogleRating');
     if (rating) rating.innerHTML = PR.googleRatingLink();
     var grid = document.getElementById('featuredGrid');
-    if (grid) grid.innerHTML = PR.skeletonGrid(8);
+    // keep the cards scripts/seo_build.py wrote into the page while loading
+    if (grid && !grid.children.length) grid.innerHTML = PR.skeletonGrid(8);
 
     try {
       var results = await Promise.all([PR.loadCategories(), PR.loadProducts()]);

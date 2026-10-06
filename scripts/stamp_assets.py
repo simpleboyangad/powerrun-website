@@ -9,12 +9,15 @@ produces bugs that are invisible to anyone testing with a fresh browser.
 Run this after changing anything under assets/, before committing:
 
     python scripts/stamp_assets.py
+
+It also writes the static header/footer into every page (static_chrome.py).
 """
 import glob
 import hashlib
 import io
 import os
 import re
+import sys
 
 ROOT = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
 
@@ -47,9 +50,15 @@ def main():
             io.open(page, "w", encoding="utf-8").write(html)
             changed += 1
 
+    # crawlable copy of the header/footer links (see scripts/static_chrome.py)
+    sys.path.insert(0, os.path.dirname(os.path.abspath(__file__)))
+    import static_chrome
+    baked = static_chrome.bake_all()
+
     print("assets hashed : {} files".format(len(assets)))
     print("build stamp   : {}".format(stamp))
     print("pages updated : {} of {}".format(changed, len(pages)))
+    print("static chrome : {} pages refreshed".format(baked))
 
 
 if __name__ == "__main__":

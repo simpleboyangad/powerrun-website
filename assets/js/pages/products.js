@@ -171,7 +171,8 @@
     if (searchInput && state.search) searchInput.value = state.search;
 
     var grid = document.getElementById('productGrid');
-    if (grid) grid.innerHTML = PR.skeletonGrid(8);
+    // keep the cards scripts/seo_build.py wrote into the page while loading
+    if (grid && !grid.children.length) grid.innerHTML = PR.skeletonGrid(8);
     bind();
 
     try {
