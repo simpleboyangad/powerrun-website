@@ -26,7 +26,7 @@ window.PR_CONFIG = {
   // confirmation page offers the Google Customer Reviews survey opt-in to
   // customers who gave an email. Leave empty until the Customer Reviews
   // program is enabled in Merchant Center.
-  GOOGLE_MERCHANT_ID: '',
+  GOOGLE_MERCHANT_ID: '5856704164',
 
   // Categories that have their own landing page at /<slug>/ (intro, buying
   // guide, FAQ). Every other category is linked as /products/?category=<slug>.
