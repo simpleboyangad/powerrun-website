@@ -9,8 +9,9 @@ Source  private/jk_bms_source.json  (gitignored: the supplier's name, page and
 
 Selling price = supplier price incl. GST x 1.20, rounded up to end in 9.
 
-A source row with "photo" (a supplier photo of that exact model, checked for
-watermarks, used with the supplier's permission) gets that photo first and a
+A source row with "photo" (a supplier photo of that exact model, used with
+the supplier's permission; either its URL, or a copy under private/ with the
+supplier's watermark removed, which the supplier also allowed) gets that photo first and a
 specifications card second. Rows without one get two spec cards (no drawn
 product) that say plainly they are illustrations. Photos are re-encoded on
 white, which also drops their metadata. The rows carry brand = 'JK BMS',
@@ -377,10 +378,14 @@ def card_specs(p):
     return img
 
 
-def photo(url):
-    """Supplier photo -> square JPEG on white, metadata dropped."""
-    req = urllib.request.Request(urllib.parse.quote(url, safe=":/"), headers={"User-Agent": "Mozilla/5.0"})
-    im = Image.open(io.BytesIO(urllib.request.urlopen(req, timeout=60).read()))
+def photo(src):
+    """Supplier photo (URL, or a retouched file under private/) -> square
+    JPEG on white, metadata dropped."""
+    if src.startswith("http"):
+        req = urllib.request.Request(urllib.parse.quote(src, safe=":/"), headers={"User-Agent": "Mozilla/5.0"})
+        im = Image.open(io.BytesIO(urllib.request.urlopen(req, timeout=60).read()))
+    else:
+        im = Image.open(os.path.join(ROOT, src))
     im = im.convert("RGBA")
     side = max(im.size)
     sq = Image.new("RGBA", (side, side), WHITE)
