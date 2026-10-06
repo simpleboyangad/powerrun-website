@@ -297,8 +297,7 @@
           (p.shortDescription ? '<p class="prose" style="margin:12px 0 0">' + PR.esc(p.shortDescription) + '</p>' : '') +
           PR.priceBlock(p) +
           (Number.isFinite(p.price) && p.price > 0
-            ? '<div class="emi-note">⚡ EMI from <b>' + PR.money(Math.round(p.price / 12)) +
-              '</b>/mo · 12 months · EMI options available on request</div>'
+            ? '<div class="emi-note">⚡ <b>EMI options available on request</b> · ask us on WhatsApp or call</div>'
             : '') +
           PR.stockLine(p) +
           (p.orderable
