@@ -399,6 +399,20 @@
     return 'https://wa.me/' + cfg.WHATSAPP + '?text=' + encodeURIComponent(text);
   };
 
+  /* ------------------------------------------------ Google Business rating */
+  // Link to the store's Google reviews, from PR_CONFIG.GOOGLE_REVIEWS. Shown
+  // as a plain link only (no review schema: Google ignores self-hosted copies
+  // of its own reviews). Empty string when not configured.
+  PR.googleRatingLink = function (className) {
+    var g = cfg.GOOGLE_REVIEWS;
+    if (!g || !g.URL || !g.COUNT) return '';
+    return '<a class="' + PR.esc(className || 'google-rating') + '" href="' + PR.esc(g.URL) +
+      '" target="_blank" rel="noopener" aria-label="Rated ' + PR.esc(g.RATING) + ' out of 5 from ' +
+      g.COUNT + ' Google reviews">' +
+      '<span class="stars" aria-hidden="true">★★★★★</span> <b>' + PR.esc(g.RATING) + '</b> on Google · ' +
+      g.COUNT + ' reviews →</a>';
+  };
+
   /* GA4 events. Queued until seo.js has loaded Analytics with the configured
      id (PR.flushTracking), then sent; never throws. */
   var gaQueue = [];

@@ -20,6 +20,14 @@ window.PR_CONFIG = {
   COMPANY: 'PowerRun Industries',
   ADDRESS: 'Plot 23, Gadi Road, Nagla Bhood, Dholna, Kasganj, Uttar Pradesh 207124, India',
   GSTIN: '09GTVPS7660P1ZZ',
+
+  // Google Business Profile rating shown on the home and product pages.
+  // Update RATING / COUNT by hand when new Google reviews come in.
+  GOOGLE_REVIEWS: {
+    RATING: '5.0',
+    COUNT: 10,
+    URL: 'https://maps.google.com/?cid=2490524210981875388'
+  },
   SITE_URL: 'https://powerrun.in',
 
   // Google Merchant Center account ID (digits only). When set, the order

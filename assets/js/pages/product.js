@@ -324,11 +324,12 @@
                 'DOWNLOAD DATASHEET <small>PDF</small></a>'
             : '') +
           '<div class="trust-badges">' +
-            '<div class="trust-badge"><span class="ic">🚚</span><div><b>Pan India Delivery</b><small>Safely packed and insured</small></div></div>' +
+            '<div class="trust-badge"><span class="ic">🚚</span><div><b>Pan India Delivery</b><small>Safely packed, tracked online</small></div></div>' +
             '<div class="trust-badge"><span class="ic">🛡️</span><div><b>Manufacturer Warranty</b><small>Register online after delivery</small></div></div>' +
             '<div class="trust-badge"><span class="ic">🎧</span><div><b>Technical Support</b><small>Sizing and installation help</small></div></div>' +
-            '<div class="trust-badge"><span class="ic">✅</span><div><b>Tested &amp; Certified</b><small>Quality checked before dispatch</small></div></div>' +
+            '<div class="trust-badge"><span class="ic">✅</span><div><b>Quality Checked</b><small>Every unit tested before dispatch</small></div></div>' +
           '</div>' +
+          PR.googleRatingLink('google-rating google-rating-product') +
           specs(p) +
           internalLinks(p) +
         '</div>' +

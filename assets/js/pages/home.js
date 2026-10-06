@@ -55,6 +55,8 @@
 
   async function init() {
     PR.mountLayout('home');
+    var rating = document.getElementById('homeGoogleRating');
+    if (rating) rating.innerHTML = PR.googleRatingLink();
     var grid = document.getElementById('featuredGrid');
     if (grid) grid.innerHTML = PR.skeletonGrid(8);
 
