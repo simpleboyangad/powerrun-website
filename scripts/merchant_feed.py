@@ -45,7 +45,6 @@ def build():
         link = "{}/products/{}/".format(SITE, p["slug"])
         desc = p.get("description") or p.get("short_description") or p["name"]
         price = p["price"]
-        mrp = p.get("mrp") or price
         availability = "in_stock" if (p.get("stock") or 0) > 0 else "out_of_stock"
         category = (p.get("categories") or {}).get("name") or ""
 
@@ -67,11 +66,10 @@ def build():
         ]
         if category:
             parts.append("    <g:product_type>{}</g:product_type>".format(esc(category)))
-        if mrp and mrp > price:
-            parts.append("    <g:price>{:.2f} INR</g:price>".format(mrp))
-            parts.append("    <g:sale_price>{:.2f} INR</g:sale_price>".format(price))
-        else:
-            parts.append("    <g:price>{:.2f} INR</g:price>".format(price))
+        # Only the real selling price. MRP was sent as <g:price> with the
+        # selling price as <g:sale_price>, which tells Google every product is
+        # on a 20-56% sale - a misrepresentation risk without that price history.
+        parts.append("    <g:price>{:.2f} INR</g:price>".format(price))
         parts.append("  </item>")
         items.append("\n".join(parts))
 

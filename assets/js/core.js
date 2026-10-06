@@ -107,7 +107,9 @@
     var rateText = rates.length === 1 ? ' @ ' + rates[0] + '%' : '';
 
     var rows = [];
-    if (mrp > subtotal + 0.5) {
+    // Staff still see MRP on admin order screens.
+    var showMrp = PR.config.SHOW_MRP || /^\/admin\//.test(window.location.pathname);
+    if (showMrp && mrp > subtotal + 0.5) {
       rows.push({ label: 'MRP Total', value: PR.money(mrp), cls: 'mrp' });
       rows.push({ label: 'Discount', value: '\u2212 ' + PR.money(discount), cls: 'discount' });
     }

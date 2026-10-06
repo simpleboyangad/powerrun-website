@@ -47,6 +47,10 @@ ROOT = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
 START = "<!-- SEO:START -->"
 END = "<!-- SEO:END -->"
 
+# Mirrors PR.config.SHOW_MRP in assets/js/config.js: no struck-out MRP or
+# "% OFF" on public pages until the MRPs are ones products really sold at.
+SHOW_MRP = False
+
 DEFAULT_ROBOTS = """User-agent: *
 Allow: /
 
@@ -358,7 +362,7 @@ def prerender_product(product, cat, images, related=None):
     price, mrp = product.get("price"), product.get("mrp")
     if price:
         row = '<div class="price-row"><span class="price-now">%s</span>' % money(price)
-        if mrp and float(mrp) > float(price):
+        if SHOW_MRP and mrp and float(mrp) > float(price):
             row += ('<span class="price-mrp">%s</span><span class="discount-badge">-%d%%</span>'
                     % (money(mrp), round((1 - float(price) / float(mrp)) * 100)))
         out.append(row + '</div>')
@@ -573,7 +577,7 @@ def static_card(product, cat, images):
     price, mrp = product.get("price"), product.get("mrp")
     if price:
         block = '<div class="card-price"><span class="price">%s</span>' % money(price)
-        if mrp and float(mrp) > float(price):
+        if SHOW_MRP and mrp and float(mrp) > float(price):
             block += ('<span class="card-mrp">%s</span><span class="card-off">%d%% OFF</span></div>'
                       '<div class="card-save">You save %s</div>'
                       % (money(mrp), round((1 - float(price) / float(mrp)) * 100), money(float(mrp) - float(price))))
