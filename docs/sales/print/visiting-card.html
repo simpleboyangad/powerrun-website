@@ -1,0 +1,50 @@
+<!doctype html><html lang="en"><head><meta charset="utf-8"><title>PowerRun Visiting Card</title><style>
+@page { size: 90mm 54mm; margin: 0; }
+* { box-sizing: border-box; }
+body { margin: 0; font-family: "Segoe UI", Arial, sans-serif; -webkit-print-color-adjust: exact; print-color-adjust: exact; }
+.card { width: 90mm; height: 54mm; position: relative; overflow: hidden; page-break-after: always; }
+.front { background: #fff; padding: 5mm 5mm 0; }
+.front img { height: 11mm; }
+.front .tag { font-size: 7.5pt; color: #555; margin: 1.2mm 0 0; }
+.front .who { margin-top: 3.5mm; font-size: 11pt; font-weight: 800; }
+.front .who small { display: block; font-size: 7pt; font-weight: 600; color: #ff5a00; letter-spacing: .4px; }
+.front .lines { font-size: 7.3pt; line-height: 1.55; margin-top: 1.5mm; color: #141414; }
+.front .qr { position: absolute; right: 5mm; top: 15mm; width: 19mm; height: 19mm; }
+.front .qr svg { width: 100%; height: 100%; }
+.front .qrl { position: absolute; right: 4mm; top: 34.5mm; width: 21mm; text-align: center; font-size: 5.6pt; font-weight: 700; }
+.front .bar { position: absolute; left: 0; right: 0; bottom: 0; height: 3mm; background: linear-gradient(90deg, #ff5a00, #ff7a1a); }
+.back { background: #111; color: #fff; padding: 5mm; }
+.back h3 { margin: 0; font-size: 10.5pt; color: #ff5a00; letter-spacing: .5px; }
+.back ul { margin: 2mm 0 0; padding: 0; list-style: none; font-size: 7.6pt; line-height: 1.75; }
+.back .qr { position: absolute; right: 5mm; top: 5mm; width: 19mm; height: 19mm; background: #fff; padding: 1.2mm; }
+.back .qr svg { width: 100%; height: 100%; }
+.back .qrl { position: absolute; right: 4mm; top: 24.5mm; width: 21mm; text-align: center; font-size: 5.6pt; color: #ccc; }
+.back .ref { position: absolute; left: 5mm; right: 5mm; bottom: 4mm; background: #ff5a00; border-radius: 1.5mm; padding: 1.5mm 2mm; font-size: 7.4pt; font-weight: 800; text-align: center; }
+</style></head><body>
+<div class="card front">
+  <img src="../../../assets/powerrun-logo.png" alt="PowerRun Industries">
+  <p class="tag">Lithium Batteries · Hybrid Inverters · Solar</p>
+  <div class="who">Angad Singh<small>POWERRUN INDUSTRIES</small></div>
+  <div class="lines">☎ +91 86075 65520 (WhatsApp)<br>✉ service@powerrun.in<br>🌐 powerrun.in<br>📍 Gadi Road, Nagla Bhood, Dholna, Kasganj (UP)</div>
+  <div class="qr" data-qr="https://wa.me/918607565520"></div><div class="qrl">Scan: WhatsApp</div>
+  <div class="bar"></div>
+</div>
+<div class="card back">
+  <h3>POWERRUN</h3>
+  <ul>
+    <li>🔋 LiFePO4 Lithium Batteries</li>
+    <li>⚡ Hybrid Solar Inverters 3.6–12 kW</li>
+    <li>🛺 E-Rickshaw &amp; E-Scooty Batteries</li>
+    <li>☀️ Solar Panels · 🔧 BMS &amp; Balancers</li>
+  </ul>
+  <div class="qr" data-qr="https://powerrun.in"></div><div class="qrl">Website / Price list</div>
+  <div class="ref">🎁 Refer karein, ₹500 paayein</div>
+</div>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/qrcode-generator/1.4.4/qrcode.min.js"></script>
+<script>
+document.querySelectorAll('[data-qr]').forEach(function (el) {
+  var q = qrcode(0, 'M'); q.addData(el.getAttribute('data-qr')); q.make();
+  el.innerHTML = q.createSvgTag({ cellSize: 4, margin: 0, scalable: true });
+});
+</script>
+</body></html>
