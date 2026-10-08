@@ -820,7 +820,7 @@ img { max-width: 100%; }
 .blog-article h2 { color: var(--ink); font-size: 22px; margin: 32px 0 10px; }
 .blog-article h3 { font-size: 18px; }
 .blog-article p, .blog-article li { margin: 0 0 12px; }
-.blog-article ul { padding-left: 20px; }
+.blog-article ul, .blog-article ol { padding-left: 20px; }
 .blog-article a { color: var(--orange); font-weight: 600; }
 .blog-article .spec-table { margin: 6px 0 18px; }
 .blog-shop, .blog-cta { max-width: 780px; margin: 26px auto 0; }
