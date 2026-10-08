@@ -336,7 +336,12 @@
     window.dataLayer = window.dataLayer || [];
     window.gtag = function () { window.dataLayer.push(arguments); };
     window.gtag('js', new Date());
-    window.gtag('config', id);
+    // Staff browsers (flag set by admin/shell.js) are tagged so the GA
+    // "Internal Traffic" data filter can drop them. Jio shares and rotates
+    // IPs, so an IP rule would not work here.
+    var internal = false;
+    try { internal = window.localStorage.getItem('pr_internal') === '1'; } catch (err) { /* storage blocked */ }
+    window.gtag('config', id, internal ? { traffic_type: 'internal' } : {});
     if (PR.flushTracking) PR.flushTracking();
   }
 })();

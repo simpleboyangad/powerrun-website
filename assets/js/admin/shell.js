@@ -15,6 +15,11 @@
   var PR = window.PR;
   var PRA = (window.PRA = window.PRA || {});
 
+  // Any browser that opens the admin is staff: its storefront visits go to
+  // Google Analytics as traffic_type=internal (see loadAnalytics in seo.js)
+  // and are dropped by the property's "Internal Traffic" data filter.
+  try { window.localStorage.setItem('pr_internal', '1'); } catch (err) { /* storage blocked */ }
+
   var NAV = [
     { key: 'dashboard', href: '/admin/dashboard/', icon: '▦', label: 'Dashboard' },
     { key: 'products',  href: '/admin/products/',  icon: '📦', label: 'Products' },
