@@ -38,6 +38,8 @@ ROOT = lx.ROOT
 SOURCE = os.path.join(ROOT, "private", "jk_bms_source.json")
 OUT_ROOT = os.path.join(ROOT, "photos", "listing", "jk-bms")
 BRAND = "JK BMS"
+MAKER = "JK"            # short name in "no warranty on JK parts"
+STORAGE = "jk-bms"      # storage folder for the images
 MARKUP = 1.20
 OUT_SIZE = 1200
 BUCKET = "product-images"
@@ -45,10 +47,11 @@ WARRANTY = "No warranty - damaged, defective or wrong items replaced within 7 da
 SORT_BASE = 100
 
 PARENT = {"name": "BMS & Balancers", "slug": "bms-balancers", "sort_order": 5,
-          "description": "JK smart BMS, active balancers, high-voltage BMS and BMS displays for lithium battery packs.",
-          "meta_title": "JK BMS, Smart BMS & Active Balancers | PowerRun",
-          "meta_description": "Buy JK smart BMS (4S-32S), ESS BMS, high-voltage BMS, active balancers and SOC displays "
-                              "for LiFePO4 and lithium-ion packs. Pan-India delivery from PowerRun.",
+          "description": "JK and JBD smart BMS, LiFePO4 and NMC BMS, active balancers, high-voltage BMS and BMS "
+                         "displays for lithium battery packs.",
+          "meta_title": "JK & JBD BMS, Smart BMS & Active Balancers | PowerRun",
+          "meta_description": "Buy JK and JBD smart BMS, LiFePO4 and NMC BMS (4S-32S), ESS BMS, active balancers and "
+                              "SOC displays for lithium battery packs. Pan-India delivery from PowerRun.",
           "focus_keyword": "jk bms"}
 SUBS = {
     "smart": ("Smart BMS", "jk-smart-bms", 1),
@@ -281,12 +284,12 @@ def finish(p):
     p["slug"] = re.sub(r"[^a-z0-9]+", "-", p["name"].lower()).strip("-")
     p["price"] = selling_price(p["cost"])
     p["description"] = (
-        "The %s is a JK BMS part for %s. %s\n\n"
+        "The %s is a %s part for %s. %s\n\n"
         "Sold and shipped by PowerRun Industries with free pan-India delivery. PowerRun does not offer a "
-        "separate warranty on JK parts; damaged, defective or wrong items are replaced within 7 days of "
+        "separate warranty on %s parts; damaged, defective or wrong items are replaced within 7 days of "
         "delivery as per our refund policy. Not sure which model fits your pack? Send us your cell type, "
         "series count (S) and current on WhatsApp and we will help you choose."
-        % (p["name"], p["use"], " ".join(f + "." for f in p["features"])))
+        % (p["name"], BRAND, p["use"], " ".join(f + "." for f in p["features"]), MAKER))
     p["meta_title"] = (p["name"] + " | PowerRun")[:70]
     p["meta_description"] = ("Buy %s - %s Pan-India delivery from PowerRun." % (p["name"], p["short"]))[:160]
     p["focus_keyword"] = re.sub(r"\s*\(.*?\)", "", p["name"]).lower()
@@ -456,7 +459,7 @@ def publish(products):
             pid = pd.rest("products", "", "POST", row, prefer="return=representation")[0]["id"]
         pd.rest("product_images", "product_id=eq." + pid, "DELETE")
         for n, path in enumerate(p["files"]):
-            storage_path = "jk-bms/{}/{}".format(p["slug"], os.path.basename(path))
+            storage_path = "{}/{}/{}".format(STORAGE, p["slug"], os.path.basename(path))
             with open(path, "rb") as f:
                 url = upload(storage_path, f.read())
             pd.rest("product_images", "", "POST", {
