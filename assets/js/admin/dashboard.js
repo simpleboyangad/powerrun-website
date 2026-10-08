@@ -77,6 +77,59 @@
       '</tbody></table></div></div>';
   }
 
+  /* Review Maango: most sales are offline (shop, phone), so there is no
+   * website order to send a review link from. This box writes a WhatsApp
+   * message with the Google review link for any customer's mobile. */
+  function askReviewPanel() {
+    var g = PR.config.GOOGLE_REVIEWS || {};
+    if (!g.WRITE_URL) return '';
+    return '<div class="panel">' +
+      '<div class="panel-head"><h2>⭐ Review Maango</h2></div>' +
+      '<p class="hint" style="margin:0 0 12px">Kisi bhi customer (dukaan, phone ya website) ko ' +
+        'WhatsApp par Google review link aur referral offer bhejein.</p>' +
+      '<form class="form" id="askReviewForm" novalidate>' +
+        '<div class="form-grid three">' +
+          '<label>Customer Name<input id="ar_name" maxlength="60" placeholder="Ramesh"></label>' +
+          '<label>Mobile <span class="req">*</span><input id="ar_mobile" inputmode="numeric" maxlength="14" placeholder="98xxxxxxxx"></label>' +
+          '<label>Product (optional)<input id="ar_product" maxlength="80" placeholder="E-rickshaw battery"></label>' +
+        '</div>' +
+        '<div class="page-actions" style="justify-content:flex-start">' +
+          '<button class="btn" type="submit">WHATSAPP PAR BHEJEIN</button>' +
+          '<span class="hint" id="ar_msg"></span>' +
+        '</div>' +
+      '</form></div>';
+  }
+
+  function askReviewText(name, product) {
+    var first = (name || '').trim().split(' ')[0];
+    return 'Namaste' + (first ? ' ' + first + ' ji' : '') + ', PowerRun Industries se ' +
+      (product ? product : 'khareedari') + ' ke liye dhanyavaad! 🙏\n\n' +
+      'Aapka anubhav kaisa raha? 1 minute nikaal kar Google par review zaroor dein, ' +
+      'isse doosre logon ko sahi product chunne mein madad milti hai:\n' +
+      PR.config.GOOGLE_REVIEWS.WRITE_URL + PRA.referralLine();
+  }
+
+  function bindAskReview() {
+    var form = document.getElementById('askReviewForm');
+    if (!form) return;
+    form.addEventListener('submit', function (event) {
+      event.preventDefault();
+      var mobile = document.getElementById('ar_mobile');
+      var msg = document.getElementById('ar_msg');
+      var link = PR.whatsappTo(mobile.value, askReviewText(
+        document.getElementById('ar_name').value, document.getElementById('ar_product').value.trim()));
+      if (!link) {
+        mobile.setAttribute('aria-invalid', 'true');
+        msg.textContent = '10 digit mobile number daalein.';
+        return;
+      }
+      mobile.removeAttribute('aria-invalid');
+      msg.textContent = '';
+      window.open(link, '_blank', 'noopener');
+      form.reset();
+    });
+  }
+
   async function lowStock() {
     var rows = await PR.call('load low stock', function (sb) {
       return sb.from('products').select('id,name,sku,stock,price,availability')
@@ -108,6 +161,8 @@
     });
 
     var parts = await Promise.all([recentOrders(), lowStock()]);
-    host.innerHTML = renderStats(stats) + '<div style="margin-top:22px"></div>' + parts.join('');
+    host.innerHTML = renderStats(stats) + '<div style="margin-top:22px"></div>' +
+      askReviewPanel() + parts.join('');
+    bindAskReview();
   });
 })();

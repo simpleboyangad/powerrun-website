@@ -46,6 +46,13 @@ def main():
         html = re.sub(r"(/assets/[^\"']+?\.(?:js|css))\?v=[0-9a-f]+", r"\1", original)
         html = re.sub(r'(src="/assets/[^"\']+?\.js)"', r"\1?v=" + stamp + '"', html)
         html = re.sub(r'(href="/assets/[^"\']+?\.css)"', r"\1?v=" + stamp + '"', html)
+        # Customer pages: external scripts load with defer, so the hero and the
+        # rest of the HTML paint before ~250 KB of JavaScript (supabase-js
+        # included) is parsed. Defer keeps their order and still runs before
+        # DOMContentLoaded, which is where every page script starts. Admin
+        # pages are left as they are.
+        if not page.replace("\\", "/").startswith("admin/"):
+            html = re.sub(r'<script src="([^"]+)"></script>', r'<script defer src="\1"></script>', html)
         if html != original:
             io.open(page, "w", encoding="utf-8").write(html)
             changed += 1

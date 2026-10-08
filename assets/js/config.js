@@ -31,8 +31,15 @@ window.PR_CONFIG = {
   GOOGLE_REVIEWS: {
     RATING: '5.0',
     COUNT: 10,
-    URL: 'https://maps.google.com/?cid=2490524210981875388'
+    URL: 'https://maps.google.com/?cid=2490524210981875388',
+    // Opens the "write a review" box directly. Sent to customers on WhatsApp.
+    WRITE_URL: 'https://g.page/r/CbyuFRSTHpAiEBM/review'
   },
+
+  // Referral reward (Rs) paid to a customer whose friend buys from PowerRun.
+  // Shown on the home page, the order confirmation page and in the admin
+  // "Review Maango" WhatsApp message.
+  REFERRAL_REWARD: 500,
   SITE_URL: 'https://powerrun.in',
 
   // Google Merchant Center account ID (digits only). When set, the order

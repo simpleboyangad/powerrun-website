@@ -94,7 +94,11 @@
           'Namaste ' + (order.customer_name || '').split(' ')[0] + ' ji, PowerRun Industries se order ' +
           order.order_number + ' lene ke liye dhanyavaad! 🙏\n\n' +
           'Product kaisa laga? 1 minute nikaal kar apna review zaroor dein, isse doosre customers ki madad hogi:\n' +
-          PR.config.SITE_URL + '/review/?t=' + order.review_token)
+          PR.config.SITE_URL + '/review/?t=' + order.review_token +
+          (PR.config.GOOGLE_REVIEWS && PR.config.GOOGLE_REVIEWS.WRITE_URL
+            ? '\n\nGoogle par bhi 5 ⭐ dein to bahut madad hogi:\n' + PR.config.GOOGLE_REVIEWS.WRITE_URL
+            : '') +
+          PRA.referralLine())
       : '';
     PRA.openDrawer('Order ' + order.order_number,
       '<div id="orderDetailMessage"></div>' +

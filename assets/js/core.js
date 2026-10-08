@@ -401,6 +401,25 @@
     return 'https://wa.me/' + cfg.WHATSAPP + '?text=' + encodeURIComponent(text);
   };
 
+  /* ------------------------------------------------------- referral offer */
+  // "Refer a friend" WhatsApp link, reward from PR_CONFIG.REFERRAL_REWARD.
+  // The home page carries the same markup statically (index.html).
+  PR.referralLink = function () {
+    return PR.whatsapp('Namaste PowerRun, main ek dost/rishtedaar ko refer karna chahta hoon.\n' +
+      'Unka naam: \nUnka mobile: \nKya chahiye (battery / inverter / solar): ');
+  };
+
+  PR.referralBox = function () {
+    var reward = cfg.REFERRAL_REWARD;
+    if (!reward) return '';
+    return '<div class="order-summary referral-box" style="margin-top:20px">' +
+      '<b>🎁 Refer karein, ₹' + reward + ' paayein</b>' +
+      '<p class="small-note" style="margin:6px 0 10px">Kisi dost ya rishtedaar ko PowerRun ka product ' +
+      'dilwayein. Unka order hone par aapko ₹' + reward + ' milenge.</p>' +
+      '<a class="outline" href="' + PR.esc(PR.referralLink()) + '" target="_blank" rel="noopener">WHATSAPP PAR REFER KAREIN</a>' +
+      '</div>';
+  };
+
   /* ------------------------------------------------ Google Business rating */
   // Link to the store's Google reviews, from PR_CONFIG.GOOGLE_REVIEWS. Shown
   // as a plain link only (no review schema: Google ignores self-hosted copies

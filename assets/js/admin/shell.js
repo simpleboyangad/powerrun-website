@@ -482,6 +482,14 @@
            '<button class="btn" type="button" onclick="location.reload()">Try again</button></div>';
   };
 
+  /* Last paragraph of customer WhatsApp messages: the referral offer. */
+  PRA.referralLine = function () {
+    var reward = PR.config.REFERRAL_REWARD;
+    if (!reward) return '';
+    return '\n\n🎁 Kisi dost ya rishtedaar ko PowerRun ka product dilwayein - unka order hone par ' +
+      'aapko ₹' + reward + ' milenge. Bas unka naam aur number is chat mein bhej dein.';
+  };
+
   PRA.pill = function (value) {
     return '<span class="pill ' + PR.esc(value || '') + '">' + PR.esc(value || '-') + '</span>';
   };

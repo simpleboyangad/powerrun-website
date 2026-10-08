@@ -58,6 +58,14 @@
     PR.mountLayout('home');
     var rating = document.getElementById('homeGoogleRating');
     if (rating) rating.innerHTML = PR.googleRatingLink();
+    // index.html carries the referral banner with Rs 500 written in; follow the config
+    var referral = document.getElementById('homeReferral');
+    if (referral) {
+      if (!PR.config.REFERRAL_REWARD) referral.remove();
+      else referral.querySelectorAll('[data-reward]').forEach(function (el) {
+        el.textContent = '₹' + PR.config.REFERRAL_REWARD;
+      });
+    }
     var grid = document.getElementById('featuredGrid');
     // keep the cards scripts/seo_build.py wrote into the page while loading
     if (grid && !grid.children.length) grid.innerHTML = PR.skeletonGrid(8);

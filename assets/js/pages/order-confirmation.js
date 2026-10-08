@@ -112,6 +112,8 @@
           : 'Our team will call you within 24 hours to confirm payment and delivery.') +
         ' Please keep your Order ID for reference.</p>' +
 
+      PR.referralBox() +
+
       '<div class="order-summary" style="margin-top:20px">' +
         '<b>Keep track of this order</b>' +
         '<p class="small-note" style="margin:6px 0 10px">Create a free account to see this order, ' +
