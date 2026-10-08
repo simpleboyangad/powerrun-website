@@ -47,11 +47,11 @@ WARRANTY = "No warranty - damaged, defective or wrong items replaced within 7 da
 SORT_BASE = 100
 
 PARENT = {"name": "BMS & Balancers", "slug": "bms-balancers", "sort_order": 5,
-          "description": "JK and JBD smart BMS, LiFePO4 and NMC BMS, active balancers, high-voltage BMS and BMS "
+          "description": "JK, JBD and Daly smart BMS, LiFePO4 and NMC BMS, active balancers, high-voltage BMS and BMS "
                          "displays for lithium battery packs.",
-          "meta_title": "JK & JBD BMS, Smart BMS & Active Balancers | PowerRun",
-          "meta_description": "Buy JK and JBD smart BMS, LiFePO4 and NMC BMS (4S-32S), ESS BMS, active balancers and "
-                              "SOC displays for lithium battery packs. Pan-India delivery from PowerRun.",
+          "meta_title": "JK, JBD & Daly BMS and Active Balancers | PowerRun",
+          "meta_description": "Buy JK, JBD and Daly smart BMS, LiFePO4 and NMC BMS (4S-32S), ESS BMS, active balancers and "
+                              "SOC displays for lithium packs. Pan-India delivery from PowerRun.",
           "focus_keyword": "jk bms"}
 SUBS = {
     "smart": ("Smart BMS", "jk-smart-bms", 1),
