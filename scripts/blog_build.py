@@ -47,6 +47,7 @@ CATEGORY_NAMES = {
     "lithium-batteries": "Lithium Batteries",
     "solar-panels": "Solar Panels",
     "e-rickshaw-batteries": "E-Rickshaw Batteries",
+    "bms-balancers": "BMS & Balancers",
 }
 
 PAGE = """<!doctype html>
