@@ -59,7 +59,7 @@ GOOGLE_BUSINESS_PROFILE = "https://maps.google.com/?cid=2490524210981875388"
 
 # category icons on the home page, same as ICONS in assets/js/pages/home.js
 HOME_ICONS = {
-    "hybrid-inverters": "⚡", "lithium-batteries": "🔋", "solar-panels": "☀️", "e-rickshaw-batteries": "🛺", "bms-balancers": "🔌",
+    "hybrid-inverters": "⚡", "lithium-batteries": "🔋", "solar-panels": "☀️", "e-rickshaw-batteries": "🛺", "bms-balancers": "🔌", "battery-connectors": "🔗",
     "home-energy-storage": "🏠", "commercial-energy-storage": "🏢", "industrial-energy-solutions": "🏭",
     "ev-batteries": "🚗", "ups-power-backup": "🔌", "accessories-spare-parts": "🧰",
 }

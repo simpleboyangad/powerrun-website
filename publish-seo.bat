@@ -36,7 +36,7 @@ echo.
 
 echo [3/4] Saving changes...
 REM only the SEO output, never whatever else is lying around in the folder
-git add sitemap.xml robots.txt products assets *.html about account admin cart checkout contact dealer order-confirmation product service set-password track-order warranty battery-calculator solar-calculator shipping-policy refund-policy terms privacy-policy hybrid-inverters lithium-batteries solar-panels e-rickshaw-batteries bms-balancers blog scripts\blog_posts
+git add sitemap.xml robots.txt products assets *.html about account admin cart checkout contact dealer order-confirmation product service set-password track-order warranty battery-calculator solar-calculator shipping-policy refund-policy terms privacy-policy hybrid-inverters lithium-batteries solar-panels e-rickshaw-batteries bms-balancers battery-connectors blog scripts\blog_posts
 git diff --cached --quiet
 if not errorlevel 1 (
   echo       Nothing new to publish - the website is already up to date.

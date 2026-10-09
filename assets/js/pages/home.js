@@ -9,6 +9,7 @@
     'solar-panels': '☀️',
     'e-rickshaw-batteries': '🛺',
     'bms-balancers': '🔌',
+    'battery-connectors': '🔗',
     'home-energy-storage': '🏠',
     'commercial-energy-storage': '🏢',
     'industrial-energy-solutions': '🏭',
