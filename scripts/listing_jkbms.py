@@ -15,8 +15,9 @@ supplier's watermark removed, which the supplier also allowed) gets that photo f
 specifications card second. Rows without one get two spec cards (no drawn
 product) that say plainly they are illustrations. Photos are re-encoded on
 white, which also drops their metadata. The rows carry brand = 'JK BMS',
-which keeps them off the Merchant Center feed and out of PowerRun's warranty
-wording (see merchant_feed.py, seo_build.py). Everything shown is read from
+which keeps them out of PowerRun's warranty wording (seo_build.py) and puts
+only their real photos, never the spec cards, in the Merchant Center feed
+under their own brand (merchant_feed.py). Everything shown is read from
 the model name; nothing is invented.
 """
 import io

@@ -37,12 +37,20 @@ def build():
     )
 
     items = []
+    no_photo = 0
     for p in rows:
-        if p.get("brand"):
-            continue  # resold parts only have PowerRun spec cards, not product photos, so keep them off Shopping
         images = sorted(p["product_images"], key=lambda x: x["sort_order"])
+        brand = (p.get("brand") or "").strip()
+        if brand:
+            # Resold parts (JK / JBD / Daly BMS, connectors): only their real
+            # supplier photos (<n>-photo.jpg, plain product on white) may go to
+            # Shopping. Their spec-card illustrations carry text, which Google
+            # disapproves as a promotional overlay, so a part with no photo
+            # stays off the feed until one is added.
+            images = [i for i in images if i["image_url"].endswith("-photo.jpg")]
         if not images:
-            continue  # Merchant Center requires an image; skip products without one yet
+            no_photo += 1
+            continue  # Merchant Center requires an image; skip products without a usable one
 
         link = "{}/products/{}/".format(SITE, p["slug"])
         desc = p.get("description") or p.get("short_description") or p["name"]
@@ -63,7 +71,15 @@ def build():
         parts += [
             "    <g:availability>{}</g:availability>".format(availability),
             "    <g:condition>new</g:condition>",
-            "    <g:brand>{}</g:brand>".format(esc(BRAND)),
+        ]
+        # g:brand is the maker: PowerRun for its own products, the real brand
+        # for resold parts, and left out for unbranded ("Generic") ones, which
+        # Google asks not to label with a made-up brand.
+        if not brand:
+            parts.append("    <g:brand>{}</g:brand>".format(esc(BRAND)))
+        elif brand.lower() != "generic":
+            parts.append("    <g:brand>{}</g:brand>".format(esc(brand)))
+        parts += [
             "    <g:identifier_exists>no</g:identifier_exists>",
         ]
         if category:
@@ -81,7 +97,7 @@ def build():
         "<channel>\n"
         "  <title>{} Product Feed</title>\n"
         "  <link>{}</link>\n"
-        "  <description>Lithium batteries, hybrid solar inverters and solar panels.</description>\n"
+        "  <description>Lithium batteries, hybrid solar inverters, solar panels, BMS and battery parts.</description>\n"
         "{}\n"
         "</channel>\n"
         "</rss>\n"
@@ -90,7 +106,7 @@ def build():
     out_path = os.path.join(ROOT, "merchant-feed.xml")
     with open(out_path, "w", encoding="utf-8", newline="\n") as f:
         f.write(xml)
-    print("wrote", out_path, "-", len(items), "products (", len(rows) - len(items), "skipped, no photos yet )")
+    print("wrote", out_path, "-", len(items), "products (", no_photo, "skipped: no product photo yet )")
 
 
 if __name__ == "__main__":
