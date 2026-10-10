@@ -54,7 +54,7 @@ def main():
         if not page.replace("\\", "/").startswith("admin/"):
             html = re.sub(r'<script src="([^"]+)"></script>', r'<script defer src="\1"></script>', html)
         if html != original:
-            io.open(page, "w", encoding="utf-8").write(html)
+            io.open(page, "w", encoding="utf-8", newline="\n").write(html)
             changed += 1
 
     # crawlable copy of the header/footer links (see scripts/static_chrome.py)

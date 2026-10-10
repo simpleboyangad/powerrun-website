@@ -134,7 +134,7 @@ def card(post):
 def write(rel, html, stamp):
     path = os.path.join(ROOT, rel)
     os.makedirs(os.path.dirname(path), exist_ok=True)
-    io.open(path, "w", encoding="utf-8").write(b.versioned(html, stamp))
+    io.open(path, "w", encoding="utf-8", newline="\n").write(b.versioned(html, stamp))
 
 
 def main():

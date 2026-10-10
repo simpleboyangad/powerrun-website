@@ -726,7 +726,7 @@ def main():
             keywords=page.get("keywords") or (g.get("keywords") if page["page_key"] == "home" else ""),
             robots=robots, gsc=gsc, schema=schema)
         html = io.open(target, encoding="utf-8").read()
-        io.open(target, "w", encoding="utf-8").write(replace_head(html, block))
+        io.open(target, "w", encoding="utf-8", newline="\n").write(replace_head(html, block))
         written.append(rel)
         if indexable and page.get("in_sitemap", True):
             add_url(canonical, priority=str(page.get("sitemap_priority") or 0.8))
@@ -786,7 +786,7 @@ def main():
             html = re.sub(r"<!-- GRID:START -->.*?<!-- GRID:END -->",
                           lambda m: "<!-- GRID:START -->\n" + cards + "\n<!-- GRID:END -->", html, flags=re.S)
         html = versioned(re.sub(r'(/assets/[^"\']+?\.(?:js|css))\?v=[0-9a-f]+"', r'\1"', html), stamp)
-        io.open(target, "w", encoding="utf-8").write(html)
+        io.open(target, "w", encoding="utf-8", newline="\n").write(html)
         written.append(rel)
         if indexable and members:
             add_url(canonical, priority="0.8")
@@ -826,7 +826,7 @@ def main():
         related = (same_sub + [p for p in same_cat if p not in same_sub])[:4]
         folder = os.path.join(product_dir, slug)
         os.makedirs(folder, exist_ok=True)
-        io.open(os.path.join(folder, "index.html"), "w", encoding="utf-8").write(
+        io.open(os.path.join(folder, "index.html"), "w", encoding="utf-8", newline="\n").write(
             versioned(PRODUCT_TEMPLATE.format(head=block, content=prerender_product(product, cat, images, related),
                                               faq=faq_html(product_faq(product, cat))),
                       stamp))
@@ -864,7 +864,7 @@ def main():
             html = re.sub(r'(<div[^>]*\bid="%s"[^>]*>)(?:<!-- GRID:START -->.*?<!-- GRID:END -->)?(</div>)' % slot_id,
                           lambda m: m.group(1) + "<!-- GRID:START -->\n" + cards + "\n<!-- GRID:END -->" + m.group(2),
                           html, count=1, flags=re.S)
-        io.open(target, "w", encoding="utf-8").write(html)
+        io.open(target, "w", encoding="utf-8", newline="\n").write(html)
 
     # ----------------------------------------------------------------- blog
     # pages written by scripts/blog_build.py (no database involved)
@@ -905,13 +905,13 @@ def main():
                       "".join("<image:image><image:loc>%s</image:loc></image:image>" % esc(u)
                               for u in pics)))
     xml.append("</urlset>")
-    io.open(os.path.join(ROOT, "sitemap.xml"), "w", encoding="utf-8").write("\n".join(xml) + "\n")
+    io.open(os.path.join(ROOT, "sitemap.xml"), "w", encoding="utf-8", newline="\n").write("\n".join(xml) + "\n")
 
     # --------------------------------------------------------------- robots
     robots_txt = (g.get("robots_txt") or "").strip() or DEFAULT_ROBOTS.format(site=site)
     if "Sitemap:" not in robots_txt:
         robots_txt = robots_txt.rstrip() + "\n\nSitemap: %s/sitemap.xml\n" % site
-    io.open(os.path.join(ROOT, "robots.txt"), "w", encoding="utf-8").write(robots_txt.rstrip() + "\n")
+    io.open(os.path.join(ROOT, "robots.txt"), "w", encoding="utf-8", newline="\n").write(robots_txt.rstrip() + "\n")
 
     print("pages rewritten : %d" % len([w for w in written if not w.startswith("products/")]))
     print("product pages   : %d  (removed %d)" % (len([w for w in written if w.startswith("products/")]), len(removed)))

@@ -137,7 +137,7 @@ def cmd_session_file():
     session = sign_in()
     target = os.path.join(os.path.dirname(os.path.dirname(os.path.abspath(__file__))),
                           "__pr_session.json")
-    with open(target, "w", encoding="utf-8") as handle:
+    with open(target, "w", encoding="utf-8", newline="\n") as handle:
         json.dump(session, handle)
     print("Session written to __pr_session.json (delete after the UI test).")
 

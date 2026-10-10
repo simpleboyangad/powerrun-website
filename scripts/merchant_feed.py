@@ -88,7 +88,7 @@ def build():
     ).format(esc(BRAND), SITE, "\n".join(items))
 
     out_path = os.path.join(ROOT, "merchant-feed.xml")
-    with open(out_path, "w", encoding="utf-8") as f:
+    with open(out_path, "w", encoding="utf-8", newline="\n") as f:
         f.write(xml)
     print("wrote", out_path, "-", len(items), "products (", len(rows) - len(items), "skipped, no photos yet )")
 

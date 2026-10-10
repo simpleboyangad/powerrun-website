@@ -169,7 +169,7 @@ def cmd_create_admin(email, name):
 
     target = os.path.join(os.path.expanduser("~"), ".powerrun", "powerrun-admin-credentials.txt")
     os.makedirs(os.path.dirname(target), exist_ok=True)
-    with open(target, "w", encoding="utf-8") as handle:
+    with open(target, "w", encoding="utf-8", newline="\n") as handle:
         handle.write(os.linesep.join([
             "PowerRun Industries - admin login",
             "=================================",
