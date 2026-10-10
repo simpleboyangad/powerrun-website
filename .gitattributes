@@ -1,0 +1,20 @@
+# Keep every text file with LF line endings on every machine, Windows too.
+# The build scripts (seo_build.py, blog_build.py, stamp_assets.py) write LF,
+# so without this Windows Git warns "LF will be replaced by CRLF" for every
+# generated page, and the asset hash in ?v= differs between machines.
+* text=auto eol=lf
+
+# Windows batch files need CRLF to run reliably in cmd.exe
+*.bat text eol=crlf
+*.cmd text eol=crlf
+
+# Binary files: never touch
+*.png binary
+*.jpg binary
+*.jpeg binary
+*.webp binary
+*.gif binary
+*.ico binary
+*.pdf binary
+*.woff binary
+*.woff2 binary
