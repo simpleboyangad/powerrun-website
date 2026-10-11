@@ -55,7 +55,7 @@ PowerRun Industries builds and supplies high-performance energy products for Ind
 
 Our range includes LiFePO4 lithium battery packs (25.6V and 51.2V, 100Ah to 800Ah) with integrated smart BMS, grid-interactive hybrid solar inverters from 3.6kW to 12kW with built-in MPPT, mono PERC solar panels from 450W to 600W, and 51.2V lithium battery packs for e-rickshaws, e-loaders and e-scooties.
 
-Warranty: up to 5 years on inverters and LiFePO4 batteries, 3 years on e-rickshaw and e-scooty batteries, and 10-year product / 25-year performance warranty on solar panels. Every unit is tested before dispatch. We deliver across India and offer dealer and fleet pricing.
+Warranty: 5 years on LiFePO4 batteries, 2 years on hybrid inverters, 3 years on e-rickshaw and e-scooty batteries, and 10-year product / 25-year performance warranty on solar panels. Every unit is tested before dispatch. We deliver across India and offer dealer and fleet pricing.
 
 Website: https://powerrun.in | WhatsApp: +91 86075 65520
 ```
@@ -72,7 +72,7 @@ PowerRun Industries, कासगंज (उत्तर प्रदेश) —
 
 | Product | Range | Warranty | Link |
 |---|---|---|---|
-| Hybrid Solar Inverter | 3.6kW, 4.2kW, 6.2kW, 8.2kW, 11kW, 12kW | 5 years | https://powerrun.in/hybrid-inverters/ |
+| Hybrid Solar Inverter | 3.6kW, 4.2kW, 6.2kW, 8.2kW, 11kW, 12kW | 2 years | https://powerrun.in/hybrid-inverters/ |
 | LiFePO4 Lithium Battery | 25.6V (100–550Ah), 51.2V (100–800Ah) | 5 years | https://powerrun.in/lithium-batteries/ |
 | Solar Panel (Mono PERC) | 450W, 535W, 550W, 580W, 600W | 10 yr product / 25 yr performance | https://powerrun.in/solar-panels/ |
 | E-Rickshaw Lithium Battery | 51.2V 110Ah, 150Ah, 230Ah, 314Ah | 3 years | https://powerrun.in/e-rickshaw-batteries/ |

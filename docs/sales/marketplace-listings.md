@@ -39,7 +39,7 @@ IndiaMART category: *Solar Hybrid Inverter* · Price unit: *Piece* · Min. order
 
 **Amazon title** (154 characters):
 ```
-PowerRun 3.6kW Hybrid Solar Inverter, 24 V Battery, MPPT Solar Charger, 5,000 W PV Input, Pure Sine Wave, 10ms Transfer, WiFi Monitoring, 5 Years Warranty
+PowerRun 3.6kW Hybrid Solar Inverter, 24 V Battery, MPPT Solar Charger, 5,000 W PV Input, Pure Sine Wave, 10ms Transfer, WiFi Monitoring, 2 Years Warranty
 ```
 Amazon category: *Electronics > Solar Inverters (ya Home Improvement > Solar)*
 
@@ -49,11 +49,11 @@ Amazon category: *Electronics > Solar Inverters (ya Home Improvement > Solar)*
 BUILT-IN MPPT: up to 5,000 W solar input (60-500 V DC). No separate charge controller needed.
 HYBRID: works on solar, grid and battery together; switches in 10 ms, so computers do not restart.
 PURE SINE WAVE 230V output, up to 98% efficiency. Works with lithium (LiFePO4) and lead-acid batteries on 24 V.
-LCD display + WiFi app monitoring (optional module). 5 Years Warranty from PowerRun Industries, GST bill provided.
+LCD display + WiFi app monitoring (optional module). 2 Years Warranty from PowerRun Industries, GST bill provided.
 ```
 **Description** (dono jagah):
 ```
-The PowerRun 3.6kW Hybrid Solar Inverter delivers a rated output of 3,600W (7,200VA peak) from a 24V battery bank, with a built-in MPPT solar charge controller accepting up to 5,000W of PV input. It switches seamlessly between grid, solar and battery power in as little as 10ms, delivering clean 230V pure sine wave output for sensitive electronics. With up to 98% conversion efficiency and LCD + WiFi monitoring, it is built for reliable day-to-day backup in homes and small businesses, backed by a 5-year warranty.
+The PowerRun 3.6kW Hybrid Solar Inverter delivers a rated output of 3,600W (7,200VA peak) from a 24V battery bank, with a built-in MPPT solar charge controller accepting up to 5,000W of PV input. It switches seamlessly between grid, solar and battery power in as little as 10ms, delivering clean 230V pure sine wave output for sensitive electronics. With up to 98% conversion efficiency and LCD + WiFi monitoring, it is built for reliable day-to-day backup in homes and small businesses, backed by a 2-year warranty.
 
 Why PowerRun: GST invoice, pan-India delivery, WhatsApp support (+91 86075 65520), warranty registration at powerrun.in/warranty.
 ```
@@ -87,7 +87,7 @@ IndiaMART category: *Solar Hybrid Inverter* · Price unit: *Piece* · Min. order
 
 **Amazon title** (154 characters):
 ```
-PowerRun 4.2kW Hybrid Solar Inverter, 24 V Battery, MPPT Solar Charger, 6,000 W PV Input, Pure Sine Wave, 10ms Transfer, WiFi Monitoring, 5 Years Warranty
+PowerRun 4.2kW Hybrid Solar Inverter, 24 V Battery, MPPT Solar Charger, 6,000 W PV Input, Pure Sine Wave, 10ms Transfer, WiFi Monitoring, 2 Years Warranty
 ```
 Amazon category: *Electronics > Solar Inverters (ya Home Improvement > Solar)*
 
@@ -97,11 +97,11 @@ Amazon category: *Electronics > Solar Inverters (ya Home Improvement > Solar)*
 BUILT-IN MPPT: up to 6,000 W solar input (60-500 V DC). No separate charge controller needed.
 HYBRID: works on solar, grid and battery together; switches in 10 ms, so computers do not restart.
 PURE SINE WAVE 230V output, up to 98% efficiency. Works with lithium (LiFePO4) and lead-acid batteries on 24 V.
-LCD display + WiFi app monitoring (optional module). 5 Years Warranty from PowerRun Industries, GST bill provided.
+LCD display + WiFi app monitoring (optional module). 2 Years Warranty from PowerRun Industries, GST bill provided.
 ```
 **Description** (dono jagah):
 ```
-The PowerRun 4.2kW Hybrid Solar Inverter is rated for 4,200W (8,400VA peak) output from a 24V battery bank, with a built-in MPPT controller supporting up to 6,000W of solar panel input. It automatically transfers between grid, solar and battery in 10ms, producing stable 230V pure sine wave power for homes and small offices that need a bit more headroom than the 3.6kW model. Up to 98% efficiency, LCD + WiFi monitoring, and a 5-year warranty come standard.
+The PowerRun 4.2kW Hybrid Solar Inverter is rated for 4,200W (8,400VA peak) output from a 24V battery bank, with a built-in MPPT controller supporting up to 6,000W of solar panel input. It automatically transfers between grid, solar and battery in 10ms, producing stable 230V pure sine wave power for homes and small offices that need a bit more headroom than the 3.6kW model. Up to 98% efficiency, LCD + WiFi monitoring, and a 2-year warranty come standard.
 
 Why PowerRun: GST invoice, pan-India delivery, WhatsApp support (+91 86075 65520), warranty registration at powerrun.in/warranty.
 ```
@@ -135,7 +135,7 @@ IndiaMART category: *Solar Hybrid Inverter* · Price unit: *Piece* · Min. order
 
 **Amazon title** (154 characters):
 ```
-PowerRun 6.2kW Hybrid Solar Inverter, 48 V Battery, MPPT Solar Charger, 8,500 W PV Input, Pure Sine Wave, 10ms Transfer, WiFi Monitoring, 5 Years Warranty
+PowerRun 6.2kW Hybrid Solar Inverter, 48 V Battery, MPPT Solar Charger, 8,500 W PV Input, Pure Sine Wave, 10ms Transfer, WiFi Monitoring, 2 Years Warranty
 ```
 Amazon category: *Electronics > Solar Inverters (ya Home Improvement > Solar)*
 
@@ -145,11 +145,11 @@ Amazon category: *Electronics > Solar Inverters (ya Home Improvement > Solar)*
 BUILT-IN MPPT: up to 8,500 W solar input (60-500 V DC). No separate charge controller needed.
 HYBRID: works on solar, grid and battery together; switches in 10 ms, so computers do not restart.
 PURE SINE WAVE 230V output, up to 98% efficiency. Works with lithium (LiFePO4) and lead-acid batteries on 48 V.
-LCD display + WiFi app monitoring (optional module). 5 Years Warranty from PowerRun Industries, GST bill provided.
+LCD display + WiFi app monitoring (optional module). 2 Years Warranty from PowerRun Industries, GST bill provided.
 ```
 **Description** (dono jagah):
 ```
-The PowerRun 6.2kW Hybrid Solar Inverter runs on a 48V battery bank and delivers 6,200W (12,400VA peak) of clean 230V pure sine wave power, with a built-in MPPT controller handling up to 8,500W of solar input. Designed for larger homes and small commercial setups, it switches between grid, solar and battery in 10ms and reaches up to 98% efficiency, with LCD + WiFi monitoring and a 5-year warranty.
+The PowerRun 6.2kW Hybrid Solar Inverter runs on a 48V battery bank and delivers 6,200W (12,400VA peak) of clean 230V pure sine wave power, with a built-in MPPT controller handling up to 8,500W of solar input. Designed for larger homes and small commercial setups, it switches between grid, solar and battery in 10ms and reaches up to 98% efficiency, with LCD + WiFi monitoring and a 2-year warranty.
 
 Why PowerRun: GST invoice, pan-India delivery, WhatsApp support (+91 86075 65520), warranty registration at powerrun.in/warranty.
 ```
@@ -183,7 +183,7 @@ IndiaMART category: *Solar Hybrid Inverter* · Price unit: *Piece* · Min. order
 
 **Amazon title** (177 characters):
 ```
-PowerRun 8.2kW Hybrid Solar Inverter, 48 V Battery, Dual MPPT (2 PV inputs) Solar Charger, 2 x 5,500 W PV Input, Pure Sine Wave, 10ms Transfer, WiFi Monitoring, 5 Years Warranty
+PowerRun 8.2kW Hybrid Solar Inverter, 48 V Battery, Dual MPPT (2 PV inputs) Solar Charger, 2 x 5,500 W PV Input, Pure Sine Wave, 10ms Transfer, WiFi Monitoring, 2 Years Warranty
 ```
 Amazon category: *Electronics > Solar Inverters (ya Home Improvement > Solar)*
 
@@ -193,11 +193,11 @@ Amazon category: *Electronics > Solar Inverters (ya Home Improvement > Solar)*
 BUILT-IN DUAL MPPT (2 PV INPUTS): up to 2 x 5,500 W solar input (90-500 V DC). No separate charge controller needed.
 HYBRID: works on solar, grid and battery together; switches in 10 ms, so computers do not restart.
 PURE SINE WAVE 230V output, up to 98% efficiency. Works with lithium (LiFePO4) and lead-acid batteries on 48 V.
-LCD display + WiFi app monitoring (optional module). 5 Years Warranty from PowerRun Industries, GST bill provided.
+LCD display + WiFi app monitoring (optional module). 2 Years Warranty from PowerRun Industries, GST bill provided.
 ```
 **Description** (dono jagah):
 ```
-The PowerRun 8.2kW Hybrid Solar Inverter is built for commercial and larger residential installations, delivering 8,200W (16,400VA peak) from a 48V battery bank. Its dual MPPT solar charge controller accepts up to 2 x 5,500W of PV input across two independent strings, and multiple units can run in parallel for higher-capacity systems. With up to 98% efficiency, 230V pure sine wave output, LCD + WiFi monitoring and a 5-year warranty, it is engineered for demanding daily use.
+The PowerRun 8.2kW Hybrid Solar Inverter is built for commercial and larger residential installations, delivering 8,200W (16,400VA peak) from a 48V battery bank. Its dual MPPT solar charge controller accepts up to 2 x 5,500W of PV input across two independent strings, and multiple units can run in parallel for higher-capacity systems. With up to 98% efficiency, 230V pure sine wave output, LCD + WiFi monitoring and a 2-year warranty, it is engineered for demanding daily use.
 
 Why PowerRun: GST invoice, pan-India delivery, WhatsApp support (+91 86075 65520), warranty registration at powerrun.in/warranty.
 ```
@@ -232,7 +232,7 @@ IndiaMART category: *Solar Hybrid Inverter* · Price unit: *Piece* · Min. order
 
 **Amazon title** (176 characters):
 ```
-PowerRun 11kW Hybrid Solar Inverter, 48 V Battery, Dual MPPT (2 PV inputs) Solar Charger, 2 x 8,500 W PV Input, Pure Sine Wave, 10ms Transfer, WiFi Monitoring, 5 Years Warranty
+PowerRun 11kW Hybrid Solar Inverter, 48 V Battery, Dual MPPT (2 PV inputs) Solar Charger, 2 x 8,500 W PV Input, Pure Sine Wave, 10ms Transfer, WiFi Monitoring, 2 Years Warranty
 ```
 Amazon category: *Electronics > Solar Inverters (ya Home Improvement > Solar)*
 
@@ -242,11 +242,11 @@ Amazon category: *Electronics > Solar Inverters (ya Home Improvement > Solar)*
 BUILT-IN DUAL MPPT (2 PV INPUTS): up to 2 x 8,500 W solar input (90-500 V DC). No separate charge controller needed.
 HYBRID: works on solar, grid and battery together; switches in 10 ms, so computers do not restart.
 PURE SINE WAVE 230V output, up to 98% efficiency. Works with lithium (LiFePO4) and lead-acid batteries on 48 V.
-LCD display + WiFi app monitoring (optional module). 5 Years Warranty from PowerRun Industries, GST bill provided.
+LCD display + WiFi app monitoring (optional module). 2 Years Warranty from PowerRun Industries, GST bill provided.
 ```
 **Description** (dono jagah):
 ```
-The PowerRun 11kW Hybrid Solar Inverter delivers a rated 11,000W (up to 12,000W dual-output, 24,000VA peak) from a 48V battery bank, making it suited to larger homes, offices and light commercial loads. Dual MPPT tracking supports up to 2 x 8,500W of solar input, and the inverter supports parallel operation and grid-tie connection for scaling up capacity. Up to 98% efficiency, 230V pure sine wave output, LCD + WiFi monitoring and a 5-year warranty are standard.
+The PowerRun 11kW Hybrid Solar Inverter delivers a rated 11,000W (up to 12,000W dual-output, 24,000VA peak) from a 48V battery bank, making it suited to larger homes, offices and light commercial loads. Dual MPPT tracking supports up to 2 x 8,500W of solar input, and the inverter supports parallel operation and grid-tie connection for scaling up capacity. Up to 98% efficiency, 230V pure sine wave output, LCD + WiFi monitoring and a 2-year warranty are standard.
 
 Why PowerRun: GST invoice, pan-India delivery, WhatsApp support (+91 86075 65520), warranty registration at powerrun.in/warranty.
 ```
@@ -283,7 +283,7 @@ IndiaMART category: *Solar Hybrid Inverter* · Price unit: *Piece* · Min. order
 
 **Amazon title** (176 characters):
 ```
-PowerRun 11kW Hybrid Solar Inverter, 48 V Battery, Dual MPPT (2 PV inputs) Solar Charger, 2 x 8,500 W PV Input, Pure Sine Wave, 10ms Transfer, WiFi Monitoring, 5 Years Warranty
+PowerRun 11kW Hybrid Solar Inverter, 48 V Battery, Dual MPPT (2 PV inputs) Solar Charger, 2 x 8,500 W PV Input, Pure Sine Wave, 10ms Transfer, WiFi Monitoring, 2 Years Warranty
 ```
 Amazon category: *Electronics > Solar Inverters (ya Home Improvement > Solar)*
 
@@ -293,11 +293,11 @@ Amazon category: *Electronics > Solar Inverters (ya Home Improvement > Solar)*
 BUILT-IN DUAL MPPT (2 PV INPUTS): up to 2 x 8,500 W solar input (90-500 V DC). No separate charge controller needed.
 HYBRID: works on solar, grid and battery together; switches in 10 ms, so computers do not restart.
 PURE SINE WAVE 230V output, up to 98% efficiency. Works with lithium (LiFePO4) and lead-acid batteries on 48 V.
-LCD display + WiFi app monitoring (optional module). 5 Years Warranty from PowerRun Industries, GST bill provided.
+LCD display + WiFi app monitoring (optional module). 2 Years Warranty from PowerRun Industries, GST bill provided.
 ```
 **Description** (dono jagah):
 ```
-The PowerRun 12kW Hybrid Solar Inverter is built for commercial-scale backup, delivering up to 12,000W of dual output power (11,000W rated, 24,000VA peak) from a 48V battery bank. Dual MPPT solar charge controllers handle up to 2 x 8,500W of PV input, with parallel operation and grid-tie support for multi-unit installations. It provides 230V pure sine wave output at up to 98% efficiency, with LCD + WiFi monitoring and a 5-year warranty.
+The PowerRun 12kW Hybrid Solar Inverter is built for commercial-scale backup, delivering up to 12,000W of dual output power (11,000W rated, 24,000VA peak) from a 48V battery bank. Dual MPPT solar charge controllers handle up to 2 x 8,500W of PV input, with parallel operation and grid-tie support for multi-unit installations. It provides 230V pure sine wave output at up to 98% efficiency, with LCD + WiFi monitoring and a 2-year warranty.
 
 Why PowerRun: GST invoice, pan-India delivery, WhatsApp support (+91 86075 65520), warranty registration at powerrun.in/warranty.
 ```

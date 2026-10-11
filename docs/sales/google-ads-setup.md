@@ -155,7 +155,7 @@ Dealer Rates Available
 **Descriptions (4, har ek 90 akshar se kam):**
 ```
 LiFePO4 lithium battery for e-rickshaw, inverter and solar. GST bill and warranty.
-Hybrid solar inverters 3.6kW to 12kW with built-in MPPT. 5 year warranty. Call now.
+Hybrid solar inverters 3.6kW to 12kW with built-in MPPT. 2 year warranty. Call now.
 Lead-acid se pareshan? Lithium lijiye: 4000+ cycles, no maintenance, 3 yr warranty.
 Kasganj, UP se poore India mein delivery. Dealer aur mechanic ke liye special rate.
 ```
