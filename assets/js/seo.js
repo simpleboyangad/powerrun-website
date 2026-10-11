@@ -329,10 +329,21 @@
   function loadAnalytics(id) {
     if (!id || window.__prGaLoaded || !/^G-[A-Z0-9]+$/i.test(id)) return;
     window.__prGaLoaded = true;
-    var script = document.createElement('script');
-    script.async = true;
-    script.src = 'https://www.googletagmanager.com/gtag/js?id=' + encodeURIComponent(id);
-    head().appendChild(script);
+    // gtag.js is the heaviest script on the page (long main-thread tasks on
+    // mobile), so fetch it only after the page has loaded and gone idle; the
+    // dataLayer below queues the config and events until it arrives.
+    var inject = function () {
+      var script = document.createElement('script');
+      script.async = true;
+      script.src = 'https://www.googletagmanager.com/gtag/js?id=' + encodeURIComponent(id);
+      head().appendChild(script);
+    };
+    var later = function () {
+      if (window.requestIdleCallback) window.requestIdleCallback(inject, { timeout: 3000 });
+      else setTimeout(inject, 1500);
+    };
+    if (document.readyState === 'complete') later();
+    else window.addEventListener('load', later, { once: true });
     window.dataLayer = window.dataLayer || [];
     window.gtag = function () { window.dataLayer.push(arguments); };
     window.gtag('js', new Date());
