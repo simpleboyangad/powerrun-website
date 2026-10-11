@@ -57,6 +57,7 @@ NO_WARRANTY_HI = "इस प्रोडक्ट पर कोई वारं�
 
 GOOGLE_BUSINESS_PROFILE = "https://maps.google.com/?cid=2490524210981875388"
 FACEBOOK_PAGE = "https://www.facebook.com/profile.php?id=61595087349723"
+LINKEDIN_PAGE = "https://www.linkedin.com/company/powerrun-industries/"
 
 # category icons on the home page, same as ICONS in assets/js/pages/home.js
 HOME_ICONS = {
@@ -679,7 +680,7 @@ def main():
         "logo": default_image, "email": "service@powerrun.in", "telephone": "+91 86075 65520",
         "areaServed": "IN",
         # every official profile, so Google ties the brand together
-        "sameAs": ["https://www.youtube.com/@PowerRunIndustries", GOOGLE_BUSINESS_PROFILE, FACEBOOK_PAGE],
+        "sameAs": ["https://www.youtube.com/@PowerRunIndustries", GOOGLE_BUSINESS_PROFILE, FACEBOOK_PAGE, LINKEDIN_PAGE],
     }
     if company.get("address_line1") or company.get("city"):
         org["address"] = {k: v for k, v in {
