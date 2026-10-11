@@ -30,7 +30,8 @@
     var results = await Promise.all([
       PR.call('load products', function (sb) {
         return sb.from('products')
-          .select('id,name,sku,price,mrp,gst_rate,purchase_cost,purchase_gst_rate,default_freight,default_packaging_cost,default_other_cost')
+          .select('id,name,sku,price,mrp,gst_rate,' +
+                  'product_costs(purchase_cost,purchase_gst_rate,default_freight,default_packaging_cost,default_other_cost)')
           .eq('is_active', true).order('name');
       }),
       PR.call('load selling channels', function (sb) {
@@ -49,7 +50,13 @@
         return sb.from('site_settings').select('value').eq('key', 'calc_defaults').maybeSingle();
       })
     ]);
-    data.products = results[0] || [];
+    // buying costs come from the admin-only product_costs table (sql/31)
+    data.products = (results[0] || []).map(function (p) {
+      var c = (Array.isArray(p.product_costs) ? p.product_costs[0] : p.product_costs) || {};
+      ['purchase_cost', 'purchase_gst_rate', 'default_freight', 'default_packaging_cost', 'default_other_cost']
+        .forEach(function (f) { p[f] = c[f] != null ? c[f] : null; });
+      return p;
+    });
     data.channels = results[1] || [];
     data.gstRates = results[2] || [];
     data.targets = results[3] || [];

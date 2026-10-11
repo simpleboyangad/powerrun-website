@@ -15,6 +15,8 @@
   var MAX_DATASHEET_MB = 20;
   var SEO_TITLE_MIN = 50, SEO_TITLE_MAX = 60;
   var SEO_DESC_MIN = 140, SEO_DESC_MAX = 160;
+  // stored in product_costs (admin-only), not on the public products row
+  var COST_FIELDS = ['purchase_cost', 'purchase_gst_rate', 'default_freight', 'default_packaging_cost', 'default_other_cost'];
 
   var pendingDatasheet = null; // File queued to replace the current datasheet
   var removeDatasheet = false; // true when the admin clicked "Remove"
@@ -27,12 +29,19 @@
       }),
       PR.call('load products', function (sb) {
         return sb.from('products')
-          .select('*, product_images(id,image_url,storage_path,sort_order,alt_text)')
+          .select('*, product_images(id,image_url,storage_path,sort_order,alt_text),' +
+                  'product_costs(' + COST_FIELDS.join(',') + ')')
           .order('sort_order').order('created_at');
       })
     ]);
     categories = results[0] || [];
-    products = results[1] || [];
+    // Buying costs live in the admin-only product_costs table (sql/31); fold
+    // them back onto each product so the form reads p.purchase_cost as before.
+    products = (results[1] || []).map(function (p) {
+      var c = Array.isArray(p.product_costs) ? p.product_costs[0] : p.product_costs;
+      COST_FIELDS.forEach(function (f) { p[f] = c ? c[f] : null; });
+      return p;
+    });
   }
 
   function categoryName(id) {
@@ -778,11 +787,6 @@
       hsn_code: document.getElementById('pf_hsn').value.trim() || null,
       price_includes_gst: document.getElementById('pf_gst_incl').checked,
       warranty: document.getElementById('pf_warranty').value.trim() || null,
-      purchase_cost: document.getElementById('pf_purchase_cost').value.trim() === '' ? null : Number(document.getElementById('pf_purchase_cost').value),
-      purchase_gst_rate: document.getElementById('pf_purchase_gst').value.trim() === '' ? null : Number(document.getElementById('pf_purchase_gst').value),
-      default_freight: document.getElementById('pf_default_freight').value.trim() === '' ? null : Number(document.getElementById('pf_default_freight').value),
-      default_packaging_cost: document.getElementById('pf_default_packaging').value.trim() === '' ? null : Number(document.getElementById('pf_default_packaging').value),
-      default_other_cost: document.getElementById('pf_default_other_cost').value.trim() === '' ? null : Number(document.getElementById('pf_default_other_cost').value),
       specifications: collectSpecs(),
       features: featuresText.split('\n').map(function (line) { return line.trim(); }).filter(Boolean),
       is_active: document.getElementById('pf_active').checked,
@@ -801,6 +805,17 @@
       seo_follow: document.getElementById('pf_seo_follow').checked,
       sort_order: Number(document.getElementById('pf_sort').value) || 0
     };
+    var numOrNull = function (id) {
+      var v = document.getElementById(id).value.trim();
+      return v === '' ? null : Number(v);
+    };
+    var costs = {
+      purchase_cost: numOrNull('pf_purchase_cost'),
+      purchase_gst_rate: numOrNull('pf_purchase_gst'),
+      default_freight: numOrNull('pf_default_freight'),
+      default_packaging_cost: numOrNull('pf_default_packaging'),
+      default_other_cost: numOrNull('pf_default_other_cost')
+    };
 
     PR.setBusy(button, true, 'SAVING…');
 
@@ -817,6 +832,11 @@
         });
         productId = created.id;
       }
+      await PR.call('save product costs', function (sb) {
+        return sb.from('product_costs')
+          .upsert(Object.assign({ product_id: productId, updated_at: new Date().toISOString() }, costs),
+                  { onConflict: 'product_id' });
+      });
 
       if (pendingFiles.length) {
         PR.setBusy(button, true, 'UPLOADING IMAGES…');

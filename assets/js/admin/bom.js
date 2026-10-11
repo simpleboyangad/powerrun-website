@@ -204,7 +204,10 @@
     PR.setBusy(button, true, 'PUSHING…');
     try {
       await PR.call('push BOM total to product purchase cost', function (sb) {
-        return sb.from('products').update({ purchase_cost: total }).eq('id', productId);
+        // admin-only table (sql/31); upsert touches only purchase_cost
+        return sb.from('product_costs').upsert(
+          { product_id: productId, purchase_cost: total, updated_at: new Date().toISOString() },
+          { onConflict: 'product_id' });
       });
       PR.toast('Purchase cost updated on the linked product.', 'success');
     } catch (err) {
