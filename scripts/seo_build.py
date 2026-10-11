@@ -56,6 +56,7 @@ NO_WARRANTY_EN = "This product is sold without any warranty. Only damaged, defec
 NO_WARRANTY_HI = "इस प्रोडक्ट पर कोई वारंटी नहीं है। सिर्फ़ टूटा हुआ, ख़राब या ग़लत प्रोडक्ट डिलीवरी के 7 दिन के अंदर बदला जाता है।"
 
 GOOGLE_BUSINESS_PROFILE = "https://maps.google.com/?cid=2490524210981875388"
+FACEBOOK_PAGE = "https://www.facebook.com/profile.php?id=61595087349723"
 
 # category icons on the home page, same as ICONS in assets/js/pages/home.js
 HOME_ICONS = {
@@ -678,7 +679,7 @@ def main():
         "logo": default_image, "email": "service@powerrun.in", "telephone": "+91 86075 65520",
         "areaServed": "IN",
         # every official profile, so Google ties the brand together
-        "sameAs": ["https://www.youtube.com/@PowerRunIndustries", GOOGLE_BUSINESS_PROFILE],
+        "sameAs": ["https://www.youtube.com/@PowerRunIndustries", GOOGLE_BUSINESS_PROFILE, FACEBOOK_PAGE],
     }
     if company.get("address_line1") or company.get("city"):
         org["address"] = {k: v for k, v in {
