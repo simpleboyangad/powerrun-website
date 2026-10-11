@@ -9,7 +9,7 @@ Source  private/jbd_bms_source.json  (gitignored: supplier name, page, MOQ and
         private/ with the supplier's watermark removed, both with the
         supplier's permission; rows without one get spec cards)
 
-Cards, pricing (supplier price x 1.20, ending in 9), categories, warranty
+Cards, pricing (supplier price x 1.30, ending in 9), categories, warranty
 wording and publishing come from listing_jkbms.py. As with JK, no supplier
 model code (ZP16S011, SP24S007 ...) appears in names, SKUs, URLs or specs;
 everything shown is read from the item's type, series count and current.

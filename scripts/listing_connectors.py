@@ -49,6 +49,9 @@ base.SUBS = {
 SOURCE = os.path.join(base.ROOT, "private", "connector_source.json")
 PACKS = (1, 2, 5, 10, 20, 50)
 MIN_PACK_PRICE = 299
+# Pack sizes were set when the range was first listed at a 1.20 markup. They
+# stay fixed when the markup changes, so SKUs, names and URLs do not move.
+PACK_MARKUP = 1.20
 
 
 def plug_icon(d, cx, cy, w):
@@ -68,7 +71,7 @@ base.board_icon = plug_icon
 
 def pack_size(cost):
     for n in PACKS:
-        if cost * n * base.MARKUP >= MIN_PACK_PRICE:
+        if cost * n * PACK_MARKUP >= MIN_PACK_PRICE:
             return n
     return PACKS[-1]
 

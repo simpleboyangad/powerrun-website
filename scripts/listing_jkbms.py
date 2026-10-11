@@ -7,7 +7,7 @@ JK BMS resale listing - products, spec-card images and categories.
 Source  private/jk_bms_source.json  (gitignored: the supplier's name, page and
         price incl. GST for every in-stock JK item; never commit buying prices)
 
-Selling price = supplier price incl. GST x 1.20, rounded up to end in 9.
+Selling price = supplier price incl. GST x 1.30, rounded up to end in 9.
 
 A source row with "photo" (a supplier photo of that exact model, used with
 the supplier's permission; either its URL, or a copy under private/ with the
@@ -41,7 +41,7 @@ OUT_ROOT = os.path.join(ROOT, "photos", "listing", "jk-bms")
 BRAND = "JK BMS"
 MAKER = "JK"            # short name in "no warranty on JK parts"
 STORAGE = "jk-bms"      # storage folder for the images
-MARKUP = 1.20
+MARKUP = 1.30
 OUT_SIZE = 1200
 BUCKET = "product-images"
 WARRANTY = "No warranty - damaged, defective or wrong items replaced within 7 days of delivery"
