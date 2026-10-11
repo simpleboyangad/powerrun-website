@@ -22,6 +22,13 @@ echo   (A click pauses Windows programs. If it ever looks
 echo    stuck, press ENTER once and it will continue.)
 echo.
 
+echo [0/4] Getting the latest website code from GitHub...
+REM  Building from an old copy publishes old scripts and the push is then
+REM  rejected, so always start from the current main.
+git pull --ff-only origin main
+if errorlevel 1 goto pullfailed
+echo.
+
 echo [1/4] Reading SEO settings and rebuilding sitemap.xml + robots.txt...
 python -u scripts\blog_build.py
 if errorlevel 1 goto failed
@@ -61,6 +68,16 @@ echo   Finished. You can close this window.
 echo ================================================
 pause
 exit /b 0
+
+:pullfailed
+echo.
+echo ------------------------------------------------
+echo   Could not get the latest code. Nothing was published.
+echo   Check the internet connection and run this file again.
+echo   If it still fails, send this whole window as a screenshot.
+echo ------------------------------------------------
+pause
+exit /b 1
 
 :failed
 echo.
