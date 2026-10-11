@@ -7,7 +7,9 @@ Battery charger resale listing - every in-stock lithium and lead-acid charger.
 Source  private/charger_source.json  (gitignored: supplier name, brand, page,
         MOQ and price incl. GST; "photo" is a supplier photo URL, or a copy
         under private/ with the supplier's watermark removed, both with the
-        supplier's permission; rows without one get spec cards)
+        supplier's permission; "photo_series" marks a photo that shows the
+        maker's charger series without a voltage label; rows without a photo
+        get spec cards)
 
 Each charger keeps its maker's brand (GRAPHY, SUN6 ...); unbranded
 imports are "Generic". LEAF chargers were withdrawn on the owner's request
@@ -123,6 +125,10 @@ def parse(src):
         p["short"] = "%s%s for %dS %s packs (%.1f V), %s V %s A%s." % (
             who, kind.lower().replace("e-rickshaw", "e-rickshaw"), cells, chem, nominal, key, amps,
             ", waterproof" if waterproof else "")
+    if src.get("photo_series"):
+        # the supplier shows one photo for the whole series; it carries no voltage
+        # label, so it is used with this note rather than left out
+        p["specs"].append(("Photo", "Same %s charger series; rating as listed above" % brand))
     return p
 
 
