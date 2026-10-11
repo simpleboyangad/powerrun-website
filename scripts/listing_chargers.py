@@ -9,8 +9,9 @@ Source  private/charger_source.json  (gitignored: supplier name, brand, page,
         under private/ with the supplier's watermark removed, both with the
         supplier's permission; rows without one get spec cards)
 
-Each charger keeps its maker's brand (LEAF, GRAPHY, SUN6 ...); unbranded
-imports are "Generic". Specs come from the product name only: the supplier's
+Each charger keeps its maker's brand (GRAPHY, SUN6 ...); unbranded
+imports are "Generic". LEAF chargers were withdrawn on the owner's request
+(2026-10-11) and are left out of the source list. Specs come from the product name only: the supplier's
 "battery voltage" field is wrong on several lead-acid listings. The battery a
 lithium charger suits follows from its charging voltage (3.65 V per LiFePO4
 cell, 4.2 V per Li-ion cell). Cards, pricing and publishing come from
@@ -33,8 +34,8 @@ base.PARENT = {
     "description": "Lithium (LiFePO4 and Li-ion) and lead-acid battery chargers for e-rickshaws, e-scooters "
                    "and battery packs.",
     "meta_title": "Lithium & Lead-Acid Battery Chargers | E-Rickshaw | PowerRun",
-    "meta_description": "Buy LiFePO4 and Li-ion chargers (29.2 V to 73 V, up to 25 A) and 60 V / 72 V lead-acid "
-                        "chargers for e-rickshaws and e-scooters. Pan-India delivery from PowerRun.",
+    "meta_description": "Buy 60 V / 72 V lead-acid chargers for e-rickshaws and e-scooters and 29.2 V / 42 V "
+                        "lithium chargers for LiFePO4 and Li-ion packs. Pan-India delivery from PowerRun.",
     "focus_keyword": "e rickshaw battery charger",
 }
 base.SUBS = {
