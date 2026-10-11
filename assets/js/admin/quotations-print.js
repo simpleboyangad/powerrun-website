@@ -176,7 +176,8 @@
 
     try {
       var settings = await PR.getSettings();
-      var company = Object.assign({}, settings.company || {}, { pdf_footer: (settings.quotation_defaults || {}).pdf_footer });
+      var company = Object.assign({}, settings.company || {}, settings.company_private || {},
+                                  { pdf_footer: (settings.quotation_defaults || {}).pdf_footer });
       var rows = await PR.call('load quotation', function (sb) {
         return sb.from('quotations').select('*, quotation_items(*)').eq('id', id).limit(1);
       });

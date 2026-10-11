@@ -24,7 +24,9 @@
     var shipping = settings.shipping || { flat_rate: 0, free_above: 0 };
     var payments = settings.payments || { razorpay_enabled: false, cod_enabled: true };
     var store = settings.store || {};
-    var company = settings.company || {};
+    // bank details live in the admin-only company_private row (see
+    // sql/30_site_settings_privacy.sql); older saves may still hold them in company
+    var company = Object.assign({}, settings.company || {}, settings.company_private || {});
     var quoteDefaults = settings.quotation_defaults || {};
     var razorpayConfigured = !!PR.config.RAZORPAY_KEY_ID;
 
@@ -197,12 +199,17 @@
   }
 
   async function saveSetting(key, value, button, messageHostId) {
+    return saveSettings([{ key: key, value: value }], button, messageHostId);
+  }
+
+  /* rows: [{key, value}], written in one request */
+  async function saveSettings(rows, button, messageHostId) {
     var messageHost = document.getElementById(messageHostId);
     if (messageHost) messageHost.innerHTML = '';
     PR.setBusy(button, true, 'SAVING…');
     try {
       await PR.call('save settings', function (sb) {
-        return sb.from('site_settings').upsert({ key: key, value: value }, { onConflict: 'key' });
+        return sb.from('site_settings').upsert(rows, { onConflict: 'key' });
       });
       PR.setBusy(button, false);
       PR.toast('Settings saved.', 'success');
@@ -258,7 +265,9 @@
 
     document.getElementById('companyForm').addEventListener('submit', function (event) {
       event.preventDefault();
-      saveSetting('company', {
+      // Address, GSTIN and PAN are public (invoices, Organization schema);
+      // bank details go to company_private, which only admins can read.
+      saveSettings([{ key: 'company', value: {
         legal_name: document.getElementById('co_legal').value.trim(),
         gstin: document.getElementById('co_gstin').value.trim().toUpperCase(),
         address_line1: document.getElementById('co_addr1').value.trim(),
@@ -267,13 +276,14 @@
         state: document.getElementById('co_state').value,
         pincode: document.getElementById('co_pincode').value.trim(),
         pan: document.getElementById('co_pan').value.trim().toUpperCase(),
-        signatory_name: document.getElementById('co_signatory').value.trim(),
+        signatory_name: document.getElementById('co_signatory').value.trim()
+      } }, { key: 'company_private', value: {
         bank_name: document.getElementById('co_bank_name').value.trim(),
         bank_account_name: document.getElementById('co_bank_account_name').value.trim(),
         bank_account_number: document.getElementById('co_bank_account_number').value.trim(),
         bank_ifsc: document.getElementById('co_bank_ifsc').value.trim().toUpperCase(),
         bank_branch: document.getElementById('co_bank_branch').value.trim()
-      }, document.getElementById('saveCompanyBtn'), 'companyMessage');
+      } }], document.getElementById('saveCompanyBtn'), 'companyMessage');
     });
 
     document.getElementById('quoteSettingsForm').addEventListener('submit', function (event) {
