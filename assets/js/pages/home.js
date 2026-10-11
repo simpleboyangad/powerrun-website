@@ -10,6 +10,7 @@
     'e-rickshaw-batteries': '🛺',
     'bms-balancers': '🔌',
     'battery-connectors': '🔗',
+    'battery-chargers': '🔌',
     'home-energy-storage': '🏠',
     'commercial-energy-storage': '🏢',
     'industrial-energy-solutions': '🏭',

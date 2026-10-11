@@ -118,6 +118,7 @@
             '<li><a href="/e-rickshaw-batteries/">E-Rickshaw Batteries</a></li>' +
             '<li><a href="/bms-balancers/">BMS &amp; Balancers</a></li>' +
             '<li><a href="/battery-connectors/">Connectors &amp; Terminals</a></li>' +
+            '<li><a href="/battery-chargers/">Battery Chargers</a></li>' +
           '</ul></div>' +
           '<div><h3>Company</h3><ul>' +
             '<li><a href="/about/">About Us</a></li>' +

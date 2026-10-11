@@ -5,6 +5,124 @@
   <link>https://powerrun.in</link>
   <description>Lithium batteries, hybrid solar inverters, solar panels, BMS and battery parts.</description>
   <item>
+    <g:id>CHG-LI-29_2V-3A-GENERIC</g:id>
+    <title>Lithium Battery Charger 29.2V 3A</title>
+    <description>The Lithium Battery Charger 29.2V 3A is for charging 24 V LiFePO4 batteries (8S LiFePO4, 25.6 V nominal). Charges 8S LiFePO4 packs (25.6 V nominal) to 29.2 V. 3 A charging current.
+
+Check that the charger matches your battery's voltage and chemistry before use - a charger for the wrong chemistry or cell count can damage the battery. Sold and shipped by PowerRun Industries with free pan-India delivery. PowerRun does not offer a separate warranty on chargers; damaged, defective or wrong items are replaced within 7 days of delivery as per our refund policy. Not sure which one fits? Send us your battery details on WhatsApp.</description>
+    <link>https://powerrun.in/products/lithium-battery-charger-29-2v-3a/</link>
+    <g:image_link>https://nnkopxkyxcmtiunftlgr.supabase.co/storage/v1/object/public/product-images/chargers/lithium-battery-charger-29-2v-3a/0-photo.jpg</g:image_link>
+    <g:availability>in_stock</g:availability>
+    <g:condition>new</g:condition>
+    <g:identifier_exists>no</g:identifier_exists>
+    <g:product_type>Battery Chargers</g:product_type>
+    <g:price>699.00 INR</g:price>
+  </item>
+  <item>
+    <g:id>CHG-LI-42V-3A-GENERIC</g:id>
+    <title>Lithium Battery Charger 42V 3A</title>
+    <description>The Lithium Battery Charger 42V 3A is for charging 36 V Li-ion e-bike and e-scooter batteries (10S Li-ion, 37.0 V nominal). Charges 10S Li-ion packs (37.0 V nominal) to 42 V. 3 A charging current.
+
+Check that the charger matches your battery's voltage and chemistry before use - a charger for the wrong chemistry or cell count can damage the battery. Sold and shipped by PowerRun Industries with free pan-India delivery. PowerRun does not offer a separate warranty on chargers; damaged, defective or wrong items are replaced within 7 days of delivery as per our refund policy. Not sure which one fits? Send us your battery details on WhatsApp.</description>
+    <link>https://powerrun.in/products/lithium-battery-charger-42v-3a/</link>
+    <g:image_link>https://nnkopxkyxcmtiunftlgr.supabase.co/storage/v1/object/public/product-images/chargers/lithium-battery-charger-42v-3a/0-photo.jpg</g:image_link>
+    <g:availability>in_stock</g:availability>
+    <g:condition>new</g:condition>
+    <g:identifier_exists>no</g:identifier_exists>
+    <g:product_type>Battery Chargers</g:product_type>
+    <g:price>699.00 INR</g:price>
+  </item>
+  <item>
+    <g:id>CHG-LI-54_6V-6A-LEAF</g:id>
+    <title>LEAF Lithium Battery Charger 54.6V 6A</title>
+    <description>The LEAF Lithium Battery Charger 54.6V 6A is for charging 48 V Li-ion e-bike and e-scooter batteries (13S Li-ion, 48.1 V nominal). Charges 13S Li-ion packs (48.1 V nominal) to 54.6 V. 6 A charging current.
+
+Check that the charger matches your battery's voltage and chemistry before use - a charger for the wrong chemistry or cell count can damage the battery. Sold and shipped by PowerRun Industries with free pan-India delivery. PowerRun does not offer a separate warranty on chargers; damaged, defective or wrong items are replaced within 7 days of delivery as per our refund policy. Not sure which one fits? Send us your battery details on WhatsApp.</description>
+    <link>https://powerrun.in/products/leaf-lithium-battery-charger-54-6v-6a/</link>
+    <g:image_link>https://nnkopxkyxcmtiunftlgr.supabase.co/storage/v1/object/public/product-images/chargers/leaf-lithium-battery-charger-54-6v-6a/0-photo.jpg</g:image_link>
+    <g:availability>in_stock</g:availability>
+    <g:condition>new</g:condition>
+    <g:brand>LEAF</g:brand>
+    <g:identifier_exists>no</g:identifier_exists>
+    <g:product_type>Battery Chargers</g:product_type>
+    <g:price>1199.00 INR</g:price>
+  </item>
+  <item>
+    <g:id>CHG-LI-67_2V-6A-LEAF</g:id>
+    <title>LEAF Lithium Battery Charger 67.2V 6A</title>
+    <description>The LEAF Lithium Battery Charger 67.2V 6A is for charging 60 V Li-ion e-scooter batteries (16S Li-ion, 59.2 V nominal). Charges 16S Li-ion packs (59.2 V nominal) to 67.2 V. 6 A charging current.
+
+Check that the charger matches your battery's voltage and chemistry before use - a charger for the wrong chemistry or cell count can damage the battery. Sold and shipped by PowerRun Industries with free pan-India delivery. PowerRun does not offer a separate warranty on chargers; damaged, defective or wrong items are replaced within 7 days of delivery as per our refund policy. Not sure which one fits? Send us your battery details on WhatsApp.</description>
+    <link>https://powerrun.in/products/leaf-lithium-battery-charger-67-2v-6a/</link>
+    <g:image_link>https://nnkopxkyxcmtiunftlgr.supabase.co/storage/v1/object/public/product-images/chargers/leaf-lithium-battery-charger-67-2v-6a/0-photo.jpg</g:image_link>
+    <g:availability>in_stock</g:availability>
+    <g:condition>new</g:condition>
+    <g:brand>LEAF</g:brand>
+    <g:identifier_exists>no</g:identifier_exists>
+    <g:product_type>Battery Chargers</g:product_type>
+    <g:price>1199.00 INR</g:price>
+  </item>
+  <item>
+    <g:id>CHG-LI-73V-6A-LEAF</g:id>
+    <title>LEAF Lithium Battery Charger 73V 6A</title>
+    <description>The LEAF Lithium Battery Charger 73V 6A is for charging 64 V LiFePO4 e-scooter batteries (20S LiFePO4, 64.0 V nominal). Charges 20S LiFePO4 packs (64.0 V nominal) to 73 V. 6 A charging current.
+
+Check that the charger matches your battery's voltage and chemistry before use - a charger for the wrong chemistry or cell count can damage the battery. Sold and shipped by PowerRun Industries with free pan-India delivery. PowerRun does not offer a separate warranty on chargers; damaged, defective or wrong items are replaced within 7 days of delivery as per our refund policy. Not sure which one fits? Send us your battery details on WhatsApp.</description>
+    <link>https://powerrun.in/products/leaf-lithium-battery-charger-73v-6a/</link>
+    <g:image_link>https://nnkopxkyxcmtiunftlgr.supabase.co/storage/v1/object/public/product-images/chargers/leaf-lithium-battery-charger-73v-6a/0-photo.jpg</g:image_link>
+    <g:availability>in_stock</g:availability>
+    <g:condition>new</g:condition>
+    <g:brand>LEAF</g:brand>
+    <g:identifier_exists>no</g:identifier_exists>
+    <g:product_type>Battery Chargers</g:product_type>
+    <g:price>1509.00 INR</g:price>
+  </item>
+  <item>
+    <g:id>CHG-PB-60V-3A-LEAF</g:id>
+    <title>LEAF Lead-Acid Battery Charger 60V 3A</title>
+    <description>The LEAF Lead-Acid Battery Charger 60V 3A is for charging 60 V lead-acid e-rickshaw and e-scooter batteries (5 x 12 V). For 60 V lead-acid batteries (5 x 12 V). 3 A charging current.
+
+Check that the charger matches your battery's voltage and chemistry before use - a charger for the wrong chemistry or cell count can damage the battery. Sold and shipped by PowerRun Industries with free pan-India delivery. PowerRun does not offer a separate warranty on chargers; damaged, defective or wrong items are replaced within 7 days of delivery as per our refund policy. Not sure which one fits? Send us your battery details on WhatsApp.</description>
+    <link>https://powerrun.in/products/leaf-lead-acid-battery-charger-60v-3a/</link>
+    <g:image_link>https://nnkopxkyxcmtiunftlgr.supabase.co/storage/v1/object/public/product-images/chargers/leaf-lead-acid-battery-charger-60v-3a/0-photo.jpg</g:image_link>
+    <g:availability>in_stock</g:availability>
+    <g:condition>new</g:condition>
+    <g:brand>LEAF</g:brand>
+    <g:identifier_exists>no</g:identifier_exists>
+    <g:product_type>Battery Chargers</g:product_type>
+    <g:price>629.00 INR</g:price>
+  </item>
+  <item>
+    <g:id>CHG-PB-60V-3A-SUN6</g:id>
+    <title>SUN6 Lead-Acid Battery Charger 60V 3A</title>
+    <description>The SUN6 Lead-Acid Battery Charger 60V 3A is for charging 60 V lead-acid e-rickshaw and e-scooter batteries (5 x 12 V). For 60 V lead-acid batteries (5 x 12 V). 3 A charging current.
+
+Check that the charger matches your battery's voltage and chemistry before use - a charger for the wrong chemistry or cell count can damage the battery. Sold and shipped by PowerRun Industries with free pan-India delivery. PowerRun does not offer a separate warranty on chargers; damaged, defective or wrong items are replaced within 7 days of delivery as per our refund policy. Not sure which one fits? Send us your battery details on WhatsApp.</description>
+    <link>https://powerrun.in/products/sun6-lead-acid-battery-charger-60v-3a/</link>
+    <g:image_link>https://nnkopxkyxcmtiunftlgr.supabase.co/storage/v1/object/public/product-images/chargers/sun6-lead-acid-battery-charger-60v-3a/0-photo.jpg</g:image_link>
+    <g:availability>in_stock</g:availability>
+    <g:condition>new</g:condition>
+    <g:brand>SUN6</g:brand>
+    <g:identifier_exists>no</g:identifier_exists>
+    <g:product_type>Battery Chargers</g:product_type>
+    <g:price>629.00 INR</g:price>
+  </item>
+  <item>
+    <g:id>CHG-PB-60V-4_5A-GRAPHY</g:id>
+    <title>GRAPHY Lead-Acid Battery Charger 60V 4.5A</title>
+    <description>The GRAPHY Lead-Acid Battery Charger 60V 4.5A is for charging 60 V lead-acid e-rickshaw and e-scooter batteries (5 x 12 V). For 60 V lead-acid batteries (5 x 12 V). 4.5 A charging current.
+
+Check that the charger matches your battery's voltage and chemistry before use - a charger for the wrong chemistry or cell count can damage the battery. Sold and shipped by PowerRun Industries with free pan-India delivery. PowerRun does not offer a separate warranty on chargers; damaged, defective or wrong items are replaced within 7 days of delivery as per our refund policy. Not sure which one fits? Send us your battery details on WhatsApp.</description>
+    <link>https://powerrun.in/products/graphy-lead-acid-battery-charger-60v-4-5a/</link>
+    <g:image_link>https://nnkopxkyxcmtiunftlgr.supabase.co/storage/v1/object/public/product-images/chargers/graphy-lead-acid-battery-charger-60v-4-5a/0-photo.jpg</g:image_link>
+    <g:availability>in_stock</g:availability>
+    <g:condition>new</g:condition>
+    <g:brand>GRAPHY</g:brand>
+    <g:identifier_exists>no</g:identifier_exists>
+    <g:product_type>Battery Chargers</g:product_type>
+    <g:price>819.00 INR</g:price>
+  </item>
+  <item>
     <g:id>CON-CHAKORI-F-X2</g:id>
     <title>Chakori Female Socket - Pack of 2</title>
     <description>Chakori Female Socket - Pack of 2 for e-rickshaw battery and charger connections. Chakori-type panel socket. Commonly used on e-rickshaw battery packs. Pack of 2.

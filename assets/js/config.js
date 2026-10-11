@@ -50,7 +50,7 @@ window.PR_CONFIG = {
 
   // Categories that have their own landing page at /<slug>/ (intro, buying
   // guide, FAQ). Every other category is linked as /products/?category=<slug>.
-  CATEGORY_PAGES: ['hybrid-inverters', 'lithium-batteries', 'solar-panels', 'e-rickshaw-batteries', 'bms-balancers', 'battery-connectors'],
+  CATEGORY_PAGES: ['hybrid-inverters', 'lithium-batteries', 'solar-panels', 'e-rickshaw-batteries', 'bms-balancers', 'battery-connectors', 'battery-chargers'],
 
   MAX_PRODUCT_IMAGES: 5,
   STORAGE_BUCKET: 'product-images'
