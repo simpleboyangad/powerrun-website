@@ -119,7 +119,7 @@ PowerRun Industries, कासगंज (उत्तर प्रदेश) —
 | Facebook | | | |
 | Instagram | | | |
 | LinkedIn | | | |
-| Bing Places | | | |
+| Bing Places | 2026-10-11 (verified via Google import, pending publish 7-12 days; weekly Google sync) | add when published (bizid c7419a6a-714e-4df3-bae6-a47533d5f86c) | syncs from Google Business Profile |
 | Apple Business Connect | | | |
 | ExportersIndia | | | |
 | Sulekha | | | |
