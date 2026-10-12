@@ -55,7 +55,7 @@ LCD display + WiFi app monitoring (optional module). 2 Years Warranty from Power
 ```
 The PowerRun 3.6kW Hybrid Solar Inverter delivers a rated output of 3,600W (7,200VA peak) from a 24V battery bank, with a built-in MPPT solar charge controller accepting up to 5,000W of PV input. It switches seamlessly between grid, solar and battery power in as little as 10ms, delivering clean 230V pure sine wave output for sensitive electronics. With up to 98% conversion efficiency and LCD + WiFi monitoring, it is built for reliable day-to-day backup in homes and small businesses, backed by a 2-year warranty.
 
-Why PowerRun: GST invoice, pan-India delivery, WhatsApp support (+91 86075 65520), warranty registration at powerrun.in/warranty.
+Why PowerRun: GST invoice, pan-India delivery, WhatsApp support (+91 80575 73040), warranty registration at powerrun.in/warranty.
 ```
 **Specifications table** (IndiaMART "Specification" mein ek-ek line):
 
@@ -103,7 +103,7 @@ LCD display + WiFi app monitoring (optional module). 2 Years Warranty from Power
 ```
 The PowerRun 4.2kW Hybrid Solar Inverter is rated for 4,200W (8,400VA peak) output from a 24V battery bank, with a built-in MPPT controller supporting up to 6,000W of solar panel input. It automatically transfers between grid, solar and battery in 10ms, producing stable 230V pure sine wave power for homes and small offices that need a bit more headroom than the 3.6kW model. Up to 98% efficiency, LCD + WiFi monitoring, and a 2-year warranty come standard.
 
-Why PowerRun: GST invoice, pan-India delivery, WhatsApp support (+91 86075 65520), warranty registration at powerrun.in/warranty.
+Why PowerRun: GST invoice, pan-India delivery, WhatsApp support (+91 80575 73040), warranty registration at powerrun.in/warranty.
 ```
 **Specifications table** (IndiaMART "Specification" mein ek-ek line):
 
@@ -151,7 +151,7 @@ LCD display + WiFi app monitoring (optional module). 2 Years Warranty from Power
 ```
 The PowerRun 6.2kW Hybrid Solar Inverter runs on a 48V battery bank and delivers 6,200W (12,400VA peak) of clean 230V pure sine wave power, with a built-in MPPT controller handling up to 8,500W of solar input. Designed for larger homes and small commercial setups, it switches between grid, solar and battery in 10ms and reaches up to 98% efficiency, with LCD + WiFi monitoring and a 2-year warranty.
 
-Why PowerRun: GST invoice, pan-India delivery, WhatsApp support (+91 86075 65520), warranty registration at powerrun.in/warranty.
+Why PowerRun: GST invoice, pan-India delivery, WhatsApp support (+91 80575 73040), warranty registration at powerrun.in/warranty.
 ```
 **Specifications table** (IndiaMART "Specification" mein ek-ek line):
 
@@ -199,7 +199,7 @@ LCD display + WiFi app monitoring (optional module). 2 Years Warranty from Power
 ```
 The PowerRun 8.2kW Hybrid Solar Inverter is built for commercial and larger residential installations, delivering 8,200W (16,400VA peak) from a 48V battery bank. Its dual MPPT solar charge controller accepts up to 2 x 5,500W of PV input across two independent strings, and multiple units can run in parallel for higher-capacity systems. With up to 98% efficiency, 230V pure sine wave output, LCD + WiFi monitoring and a 2-year warranty, it is engineered for demanding daily use.
 
-Why PowerRun: GST invoice, pan-India delivery, WhatsApp support (+91 86075 65520), warranty registration at powerrun.in/warranty.
+Why PowerRun: GST invoice, pan-India delivery, WhatsApp support (+91 80575 73040), warranty registration at powerrun.in/warranty.
 ```
 **Specifications table** (IndiaMART "Specification" mein ek-ek line):
 
@@ -248,7 +248,7 @@ LCD display + WiFi app monitoring (optional module). 2 Years Warranty from Power
 ```
 The PowerRun 11kW Hybrid Solar Inverter delivers a rated 11,000W (up to 12,000W dual-output, 24,000VA peak) from a 48V battery bank, making it suited to larger homes, offices and light commercial loads. Dual MPPT tracking supports up to 2 x 8,500W of solar input, and the inverter supports parallel operation and grid-tie connection for scaling up capacity. Up to 98% efficiency, 230V pure sine wave output, LCD + WiFi monitoring and a 2-year warranty are standard.
 
-Why PowerRun: GST invoice, pan-India delivery, WhatsApp support (+91 86075 65520), warranty registration at powerrun.in/warranty.
+Why PowerRun: GST invoice, pan-India delivery, WhatsApp support (+91 80575 73040), warranty registration at powerrun.in/warranty.
 ```
 **Specifications table** (IndiaMART "Specification" mein ek-ek line):
 
@@ -299,7 +299,7 @@ LCD display + WiFi app monitoring (optional module). 2 Years Warranty from Power
 ```
 The PowerRun 12kW Hybrid Solar Inverter is built for commercial-scale backup, delivering up to 12,000W of dual output power (11,000W rated, 24,000VA peak) from a 48V battery bank. Dual MPPT solar charge controllers handle up to 2 x 8,500W of PV input, with parallel operation and grid-tie support for multi-unit installations. It provides 230V pure sine wave output at up to 98% efficiency, with LCD + WiFi monitoring and a 2-year warranty.
 
-Why PowerRun: GST invoice, pan-India delivery, WhatsApp support (+91 86075 65520), warranty registration at powerrun.in/warranty.
+Why PowerRun: GST invoice, pan-India delivery, WhatsApp support (+91 80575 73040), warranty registration at powerrun.in/warranty.
 ```
 **Specifications table** (IndiaMART "Specification" mein ek-ek line):
 
@@ -352,7 +352,7 @@ MADE FOR SOLAR INVERTER / HOME BACKUP: LiFePO4 (LFP) cell chemistry / Integrated
 ```
 The PowerRun 25.6V 100Ah LiFePO4 battery stores 2.56kWh of usable energy in a safe, long-life lithium iron phosphate cell chemistry. An integrated Smart BMS protects against over-charge, over-discharge and short circuit, while the cell design supports 6000+ charge cycles at 80% depth of discharge, far outlasting a comparable lead-acid battery. It is built for small home backup, solar storage and off-grid setups where reliable, low-maintenance power matters, and is backed by a 5-year warranty.
 
-Why PowerRun: GST invoice, pan-India delivery, WhatsApp support (+91 86075 65520), warranty registration at powerrun.in/warranty.
+Why PowerRun: GST invoice, pan-India delivery, WhatsApp support (+91 80575 73040), warranty registration at powerrun.in/warranty.
 ```
 **Specifications table** (IndiaMART "Specification" mein ek-ek line):
 
@@ -397,7 +397,7 @@ MADE FOR SOLAR INVERTER / HOME BACKUP: LiFePO4 (LFP) cell chemistry / Integrated
 ```
 The PowerRun 25.6V 200Ah LiFePO4 battery delivers 5.12kWh of usable energy storage with an integrated Smart BMS guarding against over-charge, over-discharge and short circuit. Rated for 6000+ cycles at 80% depth of discharge, it is built to outlast lead-acid alternatives by several times over, making it a solid choice for home backup and small solar systems. Comes with a 5-year warranty.
 
-Why PowerRun: GST invoice, pan-India delivery, WhatsApp support (+91 86075 65520), warranty registration at powerrun.in/warranty.
+Why PowerRun: GST invoice, pan-India delivery, WhatsApp support (+91 80575 73040), warranty registration at powerrun.in/warranty.
 ```
 **Specifications table** (IndiaMART "Specification" mein ek-ek line):
 
@@ -442,7 +442,7 @@ MADE FOR SOLAR INVERTER / HOME BACKUP: LiFePO4 (LFP) cell chemistry / Integrated
 ```
 The PowerRun 25.6V 280Ah LiFePO4 battery provides 7.17kWh of usable capacity for homes and small businesses that need more runtime than a standard 100-200Ah pack. An integrated Smart BMS manages charge and discharge protection, and the LiFePO4 chemistry is rated for 6000+ cycles at 80% depth of discharge, safe, stable and low-maintenance compared to lead-acid. Backed by a 5-year warranty.
 
-Why PowerRun: GST invoice, pan-India delivery, WhatsApp support (+91 86075 65520), warranty registration at powerrun.in/warranty.
+Why PowerRun: GST invoice, pan-India delivery, WhatsApp support (+91 80575 73040), warranty registration at powerrun.in/warranty.
 ```
 **Specifications table** (IndiaMART "Specification" mein ek-ek line):
 
@@ -487,7 +487,7 @@ MADE FOR SOLAR INVERTER / HOME BACKUP: LiFePO4 (LFP) cell chemistry / Integrated
 ```
 The PowerRun 25.6V 550Ah LiFePO4 battery is a high-capacity 14.08kWh energy storage solution for homes, small offices and solar systems with heavier daily loads. It combines an integrated Smart BMS with active cell balancing to keep every cell performing evenly over its 6000+ cycle life at 80% depth of discharge, resisting the capacity fade and maintenance headaches of lead-acid banks. Comes with a 5-year warranty.
 
-Why PowerRun: GST invoice, pan-India delivery, WhatsApp support (+91 86075 65520), warranty registration at powerrun.in/warranty.
+Why PowerRun: GST invoice, pan-India delivery, WhatsApp support (+91 80575 73040), warranty registration at powerrun.in/warranty.
 ```
 **Specifications table** (IndiaMART "Specification" mein ek-ek line):
 
@@ -532,7 +532,7 @@ MADE FOR SOLAR INVERTER / HOME BACKUP: LiFePO4 (LFP) cell chemistry / Integrated
 ```
 The PowerRun 51.2V 100Ah LiFePO4 battery stores 5.12kWh of usable energy and is designed to pair directly with 48V hybrid solar inverters. An integrated Smart BMS protects against over-charge, over-discharge and short circuit, and the LiFePO4 chemistry delivers 6000+ cycles at 80% depth of discharge, well beyond what lead-acid batteries can offer. Ideal for home backup and solar storage, with a 5-year warranty.
 
-Why PowerRun: GST invoice, pan-India delivery, WhatsApp support (+91 86075 65520), warranty registration at powerrun.in/warranty.
+Why PowerRun: GST invoice, pan-India delivery, WhatsApp support (+91 80575 73040), warranty registration at powerrun.in/warranty.
 ```
 **Specifications table** (IndiaMART "Specification" mein ek-ek line):
 
@@ -577,7 +577,7 @@ MADE FOR SOLAR INVERTER / HOME BACKUP: LiFePO4 (LFP) cell chemistry / Integrated
 ```
 The PowerRun 51.2V 200Ah LiFePO4 battery delivers 10.24kWh of usable storage, built to work with 48V hybrid inverters for whole-home backup or solar self-consumption. Its integrated Smart BMS handles over-charge, over-discharge and short-circuit protection, while the LiFePO4 cells are rated for 6000+ cycles at 80% depth of discharge. A dependable, low-maintenance alternative to lead-acid, backed by a 5-year warranty.
 
-Why PowerRun: GST invoice, pan-India delivery, WhatsApp support (+91 86075 65520), warranty registration at powerrun.in/warranty.
+Why PowerRun: GST invoice, pan-India delivery, WhatsApp support (+91 80575 73040), warranty registration at powerrun.in/warranty.
 ```
 **Specifications table** (IndiaMART "Specification" mein ek-ek line):
 
@@ -622,7 +622,7 @@ MADE FOR SOLAR INVERTER / HOME BACKUP: LiFePO4 (LFP) cell chemistry / Integrated
 ```
 The PowerRun 51.2V 280Ah LiFePO4 battery provides 14.34kWh of usable energy, suited to larger homes and small commercial installations running on 48V hybrid inverters. An integrated Smart BMS keeps the pack safe through 6000+ cycles at 80% depth of discharge, offering years of reliable, low-maintenance service well beyond a comparable lead-acid bank. 5-year warranty included.
 
-Why PowerRun: GST invoice, pan-India delivery, WhatsApp support (+91 86075 65520), warranty registration at powerrun.in/warranty.
+Why PowerRun: GST invoice, pan-India delivery, WhatsApp support (+91 80575 73040), warranty registration at powerrun.in/warranty.
 ```
 **Specifications table** (IndiaMART "Specification" mein ek-ek line):
 
@@ -667,7 +667,7 @@ MADE FOR SOLAR INVERTER / HOME BACKUP: LiFePO4 (LFP) cell chemistry / Integrated
 ```
 The PowerRun 51.2V 400Ah LiFePO4 battery stores 20.48kWh of usable energy for homes and businesses that need substantial backup capacity from a 48V system. Protected by an integrated Smart BMS and rated for 6000+ cycles at 80% depth of discharge, it is engineered to deliver consistent performance for years with minimal upkeep. Backed by a 5-year warranty.
 
-Why PowerRun: GST invoice, pan-India delivery, WhatsApp support (+91 86075 65520), warranty registration at powerrun.in/warranty.
+Why PowerRun: GST invoice, pan-India delivery, WhatsApp support (+91 80575 73040), warranty registration at powerrun.in/warranty.
 ```
 **Specifications table** (IndiaMART "Specification" mein ek-ek line):
 
@@ -712,7 +712,7 @@ MADE FOR SOLAR INVERTER / HOME BACKUP: LiFePO4 (LFP) cell chemistry / Integrated
 ```
 The PowerRun 51.2V 600Ah LiFePO4 battery is a high-capacity 30.72kWh energy storage solution built for commercial backup and larger solar installations. Its integrated Smart BMS manages over-charge, over-discharge and short-circuit protection across a 6000+ cycle life at 80% depth of discharge, delivering the durability and safety that commercial users need. Comes with a 5-year warranty.
 
-Why PowerRun: GST invoice, pan-India delivery, WhatsApp support (+91 86075 65520), warranty registration at powerrun.in/warranty.
+Why PowerRun: GST invoice, pan-India delivery, WhatsApp support (+91 80575 73040), warranty registration at powerrun.in/warranty.
 ```
 **Specifications table** (IndiaMART "Specification" mein ek-ek line):
 
@@ -757,7 +757,7 @@ MADE FOR SOLAR INVERTER / HOME BACKUP: LiFePO4 (LFP) cell chemistry / Integrated
 ```
 The PowerRun 51.2V 800Ah LiFePO4 battery is our largest single-unit energy storage pack, delivering 40.96kWh of usable capacity for commercial energy storage and demanding backup applications. An integrated Smart BMS protects the pack through 6000+ cycles at 80% depth of discharge, offering a safer, longer-lasting alternative to large lead-acid banks. 5-year warranty included.
 
-Why PowerRun: GST invoice, pan-India delivery, WhatsApp support (+91 86075 65520), warranty registration at powerrun.in/warranty.
+Why PowerRun: GST invoice, pan-India delivery, WhatsApp support (+91 80575 73040), warranty registration at powerrun.in/warranty.
 ```
 **Specifications table** (IndiaMART "Specification" mein ek-ek line):
 
@@ -804,7 +804,7 @@ MADE FOR E-RICKSHAW / E-LOADER: Designed for daily deep cycling / Vibration-resi
 ```
 The PowerRun 51.2V 314Ah LiFePO4 E-Rickshaw Battery is our highest-capacity pack, delivering 16.08kWh of usable energy for long daily range on e-rickshaws and e-loaders. An integrated BMS with charge balancing protects the pack through 4000+ cycles of daily deep-cycling, with fast charging and a lighter, maintenance-free design compared to lead-acid.
 
-Why PowerRun: GST invoice, pan-India delivery, WhatsApp support (+91 86075 65520), warranty registration at powerrun.in/warranty.
+Why PowerRun: GST invoice, pan-India delivery, WhatsApp support (+91 80575 73040), warranty registration at powerrun.in/warranty.
 ```
 **Specifications table** (IndiaMART "Specification" mein ek-ek line):
 
@@ -850,7 +850,7 @@ MADE FOR E-RICKSHAW / E-LOADER: Designed for daily deep cycling / Vibration-resi
 ```
 The PowerRun 51.2V 110Ah LiFePO4 E-Rickshaw Battery provides 5.63kWh of usable energy with an integrated BMS and charge balancing, engineered for the daily deep-cycling duty of e-rickshaws and e-loaders. With 4000+ cycle life, fast charging and a maintenance-free lithium design, it is a durable upgrade over conventional lead-acid packs.
 
-Why PowerRun: GST invoice, pan-India delivery, WhatsApp support (+91 86075 65520), warranty registration at powerrun.in/warranty.
+Why PowerRun: GST invoice, pan-India delivery, WhatsApp support (+91 80575 73040), warranty registration at powerrun.in/warranty.
 ```
 **Specifications table** (IndiaMART "Specification" mein ek-ek line):
 
@@ -896,7 +896,7 @@ MADE FOR E-RICKSHAW / E-LOADER: Designed for daily deep cycling / Vibration-resi
 ```
 The PowerRun 51.2V 230Ah LiFePO4 E-Rickshaw Battery stores 11.78kWh of usable energy for long daily range on e-rickshaws and e-loaders. An integrated BMS with charge balancing protects the pack through 6000+ cycles of daily deep-cycling, with fast charging and a lighter, maintenance-free design compared to lead-acid.
 
-Why PowerRun: GST invoice, pan-India delivery, WhatsApp support (+91 86075 65520), warranty registration at powerrun.in/warranty.
+Why PowerRun: GST invoice, pan-India delivery, WhatsApp support (+91 80575 73040), warranty registration at powerrun.in/warranty.
 ```
 **Specifications table** (IndiaMART "Specification" mein ek-ek line):
 
@@ -942,7 +942,7 @@ MADE FOR E-RICKSHAW / E-LOADER: Designed for daily deep cycling / Vibration-resi
 ```
 The PowerRun 51.2V 150Ah LiFePO4 E-Rickshaw Battery stores 7.68kWh of usable energy for long daily range on e-rickshaws and e-loaders. An integrated BMS with charge balancing protects the pack through 4000+ cycles of daily deep-cycling, with fast charging and a lighter, maintenance-free design compared to lead-acid.
 
-Why PowerRun: GST invoice, pan-India delivery, WhatsApp support (+91 86075 65520), warranty registration at powerrun.in/warranty.
+Why PowerRun: GST invoice, pan-India delivery, WhatsApp support (+91 80575 73040), warranty registration at powerrun.in/warranty.
 ```
 **Specifications table** (IndiaMART "Specification" mein ek-ek line):
 
@@ -988,7 +988,7 @@ MADE FOR ELECTRIC SCOOTER / E-SCOOTY: Designed for daily deep cycling / Vibratio
 ```
 The PowerRun 60V 30Ah LiFePO4 E-Scooty Battery provides 1.8kWh of usable energy with an integrated BMS and charge balancing, engineered for the daily deep-cycling duty of electric scooters. With 4000+ cycle life, fast charging and a maintenance-free lithium design, it is a durable upgrade over conventional lead-acid packs.
 
-Why PowerRun: GST invoice, pan-India delivery, WhatsApp support (+91 86075 65520), warranty registration at powerrun.in/warranty.
+Why PowerRun: GST invoice, pan-India delivery, WhatsApp support (+91 80575 73040), warranty registration at powerrun.in/warranty.
 ```
 **Specifications table** (IndiaMART "Specification" mein ek-ek line):
 
@@ -1034,7 +1034,7 @@ MADE FOR ELECTRIC SCOOTER / E-SCOOTY: Designed for daily deep cycling / Vibratio
 ```
 The PowerRun 60V 45Ah LiFePO4 E-Scooty Battery provides 2.7kWh of usable energy with an integrated BMS and charge balancing, engineered for the daily deep-cycling duty of electric scooters needing extended range. With 4000+ cycle life, fast charging and a maintenance-free lithium design, it is a durable upgrade over conventional lead-acid packs.
 
-Why PowerRun: GST invoice, pan-India delivery, WhatsApp support (+91 86075 65520), warranty registration at powerrun.in/warranty.
+Why PowerRun: GST invoice, pan-India delivery, WhatsApp support (+91 80575 73040), warranty registration at powerrun.in/warranty.
 ```
 **Specifications table** (IndiaMART "Specification" mein ek-ek line):
 
@@ -1082,7 +1082,7 @@ FOR ROOFTOP & GROUND MOUNT: homes, shops, farms; works with on-grid, off-grid an
 ```
 The PowerRun 450W Mono PERC Solar Panel uses high-efficiency monocrystalline PERC cells (up to 21.3% module efficiency) housed in an anodised aluminium frame with 3.2mm tempered anti-reflective glass. Rated to operate from -40C to 85C and built to handle real-world rooftop and ground-mount conditions, it is a dependable choice for residential and small commercial solar installations.
 
-Why PowerRun: GST invoice, pan-India delivery, WhatsApp support (+91 86075 65520), warranty registration at powerrun.in/warranty.
+Why PowerRun: GST invoice, pan-India delivery, WhatsApp support (+91 80575 73040), warranty registration at powerrun.in/warranty.
 ```
 **Specifications table** (IndiaMART "Specification" mein ek-ek line):
 
@@ -1126,7 +1126,7 @@ FOR ROOFTOP & GROUND MOUNT: homes, shops, farms; works with on-grid, off-grid an
 ```
 The PowerRun 535W Mono PERC Solar Panel delivers up to 21.3% module efficiency from monocrystalline PERC cells, with a durable anodised aluminium frame and 3.2mm tempered anti-reflective glass for long-term outdoor performance. Rated for -40C to 85C operation, it suits residential and commercial rooftop or ground-mount solar systems that need more output per panel.
 
-Why PowerRun: GST invoice, pan-India delivery, WhatsApp support (+91 86075 65520), warranty registration at powerrun.in/warranty.
+Why PowerRun: GST invoice, pan-India delivery, WhatsApp support (+91 80575 73040), warranty registration at powerrun.in/warranty.
 ```
 **Specifications table** (IndiaMART "Specification" mein ek-ek line):
 
@@ -1170,7 +1170,7 @@ FOR ROOFTOP & GROUND MOUNT: homes, shops, farms; works with on-grid, off-grid an
 ```
 The PowerRun 550W Mono PERC Solar Panel combines high-efficiency monocrystalline PERC cells (up to 21.3% efficiency) with a rugged anodised aluminium frame and 3.2mm tempered anti-reflective glass, built to withstand demanding outdoor conditions from -40C to 85C. A strong choice for residential and commercial installations looking to maximise output per square foot of roof space.
 
-Why PowerRun: GST invoice, pan-India delivery, WhatsApp support (+91 86075 65520), warranty registration at powerrun.in/warranty.
+Why PowerRun: GST invoice, pan-India delivery, WhatsApp support (+91 80575 73040), warranty registration at powerrun.in/warranty.
 ```
 **Specifications table** (IndiaMART "Specification" mein ek-ek line):
 
@@ -1214,7 +1214,7 @@ FOR ROOFTOP & GROUND MOUNT: homes, shops, farms; works with on-grid, off-grid an
 ```
 The PowerRun 580W Mono PERC Solar Panel offers up to 21.3% module efficiency from monocrystalline PERC cells, wrapped in an anodised aluminium frame with 3.2mm tempered anti-reflective glass. Built to perform from -40C to 85C, it is suited to larger residential and commercial solar arrays where higher per-panel wattage reduces the number of panels needed.
 
-Why PowerRun: GST invoice, pan-India delivery, WhatsApp support (+91 86075 65520), warranty registration at powerrun.in/warranty.
+Why PowerRun: GST invoice, pan-India delivery, WhatsApp support (+91 80575 73040), warranty registration at powerrun.in/warranty.
 ```
 **Specifications table** (IndiaMART "Specification" mein ek-ek line):
 
@@ -1258,7 +1258,7 @@ FOR ROOFTOP & GROUND MOUNT: homes, shops, farms; works with on-grid, off-grid an
 ```
 The PowerRun 600W Mono PERC Solar Panel is our highest-output panel, delivering up to 21.3% module efficiency from monocrystalline PERC cells in a durable anodised aluminium frame with 3.2mm tempered anti-reflective glass. Rated for -40C to 85C operation, it is built for large residential, commercial and industrial solar installations that need maximum power density per panel.
 
-Why PowerRun: GST invoice, pan-India delivery, WhatsApp support (+91 86075 65520), warranty registration at powerrun.in/warranty.
+Why PowerRun: GST invoice, pan-India delivery, WhatsApp support (+91 80575 73040), warranty registration at powerrun.in/warranty.
 ```
 **Specifications table** (IndiaMART "Specification" mein ek-ek line):
 
@@ -1291,7 +1291,7 @@ High Voltage BMS Master and Slave for ESS, up to 1000V
 
 **Common description:**
 ```
-Original smart and standard BMS for LiFePO4 and Li-ion (NMC) battery packs: 4S to 32S, 40A to 300A, with Bluetooth app, active cell balancing and SOC display options. Used for solar battery packs, e-rickshaw, e-scooty and home ESS batteries. Pan-India dispatch with GST bill from Kasganj, UP. Correct model choose karne mein madad ke liye WhatsApp karein: +91 86075 65520.
+Original smart and standard BMS for LiFePO4 and Li-ion (NMC) battery packs: 4S to 32S, 40A to 300A, with Bluetooth app, active cell balancing and SOC display options. Used for solar battery packs, e-rickshaw, e-scooty and home ESS batteries. Pan-India dispatch with GST bill from Kasganj, UP. Correct model choose karne mein madad ke liye WhatsApp karein: +91 80575 73040.
 Note: No warranty. 7-day replacement only if the product arrives damaged or dead on arrival.
 ```
 

@@ -42,7 +42,7 @@
 
 ## Step 3: Campaign 1, Search (₹300 roz)
 
-**+ New campaign → Objective: "Leads" → Campaign type: "Search"** → Website: `https://powerrun.in`, aur "Phone calls" bhi tick karein, number: **+91 86075 65520**.
+**+ New campaign → Objective: "Leads" → Campaign type: "Search"** → Website: `https://powerrun.in`, aur "Phone calls" bhi tick karein, number: **+91 80575 73040**.
 
 **Settings (ek-ek karke):**
 
@@ -173,7 +173,7 @@ Kasganj, UP se poore India mein delivery. Dealer aur mechanic ke liye special ra
 | Battery Calculator | powerrun.in/battery-calculator/ | Kitna backup chahiye? | Free calculator |
 | Become a Dealer | powerrun.in/dealer/ | Dealer aur installer rate | Abhi apply karein |
 
-**Call asset:** +91 86075 65520, schedule: subah 8 se raat 9.
+**Call asset:** +91 80575 73040, schedule: subah 8 se raat 9.
 **Callouts:** `GST Bill` · `Pan-India Delivery` · `Up to 5 Yr Warranty` · `WhatsApp Support`
 **Location asset:** Google Business Profile link karein (Assets → + → Location). Isse ad mein aapka pata aur rating dikhegi.
 

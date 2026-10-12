@@ -65,7 +65,7 @@ MPPT वाले हाइब्रिड इन्वर्टर, Mono PERC �
 🛡️ Warranty रजिस्टर करें: https://powerrun.in/warranty/
 🔧 Service request: https://powerrun.in/service/
 
-📞 +91 86075 65520  (WhatsApp: https://wa.me/918607565520)
+📞 +91 80575 73040  (WhatsApp: https://wa.me/918057573040)
 ✉️ service@powerrun.in
 
 नई video हर मंगलवार। Sizing में मदद चाहिए तो comment करें — जवाब देते हैं।
@@ -76,7 +76,7 @@ MPPT वाले हाइब्रिड इन्वर्टर, Mono PERC �
 | क्रम | Title | URL |
 |---|---|---|
 | 1 | Website | `https://powerrun.in/` |
-| 2 | WhatsApp | `https://wa.me/918607565520` |
+| 2 | WhatsApp | `https://wa.me/918057573040` |
 | 3 | Products | `https://powerrun.in/products/` |
 | 4 | Free Calculator | `https://powerrun.in/battery-calculator/` |
 | 5 | Dealership | `https://powerrun.in/dealer/` |
@@ -252,8 +252,8 @@ Website की categories से मिलती-जुलती रखी ह�
 🔧 Service request — https://powerrun.in/service/
 🤝 Dealership — https://powerrun.in/dealer/
 
-📞 सीधे बात करें: +91 86075 65520
-💬 WhatsApp: https://wa.me/918607565520
+📞 सीधे बात करें: +91 80575 73040
+💬 WhatsApp: https://wa.me/918057573040
 ✉️ service@powerrun.in
 🚚 पूरे भारत में डिलीवरी
 
@@ -268,7 +268,7 @@ PowerRun Industries — लिथियम बैटरी, हाइब्र�
 अपने घर/दुकान के लिए सही size 10 सेकंड में पता करें 👇
 🔋 https://powerrun.in/battery-calculator/
 ☀️ https://powerrun.in/solar-calculator/
-सवाल नीचे comment में पूछें — हम जवाब देते हैं। WhatsApp: +91 86075 65520
+सवाल नीचे comment में पूछें — हम जवाब देते हैं। WhatsApp: +91 80575 73040
 ```
 
 ---
@@ -339,7 +339,7 @@ powerrun, powerrun industries, lithium battery dealer
 ```
 YouTube video  →  Calculator (powerrun.in)  →  Products  →  Cart / Checkout
                         ↓
-                 WhatsApp +91 86075 65520  →  Order / Dealer enquiry
+                 WhatsApp +91 80575 73040  →  Order / Dealer enquiry
 ```
 
 - हर video में **calculator** का link दें — वही सबसे ज़्यादा click होता है, क्योंकि मुफ़्त है और काम का है।

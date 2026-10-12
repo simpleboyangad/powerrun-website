@@ -157,7 +157,7 @@ def banner(logo):
 
     line_y = SAFE_BOTTOM - 26
     parts = [("powerrun.in", ORANGE2), ("  |  ", (120, 120, 120)),
-             ("+91 86075 65520", (235, 235, 235)), ("  |  ", (120, 120, 120)),
+             ("+91 80575 73040", (235, 235, 235)), ("  |  ", (120, 120, 120)),
              ("Pan India Delivery", (235, 235, 235))]
     f = bold(44)
     total = sum(d.textlength(t, font=f) for t, _ in parts)

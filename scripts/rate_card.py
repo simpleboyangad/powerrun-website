@@ -101,7 +101,7 @@ def build():
     foot = re.search(r'<div class="foot">.*?\n</div>\n', tpl, re.S).group(0)
     qr = tpl[tpl.index('<script src="https://cdnjs'):tpl.index("</body>")]
     note = ('<div class="note"><b>Note:</b> In parts par koi warranty nahi hai. Agar product kharab/dead aaye to '
-            '7 din mein replacement. Sahi model chunne ke liye WhatsApp karein: +91 86075 65520</div>')
+            '7 din mein replacement. Sahi model chunne ke liye WhatsApp karein: +91 80575 73040</div>')
 
     out = (style + '</head><body><div class="page1">\n' + head + '\n<h1>RATE <span>CARD</span></h1>\n'
            '<p class="sub">All prices in ₹, GST included · Rates as on %s, subject to change · Delivery &amp; '

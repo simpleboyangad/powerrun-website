@@ -18,8 +18,8 @@ Har directory mein **bilkul yahi details** daalein: naam, pata, phone aur websit
 | State | Uttar Pradesh |
 | PIN code | 207124 |
 | Country | India |
-| Phone / Mobile | +91 86075 65520 *(temporary, neeche note dekhein)* |
-| WhatsApp | +91 86075 65520 |
+| Phone / Mobile | +91 80575 73040 |
+| WhatsApp | +91 80575 73040 |
 | Email | service@powerrun.in |
 | Website | https://powerrun.in |
 | GSTIN | 09GTVPS7660P1ZZ |
@@ -30,7 +30,7 @@ Har directory mein **bilkul yahi details** daalein: naam, pata, phone aur websit
 | Year established | ____ *(aap bharein)* |
 | Owner / contact person | ____ *(aap bharein)* |
 
-**Phone number ke baare mein:** abhi wala number temporary hai. IndiaMART aur JustDial mobile number par OTP se login karwate hain, aur baad mein number badalna wahan jhanjhat ka kaam hai. **Pakka number mil jaye to listings usi se banayein.** Agar abhi banani hain, to pakka number aate hi har listing mein badal dein.
+**Phone number ke baare mein:** +91 80575 73040 pakka number hai (2026-10-12 se). Isi number se IndiaMART, JustDial aur TradeIndia ki listings banayein, kyunki ye OTP se isi number par login karwate hain.
 
 ---
 
@@ -57,7 +57,7 @@ Our range includes LiFePO4 lithium battery packs (25.6V and 51.2V, 100Ah to 800A
 
 Warranty: 5 years on LiFePO4 batteries, 2 years on hybrid inverters, 3 years on e-rickshaw and e-scooty batteries, and 10-year product / 25-year performance warranty on solar panels. Every unit is tested before dispatch. We deliver across India and offer dealer and fleet pricing.
 
-Website: https://powerrun.in | WhatsApp: +91 86075 65520
+Website: https://powerrun.in | WhatsApp: +91 80575 73040
 ```
 
 **Hindi (Facebook ya JustDial ke liye, agar Hindi box ho):**
@@ -116,9 +116,9 @@ PowerRun Industries, कासगंज (उत्तर प्रदेश) —
 | IndiaMART | | | |
 | JustDial | | | |
 | TradeIndia | | | |
-| Facebook | 2026-10-11 | https://www.facebook.com/profile.php?id=61595087349723 | temporary number; WhatsApp not connected yet; logo/cover to upload |
+| Facebook | 2026-10-11 | https://www.facebook.com/profile.php?id=61595087349723 | logo + cover done; number on page to update; WhatsApp not connected yet |
 | Instagram | | | |
-| LinkedIn | 2026-10-11 | https://www.linkedin.com/company/powerrun-industries/ | logo and About description to add |
+| LinkedIn | 2026-10-11 | https://www.linkedin.com/company/powerrun-industries/ | logo, cover, overview done; cover image to refresh with new number |
 | Bing Places | 2026-10-11 (verified via Google import, pending publish 7-12 days; weekly Google sync) | add when published (bizid c7419a6a-714e-4df3-bae6-a47533d5f86c) | syncs from Google Business Profile |
 | Apple Business Connect | | | |
 | ExportersIndia | | | |
