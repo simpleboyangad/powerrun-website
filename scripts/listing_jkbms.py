@@ -7,7 +7,8 @@ JK BMS resale listing - products, spec-card images and categories.
 Source  private/jk_bms_source.json  (gitignored: the supplier's name, page and
         price incl. GST for every in-stock JK item; never commit buying prices)
 
-Selling price = supplier price incl. GST x 1.30, rounded up to end in 9.
+Selling price = supplier price incl. GST x the markup in private/pricing.json
+(gitignored, see private_settings.py), rounded up to end in 9.
 
 A source row with "photo" (a supplier photo of that exact model, used with
 the supplier's permission; either its URL, or a copy under private/ with the
@@ -32,6 +33,7 @@ import urllib.request
 from PIL import Image, ImageDraw
 
 sys.path.insert(0, os.path.dirname(os.path.abspath(__file__)))
+import private_settings  # noqa: E402
 import listing_erickshaw as lx  # noqa: E402  shared logo, fonts and pieces
 from listing_erickshaw import S, ORANGE, ORANGE_SOFT, INK, GREY, WHITE, bold, regular, heavy, header  # noqa: E402
 
@@ -41,7 +43,6 @@ OUT_ROOT = os.path.join(ROOT, "photos", "listing", "jk-bms")
 BRAND = "JK BMS"
 MAKER = "JK"            # short name in "no warranty on JK parts"
 STORAGE = "jk-bms"      # storage folder for the images
-MARKUP = 1.30
 OUT_SIZE = 1200
 BUCKET = "product-images"
 WARRANTY = "No warranty - damaged, defective or wrong items replaced within 7 days of delivery"
@@ -63,7 +64,7 @@ SUBS = {
 
 
 def selling_price(cost):
-    return math.ceil(cost * MARKUP / 10) * 10 - 1
+    return math.ceil(cost * private_settings.markup() / 10) * 10 - 1
 
 
 def balance_current(model):
