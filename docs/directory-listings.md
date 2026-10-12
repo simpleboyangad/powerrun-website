@@ -118,7 +118,7 @@ PowerRun Industries, कासगंज (उत्तर प्रदेश) —
 | TradeIndia | | | |
 | Facebook | 2026-10-11 | https://www.facebook.com/profile.php?id=61595087349723 | logo, cover, phone 80575 73040 done (2026-10-12); WhatsApp not connected yet |
 | Instagram | | | |
-| LinkedIn | 2026-10-11 | https://www.linkedin.com/company/powerrun-industries/ | logo, cover, overview done; cover image to refresh with new number |
+| LinkedIn | 2026-10-11 | https://www.linkedin.com/company/powerrun-industries/ | logo, cover (80575 73040), overview done (2026-10-12) |
 | Bing Places | 2026-10-11 (verified via Google import, pending publish 7-12 days; weekly Google sync) | add when published (bizid c7419a6a-714e-4df3-bae6-a47533d5f86c) | syncs from Google Business Profile |
 | Apple Business Connect | | | |
 | ExportersIndia | | | |
