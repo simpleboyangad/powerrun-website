@@ -43,6 +43,9 @@ import sys
 import urllib.parse
 import urllib.request
 
+sys.path.insert(0, os.path.dirname(os.path.abspath(__file__)))
+import fit_guide  # noqa: E402
+
 ROOT = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
 START = "<!-- SEO:START -->"
 END = "<!-- SEO:END -->"
@@ -202,6 +205,7 @@ PRODUCT_TEMPLATE = """<!doctype html>
 {content}
       </div>
     </section>
+{guide}
     <section class="section" id="relatedSection" hidden style="padding-top:0">
       <div class="section-head"><h2>RELATED <span>PRODUCTS</span></h2></div>
       <div class="products" id="relatedGrid"></div>
@@ -800,6 +804,11 @@ def main():
         slug = product["slug"]
         keep.add(slug)
         canonical = product.get("canonical_url") or (site + "/products/" + urllib.parse.quote(slug) + "/")
+        # a "(Variant B)" listing with the same specs as its main listing points
+        # Google at the main page instead of competing with it
+        twin = fit_guide.twin_of(product, products)
+        if twin and not product.get("canonical_url"):
+            canonical = site + "/products/" + urllib.parse.quote(twin["slug"]) + "/"
         images = [i["image_url"] for i in sorted(product.get("product_images") or [],
                                                  key=lambda x: x.get("sort_order") or 0)]
         title = product.get("meta_title") or (product["name"] + " | " + site_name)
@@ -830,10 +839,11 @@ def main():
         os.makedirs(folder, exist_ok=True)
         io.open(os.path.join(folder, "index.html"), "w", encoding="utf-8", newline="\n").write(
             versioned(PRODUCT_TEMPLATE.format(head=block, content=prerender_product(product, cat, images, related),
+                                              guide=fit_guide.guide_html(product, cat.get("slug"), products),
                                               faq=faq_html(product_faq(product, cat))),
                       stamp))
         written.append("products/%s/index.html" % slug)
-        if indexable:
+        if indexable and not twin:
             add_url(canonical, lastmod=(product.get("updated_at") or today)[:10], priority="0.7",
                     images=images)
 
