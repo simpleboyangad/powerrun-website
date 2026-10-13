@@ -1,0 +1,230 @@
+<title>PowerRun Hero Demo</title>
+<style>
+/* Cinematic hero, one theme of motion: light and energy running through the real product photo. */
+:root {
+  --orange: #ff5a00; --orange2: #ff8a2a; --ember: #ffb070; --ink: #070707; --fg: #ffffff; --soft: #c9c9c9; --dim: #8e8e8e; --line: #ffffff1a;
+  --rx: 0deg; --ry: 0deg; --px: 0px; --py: 0px;
+  color-scheme: dark;
+}
+* { box-sizing: border-box; }
+html, body { background: var(--ink); color: var(--fg); }
+body { font-family: Inter, -apple-system, BlinkMacSystemFont, "Segoe UI", Arial, sans-serif; -webkit-font-smoothing: antialiased; }
+a { color: inherit; text-decoration: none; }
+a:focus-visible { outline: 2px solid var(--orange); outline-offset: 3px; }
+
+.hero { position: relative; overflow: hidden; isolation: isolate; min-height: 620px;
+  display: grid; grid-template-columns: minmax(0, 1fr) minmax(0, 1.15fr); align-items: center; gap: 20px;
+  padding-block: 64px; padding-inline: 6%; }
+
+/* background light: two slow beams and a breathing glow that follows the mouse a little */
+.beam { position: absolute; z-index: -3; top: -30%; width: 34%; height: 160%; transform: rotate(18deg);
+  background: linear-gradient(90deg, transparent, rgba(255,110,30,.10), transparent); filter: blur(8px); animation: prBeam 11s ease-in-out infinite alternate; }
+.beam.b2 { left: 55%; animation-duration: 15s; animation-direction: alternate-reverse; opacity: .7; }
+.beam.b1 { left: 20%; }
+@keyframes prBeam { from { transform: translateX(-12%) rotate(18deg); } to { transform: translateX(18%) rotate(18deg); } }
+.glow { position: absolute; z-index: -2; right: 10%; top: 12%; width: 48vw; max-width: 680px; aspect-ratio: 1; border-radius: 50%;
+  background: radial-gradient(closest-side, rgba(255,90,0,.45), rgba(255,90,0,0)); filter: blur(30px);
+  translate: calc(var(--px) * -1.4) calc(var(--py) * -1.4); animation: prBreathe 5s ease-in-out infinite; }
+@keyframes prBreathe { 0%, 100% { opacity: .6; scale: .94; } 50% { opacity: 1; scale: 1.06; } }
+canvas.embers { position: absolute; inset: 0; width: 100%; height: 100%; z-index: 1; pointer-events: none; }
+
+/* product photo with light drawn on top of it (same 900 x 600 coordinates) */
+.stage { position: relative; perspective: 1200px; z-index: 0; }
+.tilt { position: relative; width: 100%; aspect-ratio: 3 / 2; max-width: 100%;
+  transform: rotateY(var(--ry)) rotateX(var(--rx)) translate(var(--px), var(--py)); transition: transform .25s ease-out;
+  transform-style: preserve-3d; animation: prOpen 1.6s cubic-bezier(.2,.7,.2,1) both; }
+@keyframes prOpen { from { opacity: 0; transform: scale(1.12) translateY(20px); filter: blur(6px); } }
+.tilt img { position: absolute; inset: 0; width: 100%; height: 100%; display: block;
+  -webkit-mask-image: radial-gradient(ellipse 62% 66% at 60% 50%, #000 58%, transparent 100%); mask-image: radial-gradient(ellipse 62% 66% at 60% 50%, #000 58%, transparent 100%); }
+.tilt svg { position: absolute; inset: 0; width: 100%; height: 100%; overflow: visible; }
+.ring-base { fill: none; stroke: rgba(255,140,60,.35); stroke-width: 3; filter: url(#soft); }
+.run { fill: none; stroke: var(--ember); stroke-width: 7; stroke-linecap: round; stroke-dasharray: 360 1680; filter: url(#soft); animation: prRun 2.8s linear infinite; }
+.run.r2 { stroke: #fff; stroke-width: 3; stroke-dasharray: 160 1880; animation-delay: -.1s; filter: none; }
+@keyframes prRun { to { stroke-dashoffset: -2040; } }
+/* both displays stay on: steady backlight glow */
+.screen-glow { mix-blend-mode: screen; opacity: .55; }
+.lcd text { font-family: "Consolas", "Courier New", monospace; fill: #e9f3ff; }
+.lcd .ln { stroke: #cfe3ff; stroke-width: .7; fill: none; }
+.lcd .flow { stroke: #9fd0ff; stroke-width: .7; stroke-dasharray: 1.5 1.5; animation: prLcd 1s linear infinite; }
+@keyframes prLcd { to { stroke-dashoffset: -3; } }
+.sweep { mix-blend-mode: screen; animation: prSweep 6s ease-in-out 1.6s infinite; }
+@keyframes prSweep { 0% { transform: translateX(-420px); } 50%, 100% { transform: translateX(1100px); } }
+.floor { animation: prFloor 3.2s ease-in-out infinite; }
+@keyframes prFloor { 0%, 100% { opacity: .35; } 50% { opacity: .8; } }
+
+/* text */
+.copy { max-width: 600px; position: relative; z-index: 2; }
+.eyebrow { display: inline-flex; align-items: center; gap: 8px; padding: 7px 12px; border: 1px solid var(--line); border-radius: 999px;
+  background: #ffffff0a; color: #ddd; font-size: 12px; font-weight: 800; letter-spacing: .5px; }
+.eyebrow .dot { width: 8px; height: 8px; border-radius: 50%; background: var(--orange); box-shadow: 0 0 0 0 rgba(255,90,0,.7); animation: prPing 1.8s infinite; }
+@keyframes prPing { 70% { box-shadow: 0 0 0 9px rgba(255,90,0,0); } 100% { box-shadow: 0 0 0 0 rgba(255,90,0,0); } }
+h1 { margin: 20px 0 18px; font-size: clamp(42px, 5.4vw, 78px); line-height: 1; letter-spacing: -2px; text-transform: uppercase; font-weight: 900; }
+h1 .ch { display: inline-block; opacity: 0; transform: translateY(.5em) rotate(6deg); animation: prCh .6s cubic-bezier(.2,.8,.2,1) forwards; }
+@keyframes prCh { to { opacity: 1; transform: none; } }
+h1 .w { display: inline-block; white-space: nowrap; }
+.swap { display: block; height: 1.06em; overflow: hidden; }
+.swap > span { display: block; animation: prWords 10s cubic-bezier(.75,0,.25,1) 1.2s infinite; }
+.swap i { display: block; font-style: normal; height: 1.06em;
+  background: linear-gradient(90deg, #ff5a00, #ffc08a 45%, #ff5a00 60%); background-size: 220% 100%;
+  -webkit-background-clip: text; background-clip: text; -webkit-text-fill-color: transparent; animation: prShine 2.6s linear infinite; }
+@keyframes prShine { from { background-position: 120% 0; } to { background-position: -100% 0; } }
+@keyframes prWords {
+  0%, 22% { transform: translateY(0); }
+  25%, 47% { transform: translateY(-1.06em); }
+  50%, 72% { transform: translateY(-2.12em); }
+  75%, 97% { transform: translateY(-3.18em); }
+  100% { transform: translateY(-4.24em); }
+}
+.rule { width: 74px; height: 4px; border-radius: 4px; background: var(--orange); margin: 0 0 22px; transform-origin: left; animation: prRule 1s ease .9s both; }
+@keyframes prRule { from { transform: scaleX(0); } }
+p.lead { margin: 0 0 30px; color: var(--soft); font-size: 18px; line-height: 1.6; max-width: 54ch; }
+.ctas { display: flex; flex-wrap: wrap; gap: 12px; }
+.btn { position: relative; overflow: hidden; display: inline-flex; align-items: center; justify-content: center; gap: 8px; border-radius: 10px; padding: 15px 24px;
+  font-weight: 800; font-size: 14px; min-height: 50px; transition: transform .2s ease, box-shadow .2s ease, border-color .2s; }
+.btn.orange { background: linear-gradient(135deg, var(--orange), var(--orange2)); color: #fff; box-shadow: 0 12px 30px rgba(255,90,0,.35); }
+.btn.orange:after { content: ""; position: absolute; inset: 0 auto 0 -60%; width: 45%; transform: skewX(-20deg);
+  background: linear-gradient(90deg, transparent, rgba(255,255,255,.5), transparent); animation: prBtn 3.4s ease-in-out 2s infinite; }
+@keyframes prBtn { 0%, 60% { left: -60%; } 100% { left: 140%; } }
+.btn.orange:hover { transform: translateY(-2px); box-shadow: 0 16px 36px rgba(255,90,0,.55); }
+.btn.dark { border: 1px solid #ffffff33; color: #fff; background: #ffffff08; }
+.btn.dark:hover { border-color: var(--orange); transform: translateY(-2px); }
+.cats { display: flex; flex-wrap: wrap; gap: 8px 22px; margin-top: 30px; padding-top: 22px; border-top: 1px solid var(--line); }
+.cats a { color: var(--dim); font-size: 14px; font-weight: 700; display: inline-flex; align-items: center; gap: 6px; transition: color .2s; }
+.cats a:after { content: "→"; color: var(--orange); transition: transform .2s; }
+.cats a:hover { color: #fff; } .cats a:hover:after { transform: translateX(4px); }
+
+.in { animation: prIn .9s cubic-bezier(.2,.7,.2,1) both; }
+.d1 { animation-delay: .05s } .d3 { animation-delay: 1s } .d4 { animation-delay: 1.15s } .d5 { animation-delay: 1.3s }
+@keyframes prIn { from { opacity: 0; transform: translateY(18px); } }
+
+.note { padding-block: 14px; padding-inline: 6%; color: var(--dim); font-size: 13px; border-top: 1px solid var(--line); }
+
+@media (max-width: 900px) {
+  .hero { grid-template-columns: 1fr; min-height: 0; padding-block: 24px 44px; }
+  .stage { order: -1; margin-inline: -4%; }
+  .glow { right: -10%; top: 0; width: 90vw; }
+  h1 { margin-top: 14px; } p.lead { font-size: 16px; }
+}
+@media (prefers-reduced-motion: reduce) {
+  *, *:after { animation: none !important; transition: none !important; }
+  h1 .ch, .in, .tilt { opacity: 1 !important; transform: none !important; filter: none !important; }
+}
+</style>
+
+<section class="hero" id="hero">
+  <div class="beam b1" aria-hidden="true"></div><div class="beam b2" aria-hidden="true"></div>
+  <div class="glow" aria-hidden="true"></div>
+  <canvas class="embers" id="embers" aria-hidden="true"></canvas>
+
+  <div class="copy">
+    <div class="eyebrow in d1"><span class="dot"></span> SMART ENERGY • POWERED BY POWERRUN</div>
+    <h1 id="h1" aria-label="Powering your home, business, e-rickshaw and shop">
+      <span class="split" aria-hidden="true">Powering your</span>
+      <span class="swap" aria-hidden="true"><span><i>home</i><i>business</i><i>e-rickshaw</i><i>shop</i><i>home</i></span></span>
+    </h1>
+    <div class="rule"></div>
+    <p class="lead in d3">Lithium batteries, hybrid inverters and solar systems built for Indian homes, shops and e-rickshaws. Every unit is tested before dispatch, with delivery across India.</p>
+    <div class="ctas in d4">
+      <a class="btn orange" href="https://powerrun.in/products/" target="_blank" rel="noopener">SHOP PRODUCTS →</a>
+      <a class="btn dark" href="https://wa.me/918057573040" target="_blank" rel="noopener">GET EXPERT HELP</a>
+    </div>
+    <nav class="cats in d5" aria-label="Main categories">
+      <a href="https://powerrun.in/hybrid-inverters/" target="_blank" rel="noopener">Hybrid Inverters</a>
+      <a href="https://powerrun.in/lithium-batteries/" target="_blank" rel="noopener">Lithium Batteries</a>
+      <a href="https://powerrun.in/e-rickshaw-batteries/" target="_blank" rel="noopener">E-Rickshaw Batteries</a>
+    </nav>
+  </div>
+
+  <div class="stage">
+    <div class="tilt" id="tilt">
+      <img src="hero-1536.webp" srcset="hero-900.webp 900w, hero-1536.webp 1536w" sizes="(max-width: 900px) 100vw, 56vw" alt="PowerRun hybrid inverter and lithium battery on a lit stand" width="1536" height="1024">
+      <svg viewBox="0 0 900 600" aria-hidden="true">
+        <defs>
+          <filter id="soft" x="-20%" y="-50%" width="140%" height="200%"><feGaussianBlur stdDeviation="2.2"/></filter>
+          <filter id="big" x="-50%" y="-50%" width="200%" height="200%"><feGaussianBlur stdDeviation="10"/></filter>
+          <linearGradient id="sw" x1="0" x2="1"><stop offset="0" stop-color="#fff" stop-opacity="0"/><stop offset=".5" stop-color="#fff" stop-opacity=".38"/><stop offset="1" stop-color="#fff" stop-opacity="0"/></linearGradient>
+          <linearGradient id="lcdg" x1="0" y1="0" x2="0" y2="1"><stop offset="0" stop-color="#1f5fe0"/><stop offset="1" stop-color="#0b2f8f"/></linearGradient>
+          <clipPath id="units"><rect x="330" y="137" width="236" height="333" rx="6"/><rect x="567" y="88" width="282" height="388" rx="6"/></clipPath>
+        </defs>
+        <!-- light on the floor under the stand -->
+        <ellipse class="floor" cx="590" cy="492" rx="300" ry="40" fill="#ff6a10" opacity=".4" filter="url(#big)"/>
+        <!-- light running around the stand's ring -->
+        <ellipse class="ring-base" cx="588" cy="478" rx="332" ry="38"/>
+        <ellipse class="run" cx="588" cy="478" rx="332" ry="38"/>
+        <ellipse class="run r2" cx="588" cy="478" rx="332" ry="38"/>
+        <!-- screens glowing -->
+        <!-- battery display: backlight glow (its screen already shows 100%) -->
+        <rect class="screen-glow" x="628" y="136" width="122" height="90" rx="8" fill="#3d8bff" filter="url(#big)"/>
+        <!-- inverter display switched on -->
+        <rect class="screen-glow" x="404" y="203" width="64" height="38" rx="4" fill="#3d8bff" filter="url(#big)"/>
+        <g class="lcd">
+          <rect x="408.4" y="206.8" width="55.1" height="30.5" rx="1.5" fill="url(#lcdg)"/>
+          <circle class="ln" cx="414" cy="213" r="2.2"/>
+          <path class="ln" d="M414 209.4v-1M414 216.6v1M410.4 213h-1M417.6 213h1"/>
+          <line class="flow" x1="418.5" y1="213" x2="429" y2="213"/>
+          <rect class="ln" x="430" y="210.6" width="8.5" height="4.8" rx=".6"/>
+          <line class="ln" x1="438.5" y1="212.2" x2="439.4" y2="212.2"/>
+          <line class="flow" x1="441" y1="213" x2="450" y2="213"/>
+          <path class="ln" d="M451 214.5l4.5-4 4.5 4M452.2 213.6v3.2h6.6v-3.2"/>
+          <text x="411.5" y="232.5" font-size="4.6">OUT</text>
+          <text x="459.5" y="233" font-size="9.5" text-anchor="end">230V</text>
+        </g>
+        <!-- light sweeping across both units -->
+        <g clip-path="url(#units)"><rect class="sweep" x="0" y="60" width="160" height="440" fill="url(#sw)" transform="skewX(-18)"/></g>
+      </svg>
+    </div>
+  </div>
+</section>
+<p class="note">Demo only, not on powerrun.in yet. Move the mouse over the photo.</p>
+
+<script>
+(function () {
+  var reduce = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+  // headline letters drop in one by one
+  var split = document.querySelector('#h1 .split'), txt = split.textContent, i0 = 0;
+  split.textContent = '';
+  txt.split(' ').forEach(function (word, wi) {
+    if (wi) split.appendChild(document.createTextNode(' '));
+    var w = document.createElement('span'); w.className = 'w';
+    word.split('').forEach(function (c) {
+      var s = document.createElement('span'); s.className = 'ch'; s.textContent = c;
+      s.style.animationDelay = (0.15 + i0++ * 0.04) + 's'; w.appendChild(s);
+    });
+    split.appendChild(w);
+  });
+  if (reduce) return;
+
+  // photo tilts toward the mouse
+  var hero = document.getElementById('hero'), root = document.documentElement;
+  hero.addEventListener('mousemove', function (e) {
+    var r = hero.getBoundingClientRect(), x = (e.clientX - r.left) / r.width - .5, y = (e.clientY - r.top) / r.height - .5;
+    root.style.setProperty('--ry', (x * 10).toFixed(2) + 'deg'); root.style.setProperty('--rx', (-y * 7).toFixed(2) + 'deg');
+    root.style.setProperty('--px', (x * 14).toFixed(1) + 'px'); root.style.setProperty('--py', (y * 10).toFixed(1) + 'px');
+  });
+  hero.addEventListener('mouseleave', function () { ['--rx', '--ry'].forEach(function (k) { root.style.setProperty(k, '0deg'); }); ['--px', '--py'].forEach(function (k) { root.style.setProperty(k, '0px'); }); });
+
+  // embers rising from the stand
+  var cv = document.getElementById('embers'), ctx = cv.getContext('2d'), W, H, dpr = Math.min(2, window.devicePixelRatio || 1), parts = [];
+  function size() { W = cv.clientWidth; H = cv.clientHeight; cv.width = W * dpr; cv.height = H * dpr; ctx.setTransform(dpr, 0, 0, dpr, 0, 0); }
+  function spawn(p) {
+    p = p || {}; p.x = W * (0.45 + Math.random() * 0.5); p.y = H * (0.75 + Math.random() * 0.3);
+    p.r = 0.8 + Math.random() * 2.2; p.vy = 0.3 + Math.random() * 0.9; p.vx = (Math.random() - .5) * 0.3; p.life = 0; p.max = 180 + Math.random() * 220; return p;
+  }
+  size(); window.addEventListener('resize', size);
+  for (var k = 0; k < 46; k++) { var p = spawn(); p.life = Math.random() * p.max; parts.push(p); }
+  (function frame() {
+    if (!document.hidden) {
+      ctx.clearRect(0, 0, W, H);
+      parts.forEach(function (p) {
+        p.life++; p.y -= p.vy; p.x += p.vx + Math.sin((p.life + p.r * 40) / 30) * 0.25;
+        var a = Math.sin(Math.PI * Math.min(1, p.life / p.max));
+        ctx.beginPath(); ctx.arc(p.x, p.y, p.r, 0, 6.283);
+        ctx.fillStyle = 'rgba(255,' + (140 + (p.r * 30 | 0)) + ',60,' + (a * 0.9).toFixed(3) + ')';
+        ctx.shadowColor = '#ff5a00'; ctx.shadowBlur = 10; ctx.fill();
+        if (p.life > p.max) spawn(p);
+      });
+    }
+    requestAnimationFrame(frame);
+  })();
+})();
+</script>
