@@ -22,7 +22,10 @@
   function renderCategories(categories, products) {
     var host = document.getElementById('homeCategories');
     if (!host) return;
-    var top = categories.filter(function (c) { return !c.parent_id; });
+    // categories with no products yet are not shown (same rule as seo_build.py)
+    var top = categories.filter(function (c) {
+      return !c.parent_id && products.some(function (p) { return p.categoryId === c.id; });
+    });
     if (!top.length) {
       host.innerHTML = '<div class="empty-state"><h3>Categories are being updated</h3>' +
         '<p>Please check back shortly.</p><a class="btn orange" href="/products/">Browse all products</a></div>';
@@ -30,12 +33,11 @@
     }
     host.innerHTML = top.map(function (cat) {
       var count = products.filter(function (p) { return p.categoryId === cat.id; }).length;
-      return '<a class="cat" href="' + PR.categoryPath(cat.slug) + '">' +
-        '<div class="pic">' + (ICONS[cat.slug] || '⚡') + '</div>' +
-        '<h3>' + PR.esc(String(cat.name).toUpperCase()) + '</h3>' +
-        '<p>' + PR.esc(cat.description || 'Explore the PowerRun range.') + '</p>' +
+      return '<a class="cat" href="' + PR.categoryPath(cat.slug) + '" title="' +
+        PR.esc(cat.description || 'Explore the PowerRun range.') + '">' +
+        '<span class="pic">' + (ICONS[cat.slug] || '⚡') + '</span>' +
+        '<h3>' + PR.esc(String(cat.name)) + '</h3>' +
         '<small>' + count + ' product' + (count === 1 ? '' : 's') + '</small>' +
-        '<span class="cat-link">View Products →</span>' +
       '</a>';
     }).join('');
   }

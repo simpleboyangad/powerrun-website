@@ -182,22 +182,25 @@ img { max-width: 100%; }
 .page-head p { color: #bbb; margin: 0; max-width: 700px; line-height: 1.6; }
 
 /* -------------------------------------------------------------- categories */
-.categories { display: grid; grid-template-columns: repeat(4, 1fr); gap: 14px; }
+/* one row of small tiles; scrolls sideways on narrow screens */
+.categories { display: grid; grid-template-columns: repeat(auto-fit, minmax(118px, 1fr)); gap: 10px; }
 .cat {
-  background: #fff; border: 1px solid var(--line); border-radius: 12px; padding: 15px;
-  box-shadow: 0 8px 22px rgba(0, 0, 0, .05);
+  background: #fff; border: 1px solid var(--line); border-radius: 12px; padding: 10px 6px 9px;
   transition: transform .2s ease, box-shadow .2s ease, border-color .2s ease;
-  display: flex; flex-direction: column;
+  display: flex; flex-direction: column; align-items: center; text-align: center;
 }
-.cat:hover { transform: translateY(-4px); box-shadow: 0 14px 28px rgba(0, 0, 0, .09); border-color: #ffd2bb; }
+.cat:hover { transform: translateY(-2px); box-shadow: 0 8px 18px rgba(0, 0, 0, .07); border-color: #ffd2bb; }
 .cat .pic {
-  height: 56px; border-radius: 10px; background: linear-gradient(135deg, #fff4ed, #fff);
-  display: flex; align-items: center; justify-content: center; font-size: 26px; margin-bottom: 9px;
+  width: 44px; height: 44px; border-radius: 10px; background: #fff4ed;
+  display: flex; align-items: center; justify-content: center; font-size: 22px; margin-bottom: 6px;
 }
-.cat h3 { margin: 0 0 5px; font-size: 12.5px; }
-.cat p { margin: 0 0 9px; color: var(--muted); font-size: 11px; line-height: 1.4; flex: 1; }
-.cat .cat-link { color: var(--orange); font-weight: 800; font-size: 12px; }
-.cat small { display: block; color: #999; font-size: 10px; margin-bottom: 6px; }
+.cat h3 { margin: 0 0 2px; font-size: 12px; line-height: 1.25; }
+.cat small { color: #999; font-size: 10.5px; }
+@media (max-width: 1024px) {
+  .categories { grid-template-columns: none; grid-auto-flow: column; grid-auto-columns: 108px;
+    overflow-x: auto; padding-bottom: 6px; scroll-snap-type: x proximity; -webkit-overflow-scrolling: touch; }
+  .cat { scroll-snap-align: start; }
+}
 
 /* ------------------------------------------------------------------- trust */
 .trust {
@@ -617,7 +620,7 @@ img { max-width: 100%; }
   .hero-art { height: 330px; order: 1; }
   .hero-product-image img { max-width: 620px; }
   .hero > div:first-child { order: 2; }
-  .categories, .products { grid-template-columns: repeat(2, 1fr); gap: 14px; }
+  .products { grid-template-columns: repeat(2, 1fr); gap: 14px; }
   .trust { grid-template-columns: repeat(2, 1fr); }
   .footer-grid { grid-template-columns: 1fr 1fr; }
   .card-img { height: 245px; }
@@ -641,7 +644,6 @@ img { max-width: 100%; }
      wide, which is too narrow to read a price or tap a button. Two is what
      every large Indian storefront uses at this width. */
   .products { grid-template-columns: repeat(2, 1fr); gap: 10px; }
-  .categories { grid-template-columns: repeat(2, 1fr); gap: 10px; }
 
   .card { border-radius: 10px; }
   .card-img { height: 150px; padding: 8px; }
@@ -663,10 +665,6 @@ img { max-width: 100%; }
   }
   .tag { font-size: 8.5px; padding: 3px 6px; left: 7px; top: 7px; }
 
-  .cat { min-height: 0; padding: 14px; }
-  .cat .pic { height: 60px; font-size: 30px; }
-  .cat h3 { font-size: 12px; }
-  .cat p { font-size: 11px; }
   .trust { grid-template-columns: 1fr; }
   .trust .item { border-right: 0; border-bottom: 1px solid #333; padding: 14px; }
   .footer-grid { grid-template-columns: 1fr; }

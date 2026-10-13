@@ -850,13 +850,14 @@ def main():
     # ------------------------------------------- home + /products/ grids
     # The same cards home.js / products.js render, written into the page so
     # Google sees every category and product link without running JavaScript.
+    # Compact one-row tiles; categories with no products yet are left out
+    # (same rule as renderCategories() in home.js).
     top = [c for c in categories if not c.get("parent_id")]
     cat_cards = "\n".join(
-        '<a class="cat" href="%s"><div class="pic">%s</div><h3>%s</h3><p>%s</p><small>%d product%s</small>'
-        '<span class="cat-link">View Products →</span></a>'
-        % (category_path(c["slug"]), HOME_ICONS.get(c["slug"], "⚡"), esc(c["name"].upper()),
-           esc(c.get("description") or "Explore the PowerRun range."), n, "" if n == 1 else "s")
-        for c in top for n in [len([p for p in products if p.get("category_id") == c["id"]])])
+        '<a class="cat" href="%s" title="%s"><span class="pic">%s</span><h3>%s</h3><small>%d product%s</small></a>'
+        % (category_path(c["slug"]), esc(c.get("description") or "Explore the PowerRun range."),
+           HOME_ICONS.get(c["slug"], "⚡"), esc(c["name"]), n, "" if n == 1 else "s")
+        for c in top for n in [len([p for p in products if p.get("category_id") == c["id"]])] if n)
     featured = [p for p in products if p.get("is_featured")]
     if len(featured) < 4:
         featured = products[:8]
