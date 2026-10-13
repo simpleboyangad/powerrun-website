@@ -201,6 +201,18 @@ img { max-width: 100%; }
     overflow-x: auto; padding-bottom: 6px; scroll-snap-type: x proximity; -webkit-overflow-scrolling: touch; }
   .cat { scroll-snap-align: start; }
 }
+/* home "Shop by category": highlighted on a soft orange band */
+#homeCategories { background: #fff1e8; border: 1px solid #ffd9c4; border-radius: 16px; padding: 14px; }
+#homeCategories .cat {
+  border: 1px solid #ffd2bb; border-top: 3px solid var(--orange); padding: 12px 6px 10px;
+  box-shadow: 0 6px 16px rgba(255, 90, 0, .08);
+}
+#homeCategories .cat:hover { background: var(--orange); border-color: var(--orange); box-shadow: 0 10px 22px rgba(255, 90, 0, .28); }
+#homeCategories .cat .pic { width: 50px; height: 50px; font-size: 26px; background: #ffe2d1; }
+#homeCategories .cat h3 { font-weight: 800; color: #111; }
+#homeCategories .cat small { color: var(--orange); font-weight: 700; }
+#homeCategories .cat:hover h3, #homeCategories .cat:hover small { color: #fff; }
+#homeCategories .cat:hover .pic { background: #fff; }
 /* "Our services" on the home page keeps the larger card look */
 .categories.services { grid-template-columns: repeat(4, 1fr); gap: 14px; }
 .services .cat { align-items: stretch; text-align: left; padding: 15px; }
