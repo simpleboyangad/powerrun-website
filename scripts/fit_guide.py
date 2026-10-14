@@ -11,6 +11,12 @@ the power it can carry, cable and fuse size, charge times) plus a table that
 compares it with its closest siblings, so every page answers questions only
 that product can answer.
 
+PowerRun's own inverters, batteries and panels get a "Sizing & setup" section
+the same way (backup times, matching inverters/batteries/panels, cable and
+breaker size, a comparison with the other sizes): their pages share one
+template and differ only by size, and sat in "Discovered - currently not
+indexed" until they had content of their own.
+
 Only arithmetic on the listed specs and general wiring rules of thumb - no
 claim the product data does not support. Used by scripts/seo_build.py.
 """
@@ -351,10 +357,245 @@ def twin_of(p, pool):
     return next((q for q in pool if q["slug"] == base), None)
 
 
+# --------------------------------------------- PowerRun's own range (no brand)
+# The same rule the battery and solar calculators use: ~90% usable LiFePO4
+# capacity x ~90% inverter efficiency, and ~4 units a day per installed kW.
+SYSTEM_EFFICIENCY = 0.81
+UNITS_PER_KW_DAY = 4
+BACKUP_LOADS = [300, 500, 1000, 1500, 2000, 3000, 5000, 8000]
+UNIT_RATE = 8  # example grid tariff, Rs per unit, stated wherever it is used
+
+
+def hours_text(h):
+    if h >= 48:
+        return "%d days" % round(h / 24)
+    whole, mins = int(h), int(round((h - int(h)) * 60))
+    if mins == 60:
+        whole, mins = whole + 1, 0
+    if not whole:
+        return "%d min" % mins
+    return "%d h%s" % (whole, (" %d min" % mins) if mins else "")
+
+
+def own(pool, test):
+    return sorted([q for q in pool if not q.get("brand") and test(q)], key=lambda q: float(q.get("price") or 0))
+
+
+def is_inverter(q):
+    return "inverter" in q["name"].lower()
+
+
+def is_panel(q):
+    return "solar panel" in q["name"].lower()
+
+
+def battery_v(q):
+    return num(specs(q).get("nominal voltage"))
+
+
+def battery_ah(q):
+    return num(specs(q).get("capacity"))
+
+
+def inverter_dc_v(q):
+    return num(specs(q).get("battery voltage"))
+
+
+def pv_max_w(sp):
+    text = (sp.get("max pv input power") or "").replace(",", "")
+    m = re.search(r"(\d+)\s*[×x]\s*(\d+)", text)
+    return float(m.group(1)) * float(m.group(2)) if m else num(text)
+
+
+def per_kwh(price, kwh):
+    try:
+        return rupees(float(price) / kwh) if kwh else "-"
+    except (TypeError, ValueError):
+        return "-"
+
+
+def storage_guide(p, sp, pool):
+    v, ah = battery_v(p), battery_ah(p)
+    if not v or not ah:
+        return []
+    kwh = v * ah / 1000.0
+    usable = kwh * 1000 * SYSTEM_EFFICIENCY
+    mobility = "rickshaw" in p["name"].lower() or "scooty" in p["name"].lower()
+    out = []
+    if not mobility:
+        rows = [["%s" % kw(w), hours_text(usable / w)] for w in BACKUP_LOADS if usable / w >= 0.5][:7]
+        out += ['<h3>Backup time on this battery</h3>',
+                '<p class="prose">The %s stores %.2f kWh (%g V &times; %g Ah). Through an inverter about %.1f kWh '
+                'reaches your appliances (%d%% of the stored energy, the same allowance our '
+                '<a href="/battery-calculator/">battery calculator</a> uses), so backup time is about %.0f Wh '
+                '&divide; the load:</p>' % (esc(p["name"]), kwh, v, ah, usable / 1000, SYSTEM_EFFICIENCY * 100, usable),
+                table(["Load running", "Backup time"], rows),
+                '<p class="prose" lang="hi">यह बैटरी %.2f kWh स्टोर करती है। इन्वर्टर से लगभग %.1f kWh उपकरणों तक '
+                'पहुँचती है, जैसे 1 kW लोड पर लगभग %s बैकअप।</p>' % (kwh, usable / 1000, hours_text(usable / 1000))]
+        dc = 24 if v < 40 else 48
+        invs = [q for q in own(pool, is_inverter) if inverter_dc_v(q) == dc]
+        if invs:
+            out += ['<h3>Inverters that take this battery</h3>',
+                    '<p class="prose">This is a %d V class battery (%.1f V nominal), so it pairs with hybrid inverters '
+                    'built for a %d V DC battery: %s. Check the inverter battery setting is on LiFePO4 / lithium before '
+                    'first charge.</p>' % (dc, v, dc, ", ".join(link(q) for q in invs))]
+        panel_kw = kwh / UNITS_PER_KW_DAY
+        out += ['<h3>Solar to recharge it in a day</h3>',
+                '<p class="prose">In most of India 1 kW of panels makes about %d units (kWh) on a clear day, so '
+                'about %.1f kW of panels refills this battery from empty in one sunny day - for example %d panels '
+                'of 550 W. Solar running your daytime load at the same time needs more panels on top.</p>'
+                % (UNITS_PER_KW_DAY, panel_kw, max(1, -(-panel_kw * 1000 // 550)))]
+    else:
+        out += ['<h3>Energy and charging</h3>',
+                '<p class="prose">The %s stores %.2f kWh (%g V &times; %g Ah). A full charge from empty takes '
+                'about %.1f units of electricity from the grid, allowing for about 90%% charger efficiency.'
+                % (esc(p["name"]), kwh, v, ah, kwh / 0.9)]
+        cc = num(sp.get("max charge current"))
+        if cc:
+            out[-1] += (' At its maximum charge current of %d A it charges from empty in roughly %s; a smaller '
+                        'charger takes proportionally longer (capacity in Ah &divide; charger amps).' % (cc, hours_text(ah / cc * 1.1)))
+        dc_ = num(sp.get("max discharge current"))
+        if dc_:
+            out[-1] += ' Its BMS allows up to %d A continuous, which is about %s at the motor controller.' % (dc_, kw(v * dc_))
+        out[-1] += '</p>'
+        amps_list = [a for a in (10, 15, 20, 30, 50) if not cc or a <= cc]
+        if amps_list:
+            out += ['<h3>Charging time by charger size</h3>',
+                    '<p class="prose">Approximate time from empty to full (capacity &divide; charger current, plus about '
+                    '10%% for the final balancing stage), and what a full charge costs at %s a unit:</p>' % rupees(UNIT_RATE),
+                    table(["Charger", "Time to full"], [["%d A" % a, hours_text(ah / a * 1.1)] for a in amps_list]),
+                    '<p class="prose">One full charge: about %.1f units, roughly %s of electricity.</p>'
+                    % (kwh / 0.9, rupees(kwh / 0.9 * UNIT_RATE))]
+        out.append('<p class="prose" lang="hi">यह बैटरी %.2f kWh स्टोर करती है। खाली से पूरी चार्ज करने में बिजली '
+                   'की लगभग %.1f यूनिट (लगभग %s) लगती है।</p>' % (kwh, kwh / 0.9, rupees(kwh / 0.9 * UNIT_RATE)))
+    sibs = own(pool, lambda q: battery_v(q) == v and battery_ah(q) and
+               (("rickshaw" in q["name"].lower() or "scooty" in q["name"].lower()) == mobility))
+    if len(sibs) > 1:
+        rows = []
+        for q in sibs:
+            qk = v * battery_ah(q) / 1000.0
+            name = ("<b>%s</b> (this page)" % esc(q["name"])) if q["id"] == p["id"] else link(q)
+            rows.append([name, "%.2f kWh" % qk] + ([] if mobility else [hours_text(qk * 1000 * SYSTEM_EFFICIENCY / 1000)])
+                        + [rupees(q.get("price")), per_kwh(q.get("price"), qk)])
+        out += ['<h3>Compare %g V models</h3>' % v,
+                table(["Model", "Energy"] + ([] if mobility else ["Backup at 1 kW"]) + ["Price", "Price per kWh"], rows)]
+    return out
+
+
+def inverter_guide(p, sp, pool):
+    rated, dc = num((sp.get("rated output power") or "").replace(",", "")), inverter_dc_v(p)
+    if not rated or not dc:
+        return []
+    bv = 25.6 if dc == 24 else 51.2
+    amps = rated / (bv * 0.9)
+    mm, awg = cable_for(amps)
+    out = ['<h3>Battery for this inverter</h3>',
+           '<p class="prose">The %s runs on a %d V DC battery bank, so it needs a %.1f V LiFePO4 battery. At its full '
+           'rated %s it draws about %d A from the battery (%s &divide; %.1f V at about 90%% efficiency): use at least '
+           '%s (%s) copper battery cable and %s %d A DC breaker or fuse.</p>'
+           % (esc(p["name"]), dc, bv, kw(rated), amps, kw(rated), bv, mm, awg, a_n(fuse_for(amps)), fuse_for(amps))]
+    bats = own(pool, lambda q: battery_v(q) == bv and "rickshaw" not in q["name"].lower() and "scooty" not in q["name"].lower())
+    if bats:
+        rows = []
+        for q in bats:
+            wh = bv * battery_ah(q) * SYSTEM_EFFICIENCY
+            rows.append([link(q), "%.2f kWh" % (bv * battery_ah(q) / 1000), hours_text(wh / (rated * 0.25)),
+                         hours_text(wh / (rated * 0.5))])
+        out += [table(["Battery", "Energy", "Backup at %s (25%% load)" % kw(rated * 0.25),
+                       "Backup at %s (50%% load)" % kw(rated * 0.5)], rows)]
+    pv = pv_max_w(sp)
+    if pv:
+        panels = own(pool, is_panel)
+        rows = [[link(q), "%d" % (pv // num(specs(q).get("peak power"))),
+                 "%.1f kW" % ((pv // num(specs(q).get("peak power"))) * num(specs(q).get("peak power")) / 1000)]
+                for q in panels if num(specs(q).get("peak power"))]
+        out += ['<h3>How much solar it takes</h3>',
+                '<p class="prose">Its MPPT solar charger accepts up to %s of panels (%s), which makes about %d units '
+                '(kWh) a day in average Indian sun. The most panels of each PowerRun size that stay within that limit '
+                '(arrange them in strings that stay inside the %s input range):</p>'
+                % (kw(pv), esc(sp.get("max pv input power", "")), pv / 1000 * UNITS_PER_KW_DAY,
+                   esc(sp.get("pv input voltage range", "PV voltage"))),
+                table(["Panel", "Max panels", "Array size"], rows)]
+    out.append('<p class="prose" lang="hi">यह इन्वर्टर %d V DC बैटरी पर चलता है, इसलिए %.1f V लिथियम बैटरी लगेगी। '
+               'पूरे लोड पर यह बैटरी से लगभग %d A लेता है - कम से कम %s केबल और %d A का DC ब्रेकर लगाएँ।%s</p>'
+               % (dc, bv, amps, mm, fuse_for(amps), (' सोलर पैनल अधिकतम %s तक लगा सकते हैं।' % kw(pv)) if pv else ''))
+    sibs = own(pool, is_inverter)
+    if len(sibs) > 1:
+        rows = []
+        for q in sibs:
+            qs = specs(q)
+            name = ("<b>%s</b> (this page)" % esc(q["name"])) if q["id"] == p["id"] else link(q)
+            rows.append([name, esc(qs.get("rated output power", "-")), esc(qs.get("battery voltage", "-")),
+                         kw(pv_max_w(qs) or 0), rupees(q.get("price"))])
+        out += ['<h3>Compare PowerRun hybrid inverters</h3>',
+                table(["Model", "Rated output", "Battery", "Max solar", "Price"], rows)]
+    return out
+
+
+def panel_guide(p, sp, pool):
+    w = num(sp.get("peak power"))
+    if not w:
+        return []
+    rows = []
+    for size in (1, 2, 3, 5, 10):
+        n = int(-(-size * 1000 // w))
+        rows.append(["%d kW" % size, "%d panels" % n, "%.2f kW" % (n * w / 1000),
+                     "about %d units/day, %d units/month" % (n * w / 1000 * UNITS_PER_KW_DAY, n * w / 1000 * UNITS_PER_KW_DAY * 30)])
+    out = ['<h3>How many %d W panels you need</h3>' % w,
+           '<p class="prose">Panels needed for common system sizes, rounded up, with the energy they make at about %d '
+           'units per kW per day (Indian average; shade, roof direction and cloudy weather lower it). Match daily '
+           'units to your electricity bill, or use the <a href="/solar-calculator/">solar calculator</a>.</p>'
+           % UNITS_PER_KW_DAY,
+           table(["System", "Panels", "Actual array", "Expected generation"], rows),
+           '<p class="prose" lang="hi">3 kW सिस्टम के लिए %d पैनल लगेंगे, जो रोज़ लगभग %d यूनिट बनाएँगे।</p>'
+           % (int(-(-3000 // w)), int(-(-3000 // w)) * w / 1000 * UNITS_PER_KW_DAY)]
+    invs = own(pool, is_inverter)
+    if invs:
+        rows = []
+        for q in invs:
+            pv = pv_max_w(specs(q))
+            if pv:
+                rows.append([link(q), "%d" % (pv // w), "%.1f kW" % ((pv // w) * w / 1000)])
+        out += ['<h3>Panels per PowerRun inverter</h3>',
+                '<p class="prose">The most %d W panels each hybrid inverter\'s solar input can take:</p>' % w,
+                table(["Inverter", "Max panels", "Array size"], rows)]
+    sibs = own(pool, is_panel)
+    if len(sibs) > 1:
+        rows = []
+        for q in sibs:
+            qw = num(specs(q).get("peak power"))
+            name = ("<b>%s</b> (this page)" % esc(q["name"])) if q["id"] == p["id"] else link(q)
+            rows.append([name, "%.1f units" % (qw / 1000 * UNITS_PER_KW_DAY), "%d" % int(-(-3000 // qw)),
+                         "%d" % int(-(-5000 // qw)), rupees(q.get("price"))])
+        out += ['<h3>Compare PowerRun panels</h3>',
+                table(["Model", "Units per panel per day", "Panels for 3 kW", "Panels for 5 kW", "Price"], rows)]
+    return out
+
+
+def own_guide(p, pool):
+    sp = specs(p)
+    if is_inverter(p):
+        body = inverter_guide(p, sp, pool)
+    elif is_panel(p):
+        body = panel_guide(p, sp, pool)
+    elif battery_v(p) and battery_ah(p):
+        body = storage_guide(p, sp, pool)
+    else:
+        body = []
+    if not body:
+        return ""
+    return ('    <section class="section" id="fitGuide" style="padding-top:0">\n'
+            '      <div class="section-head"><div><h2>SIZING &amp; <span>SETUP GUIDE</span></h2>'
+            '<p class="section-sub" lang="hi">साइज़ और सेटअप गाइड</p></div></div>\n'
+            '      <div class="spec-table-wrap fit-guide">\n        '
+            + "\n        ".join(body)
+            + '\n      </div>\n    </section>')
+
+
 def guide_html(p, cat_slug, pool):
     """The section, or "" for products it does not apply to."""
     if not p.get("brand"):
-        return ""
+        return own_guide(p, pool)
     sp = specs(p)
     kind = (sp.get("type") or "").lower()
     body = []
