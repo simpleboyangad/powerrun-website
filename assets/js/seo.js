@@ -156,7 +156,7 @@
       '@id': site + '/#organization',
       name: g.site_name || PR.config.COMPANY,
       url: site + '/',
-      logo: absolute(g.og_image || '/assets/powerrun-logo.png'),
+      logo: absolute('/assets/icon-512.png'),
       email: PR.config.EMAIL || undefined,
       telephone: PR.config.PHONE || undefined,
       areaServed: 'IN'

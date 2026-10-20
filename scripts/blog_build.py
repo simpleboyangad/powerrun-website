@@ -57,7 +57,9 @@ PAGE = """<!doctype html>
 <meta name="viewport" content="width=device-width,initial-scale=1">
 {head}
 <meta name="theme-color" content="#ff5a00">
-<link rel="icon" href="/assets/powerrun-logo.png">
+<link rel="icon" href="/favicon.ico" sizes="48x48">
+<link rel="icon" type="image/png" sizes="192x192" href="/assets/icon-192.png">
+<link rel="apple-touch-icon" href="/assets/apple-touch-icon.png">
 <link rel="preconnect" href="https://nnkopxkyxcmtiunftlgr.supabase.co" crossorigin>
 <link rel="stylesheet" href="/assets/css/site.css">
 </head>
@@ -155,7 +157,7 @@ def main():
             "inLanguage": "hi-IN" if post.get("lang") == "hi" else "en-IN",
             "author": {"@type": "Organization", "name": SITE_NAME, "url": site + "/"},
             "publisher": {"@type": "Organization", "name": SITE_NAME,
-                          "logo": {"@type": "ImageObject", "url": site + "/assets/powerrun-logo.png"}},
+                          "logo": {"@type": "ImageObject", "url": site + "/assets/icon-512.png"}},
         }
         crumbs = b.breadcrumb_schema([("Home", site + "/"), ("Blog", blog_url), (post["title"], url)])
         head = b.head_block(title=post.get("seo_title") or (post["title"] + " | PowerRun"),

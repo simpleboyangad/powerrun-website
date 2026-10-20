@@ -194,7 +194,9 @@ PRODUCT_TEMPLATE = """<!doctype html>
 <meta name="viewport" content="width=device-width,initial-scale=1">
 {head}
 <meta name="theme-color" content="#ff5a00">
-<link rel="icon" href="/assets/powerrun-logo.png">
+<link rel="icon" href="/favicon.ico" sizes="48x48">
+<link rel="icon" type="image/png" sizes="192x192" href="/assets/icon-192.png">
+<link rel="apple-touch-icon" href="/assets/apple-touch-icon.png">
 <link rel="preconnect" href="https://nnkopxkyxcmtiunftlgr.supabase.co" crossorigin>
 <link rel="stylesheet" href="/assets/css/site.css">
 </head>
@@ -683,7 +685,7 @@ def main():
     org = {
         "@context": "https://schema.org", "@type": "Organization",
         "@id": site + "/#organization", "name": site_name, "url": site + "/",
-        "logo": default_image, "email": "service@powerrun.in", "telephone": "+91 80575 73040",
+        "logo": site + "/assets/icon-512.png", "email": "service@powerrun.in", "telephone": "+91 80575 73040",
         "areaServed": "IN",
         # every official profile, so Google ties the brand together
         "sameAs": ["https://www.youtube.com/@PowerRunIndustries", GOOGLE_BUSINESS_PROFILE, FACEBOOK_PAGE, LINKEDIN_PAGE],
