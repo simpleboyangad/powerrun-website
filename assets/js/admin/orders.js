@@ -14,7 +14,7 @@
   async function loadAll() {
     orders = await PR.call('load orders', function (sb) {
       return sb.from('orders')
-        .select('*, order_items(id,product_name,product_sku,quantity,unit_price,total_price,mrp,gst_rate,gst_amount)')
+        .select('*, order_items(id,product_name,product_sku,hsn_code,quantity,unit_price,total_price,mrp,gst_rate,taxable_amount,gst_amount)')
         .order('created_at', { ascending: false });
     }) || [];
   }
@@ -70,7 +70,8 @@
   function row(order) {
     return '<tr>' +
       '<td class="nowrap"><b>' + PR.esc(order.order_number) + '</b></td>' +
-      '<td>' + PR.esc(order.customer_name || '-') + '</td>' +
+      '<td>' + PR.esc(order.customer_name || '-') +
+        (order.customer_gstin ? ' <small class="pill" title="GST invoice requested">GST</small>' : '') + '</td>' +
       '<td class="nowrap">' + PR.esc(order.customer_mobile || '-') + '</td>' +
       '<td>' + PR.esc(order.customer_email || '-') + '</td>' +
       '<td class="nowrap">' + PR.formatDate(order.created_at) + '</td>' +
@@ -110,6 +111,11 @@
             '☎ <a href="tel:' + PR.esc(order.customer_mobile) + '">' + PR.esc(order.customer_mobile || '-') + '</a><br>' +
             (order.customer_email
               ? '✉ <a href="mailto:' + PR.esc(order.customer_email) + '">' + PR.esc(order.customer_email) + '</a>'
+              : '') +
+            (order.customer_gstin
+              ? '<br><span class="pill" style="background:#e7f6ed;color:#14663a">GST BILL</span> ' +
+                '<b>' + PR.esc(order.customer_business_name || '') + '</b><br>GSTIN: <b>' +
+                PR.esc(order.customer_gstin) + '</b>'
               : '') +
           '</p></div>' +
         '<div><b style="font-size:12px;color:#6d6d6d">BILLING ADDRESS</b>' +
@@ -154,6 +160,19 @@
                 b.gstRows.map(line).join('') + '</div>'
               : '');
         })() +
+      '</div>' +
+
+      '<div class="page-actions" style="margin-top:16px;padding:12px;border:1px solid #eef0f3;border-radius:10px;align-items:center">' +
+        '<b style="font-size:12px;color:#6d6d6d;margin-right:auto">INVOICE' +
+          (order.invoice_number
+            ? ' · <span style="color:#14663a">' + PR.esc(order.invoice_number) + ' (' + PR.formatDate(order.invoice_date) + ')</span>'
+            : ' · not issued yet') + '</b>' +
+        '<a class="btn gray small" href="/admin/invoice/?type=proforma&id=' + encodeURIComponent(order.id) +
+          '" target="_blank" rel="noopener" title="Advance payment / approval ke liye">Proforma Invoice</a>' +
+        (order.order_status === 'cancelled' && !order.invoice_number
+          ? ''
+          : '<button class="btn small" type="button" id="taxInvoiceBtn">' +
+              (order.invoice_number ? 'Print Tax Invoice' : 'Issue Tax Invoice') + '</button>') +
       '</div>' +
 
       '<div class="hint" style="margin-top:12px">' +
@@ -202,6 +221,36 @@
     document.getElementById('orderUpdateForm').addEventListener('submit', function (event) {
       saveOrder(event, order);
     });
+    var taxBtn = document.getElementById('taxInvoiceBtn');
+    if (taxBtn) taxBtn.addEventListener('click', function () { taxInvoice(order, taxBtn); });
+  }
+
+  /* The invoice number is permanent: once issued it can't be reused or
+     deleted (GST needs a continuous series), so ask before the first issue. */
+  async function taxInvoice(order, button) {
+    var url = '/admin/invoice/?type=tax&id=' + encodeURIComponent(order.id);
+    if (order.invoice_number) { window.open(url, '_blank', 'noopener'); return; }
+    if (!confirm('Issue a GST tax invoice for order ' + order.order_number + '?\n\n' +
+                 'The next invoice number will be used permanently. Check the customer details, ' +
+                 'GSTIN and HSN codes first. Usually issue it when the goods are dispatched.')) return;
+    // open the tab now (still inside the click) so pop-up blockers allow it
+    var tab = window.open('', '_blank');
+    PR.setBusy(button, true, 'ISSUING…');
+    try {
+      var result = await PR.call('issue tax invoice', function (sb) {
+        return sb.rpc('issue_tax_invoice', { p_order_id: order.id });
+      });
+      order.invoice_number = result.invoice_number;
+      order.invoice_date = result.invoice_date;
+      PR.toast('Tax invoice ' + result.invoice_number + ' issued.', 'success');
+      if (tab) tab.location.href = url; else window.location.href = url;
+      await refresh();
+      detail(orders.find(function (o) { return o.id === order.id; }) || order);
+    } catch (err) {
+      if (tab) tab.close();
+      PR.setBusy(button, false);
+      PR.toast(err.message, 'error');
+    }
   }
 
   async function saveOrder(event, order) {

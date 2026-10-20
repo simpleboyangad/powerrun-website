@@ -133,7 +133,7 @@
             '<label>IFSC<input id="co_bank_ifsc" maxlength="15" value="' + PR.esc(company.bank_ifsc || '') + '"></label>' +
             '<label>Branch<input id="co_bank_branch" maxlength="100" value="' + PR.esc(company.bank_branch || '') + '"></label>' +
           '</div>' +
-          '<p class="hint">Bank details and signatory are only used on the Quotation PDF, not on order invoices.</p>' +
+          '<p class="hint">Bank details print on quotations and admin proforma invoices (never shown to customers). The signatory prints on quotations and GST invoices.</p>' +
           '<div class="page-actions" style="justify-content:flex-end">' +
             '<button class="btn" type="submit" id="saveCompanyBtn">SAVE COMPANY DETAILS</button></div>' +
         '</form>' +

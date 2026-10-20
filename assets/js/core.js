@@ -341,6 +341,32 @@
     'Andaman and Nicobar Islands': '35', 'Telangana': '36', 'Andhra Pradesh': '37', 'Ladakh': '38'
   };
 
+  /* GSTIN: state code + PAN + entity + 'Z' + mod-36 check character. Same
+     rule as pr_valid_gstin() in sql/32_gst_invoices.sql. */
+  PR.normalizeGstin = function (value) {
+    return String(value || '').toUpperCase().replace(/\s+/g, '');
+  };
+
+  PR.isValidGstin = function (value) {
+    var g = PR.normalizeGstin(value);
+    if (!/^[0-9]{2}[A-Z]{5}[0-9]{4}[A-Z][1-9A-Z]Z[0-9A-Z]$/.test(g)) return false;
+    var chars = '0123456789ABCDEFGHIJKLMNOPQRSTUVWXYZ';
+    var total = 0;
+    for (var i = 0; i < 14; i++) {
+      var v = chars.indexOf(g[i]) * (i % 2 ? 2 : 1);
+      total += Math.floor(v / 36) + (v % 36);
+    }
+    return chars[(36 - (total % 36)) % 36] === g[14];
+  };
+
+  /* State name for the first two digits of a GSTIN, or '' */
+  PR.gstinState = function (value) {
+    var code = PR.normalizeGstin(value).slice(0, 2);
+    return Object.keys(PR.GST_STATE_CODES).filter(function (s) {
+      return PR.GST_STATE_CODES[s] === code;
+    })[0] || '';
+  };
+
   /* --------------------------------------------------------- validation */
   PR.fieldError = function (input, message) {
     if (!input) return;

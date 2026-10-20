@@ -14,12 +14,25 @@
   var paymentMethod = 'cod';
   var appliedCoupon = null; // { code, discount_amount, message } or null
 
+  function wantsGst() {
+    var box = document.getElementById('ck_gst');
+    return !!(box && box.checked);
+  }
+
+  /* GST place of supply, same rule as create_website_order(): a registered
+     buyer is billed at its GSTIN (billing) state, anyone else at the
+     delivery state. That decides CGST+SGST vs IGST. */
+  function placeOfSupply() {
+    var value = function (id) { var el = document.getElementById(id); return el ? el.value : ''; };
+    if (wantsGst() || document.getElementById('ck_ship_same').checked) return value('ck_state');
+    return value('ck_s_state');
+  }
+
   function renderSummary() {
     var host = document.getElementById('checkoutSummary');
     var shipping = PR.shippingFor(current.subtotal, settings.shipping);
     var discount = appliedCoupon ? appliedCoupon.discount_amount : 0;
-    var stateEl = document.getElementById('ck_state');
-    var state = stateEl ? stateEl.value : '';
+    var state = placeOfSupply();
     var b = PR.cart.breakdown(current.lines, state, ((settings && settings.company) || {}).state);
     var total = Math.max(current.subtotal + b.gstAdded + shipping - discount, 0);
 
@@ -169,7 +182,36 @@
       if (!ship) return null;
       Object.assign(values, ship);
     }
+    if (wantsGst()) {
+      var gst = collectGst(values.state);
+      if (!gst) return null;
+      Object.assign(values, gst);
+    }
     return values;
+  }
+
+  function collectGst(billingState) {
+    var gstinEl = document.getElementById('ck_gstin');
+    var nameEl = document.getElementById('ck_business');
+    var gstin = PR.normalizeGstin(gstinEl.value);
+    var name = nameEl.value.trim();
+    var gstinError = '';
+    if (!gstin) gstinError = 'GSTIN is required for a GST invoice.';
+    else if (!PR.isValidGstin(gstin)) gstinError = 'This GSTIN is not valid. Please check all 15 characters.';
+    else if (PR.gstinState(gstin) !== billingState) {
+      gstinError = 'This GSTIN is registered in ' + (PR.gstinState(gstin) || 'another state') +
+                   '. The billing state must be the same.';
+    }
+    PR.fieldError(gstinEl, gstinError);
+    PR.fieldError(nameEl, name ? '' : 'Business / legal name is required for a GST invoice.');
+    var bad = gstinError ? gstinEl : (name ? null : nameEl);
+    if (bad) {
+      bad.focus();
+      bad.scrollIntoView({ behavior: 'smooth', block: 'center' });
+      PR.toast('Please correct the highlighted fields.', 'error');
+      return null;
+    }
+    return { gstin: gstin, business_name: name };
   }
 
   function goToConfirmation(orderNumber, mobile) {
@@ -380,11 +422,28 @@
     PR.mountLayout('products');
     PR.fillStates(document.getElementById('ck_state'));
     PR.fillStates(document.getElementById('ck_s_state'));
-    document.getElementById('ck_state').addEventListener('change', function () {
-      if (current && current.lines && current.lines.length) renderSummary();
-    });
+    var refresh = function () {
+      if (settings && current && current.lines && current.lines.length) renderSummary();
+    };
+    document.getElementById('ck_state').addEventListener('change', refresh);
+    document.getElementById('ck_s_state').addEventListener('change', refresh);
     document.getElementById('ck_ship_same').addEventListener('change', function (e) {
       document.getElementById('ck_ship').hidden = e.target.checked;
+      refresh();
+    });
+    document.getElementById('ck_gst').addEventListener('change', function (e) {
+      document.getElementById('ck_gst_box').hidden = !e.target.checked;
+      if (e.target.checked) document.getElementById('ck_gstin').focus();
+      refresh();
+    });
+    // A valid GSTIN fixes the billing state, so select it for the customer.
+    document.getElementById('ck_gstin').addEventListener('input', function (e) {
+      var state = PR.isValidGstin(e.target.value) && PR.gstinState(e.target.value);
+      var select = document.getElementById('ck_state');
+      if (state && select.value !== state) {
+        select.value = state;
+        refresh();
+      }
     });
 
     try {

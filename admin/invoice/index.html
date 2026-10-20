@@ -1,0 +1,30 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>Invoice | PowerRun Admin</title>
+<meta name="robots" content="noindex,nofollow,noarchive">
+<link rel="icon" href="/assets/powerrun-logo.png">
+<link rel="stylesheet" href="/assets/css/site.css?v=ae9b3240">
+<link rel="stylesheet" href="/assets/css/invoice.css?v=ae9b3240">
+</head>
+<body class="invoice-body">
+<div class="invoice-toolbar no-print">
+  <a class="outline" href="/admin/orders/" id="backLink">&larr; Back to orders</a>
+  <select id="copySelect" hidden aria-label="Invoice copy">
+    <option>Original for Recipient</option>
+    <option>Duplicate for Transporter</option>
+    <option>Triplicate for Supplier</option>
+  </select>
+  <button class="btn orange" type="button" id="printBtn">PRINT / SAVE AS PDF</button>
+</div>
+<div id="invoiceContent"><p class="small-note" style="padding:40px">Loading the invoice…</p></div>
+<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2.48.0/dist/umd/supabase.js"></script>
+<script src="/assets/js/config.js?v=ae9b3240"></script>
+<script src="/assets/js/core.js?v=ae9b3240"></script>
+<script src="/assets/js/admin/shell.js?v=ae9b3240"></script>
+<script src="/assets/js/invoice-doc.js?v=ae9b3240"></script>
+<script src="/assets/js/admin/invoice-print.js?v=ae9b3240"></script>
+</body>
+</html>
