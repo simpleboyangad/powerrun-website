@@ -29,9 +29,22 @@ def esc(s):
     return html.escape(s or "", quote=False)
 
 
+def feed_title(p):
+    """Shopping matches on the title, and people search "48V lithium battery for
+    inverter", not "PR LFP Battery 51.2V". For PowerRun's own products lead with
+    the keyword part of the SEO title (without "Price" / "| PowerRun") and keep
+    the model name in brackets; resold parts keep their plain name."""
+    title = (p.get("meta_title") or "").strip()
+    if p.get("brand") or not title:
+        return p["name"]
+    parts = [x.strip() for x in title.split("|") if x.strip() and x.strip() not in ("PowerRun", "Price")]
+    core = " - ".join(x.replace(" Price in India", "").replace(" Price", "") for x in parts)
+    return ("PowerRun %s (%s)" % (core, p["name"]))[:150]
+
+
 def build():
     rows = fetch(
-        "products?select=sku,name,slug,brand,short_description,description,price,mrp,stock,"
+        "products?select=sku,name,slug,brand,short_description,description,price,mrp,stock,meta_title,"
         "categories!products_category_id_fkey(name),product_images(image_url,sort_order)"
         "&is_active=eq.true&order=sku"
     )
@@ -61,7 +74,7 @@ def build():
         parts = [
             "  <item>",
             "    <g:id>{}</g:id>".format(esc(p["sku"])),
-            "    <title>{}</title>".format(esc(p["name"])),
+            "    <title>{}</title>".format(esc(feed_title(p))),
             "    <description>{}</description>".format(esc(desc)),
             "    <link>{}</link>".format(esc(link)),
             "    <g:image_link>{}</g:image_link>".format(esc(images[0]["image_url"])),
