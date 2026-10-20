@@ -43,6 +43,14 @@
     return pi.business_name ? pi.business_name + ' (' + pi.customer_name + ')' : pi.customer_name;
   }
 
+  function actions(pi) {
+    return '<button class="btn ghost small" type="button" data-edit-pi="' + PR.esc(pi.id) + '">Edit / Rate</button> ' +
+      '<button class="btn ghost small" type="button" data-copy-pi="' + PR.esc(pi.id) + '">Copy</button> ' +
+      '<a class="btn small" href="/admin/proforma/print/?id=' + encodeURIComponent(pi.id) + '" target="_blank" rel="noopener">Print / PDF</a> ' +
+      (PR.whatsappTo(pi.mobile, '') ? '<button class="btn ghost small" type="button" data-wa-pi="' + PR.esc(pi.id) + '">WhatsApp</button> ' : '') +
+      '<button class="btn danger small" type="button" data-delete-pi="' + PR.esc(pi.id) + '">Delete</button>';
+  }
+
   function render(host) {
     var q = search.toLowerCase();
     var rows = list.filter(function (pi) {
@@ -60,7 +68,7 @@
         '<p class="hint" style="margin-top:-6px">Dealer ya customer ke liye alag se PI banayein - website order ki zaroorat nahi. ' +
           'Rate GST sahit daalein; print par GST alag dikhega.</p>' +
         (rows.length
-          ? '<div class="table-scroll"><table class="grid"><thead><tr>' +
+          ? '<div class="table-scroll pi-table"><table class="grid"><thead><tr>' +
               '<th>PI No.</th><th>Date</th><th>Party</th><th>Mobile</th><th>Amount</th><th>Status</th><th></th>' +
             '</tr></thead><tbody>' +
             rows.map(function (pi) {
@@ -71,15 +79,19 @@
                 '<td class="nowrap">' + PR.esc(pi.mobile || '-') + '</td>' +
                 '<td class="nowrap"><b>' + PR.money(pi.total_amount) + '</b></td>' +
                 '<td>' + PRA.pill(pi.status) + '</td>' +
-                '<td class="nowrap">' +
-                  '<a class="btn small" href="/admin/proforma/print/?id=' + encodeURIComponent(pi.id) + '" target="_blank" rel="noopener">Print / PDF</a> ' +
-                  (PR.whatsappTo(pi.mobile, '') ? '<button class="btn ghost small" type="button" data-wa-pi="' + PR.esc(pi.id) + '">WhatsApp</button> ' : '') +
-                  '<button class="btn ghost small" type="button" data-edit-pi="' + PR.esc(pi.id) + '">Edit</button> ' +
-                  '<button class="btn ghost small" type="button" data-copy-pi="' + PR.esc(pi.id) + '">Copy</button> ' +
-                  '<button class="btn danger small" type="button" data-delete-pi="' + PR.esc(pi.id) + '">Delete</button>' +
-                '</td></tr>';
+                '<td class="nowrap">' + actions(pi) + '</td></tr>';
             }).join('') +
-            '</tbody></table></div>'
+            '</tbody></table></div>' +
+            '<div class="pi-cards">' + rows.map(function (pi) {
+              return '<div class="pi-card">' +
+                '<div class="pi-card-top"><b>' + PR.esc(pi.pi_number) + '</b>' + PRA.pill(pi.status) + '</div>' +
+                '<div>' + PR.esc(partyLabel(pi)) + '</div>' +
+                '<div class="hint">' + PR.formatDate(pi.pi_date) + (pi.city ? ' · ' + PR.esc(pi.city) : '') +
+                  (pi.mobile ? ' · ' + PR.esc(pi.mobile) : '') + '</div>' +
+                '<div class="pi-card-amt">' + PR.money(pi.total_amount) + '</div>' +
+                '<div class="pi-card-actions">' + actions(pi) + '</div>' +
+              '</div>';
+            }).join('') + '</div>'
           : PRA.empty(list.length ? 'No PI matches your search' : 'No proforma invoice yet',
                       'Click "+ New PI" to make one for a dealer or customer.')) +
       '</div>';
@@ -99,19 +111,21 @@
 
   function itemRow(it) {
     it = it || {};
-    return '<tr class="pi-item">' +
-      '<td><input class="pi-name" list="piProducts" value="' + PR.esc(it.product_name || '') + '" placeholder="Product (type to search) or any item" style="min-width:220px">' +
+    var lab = function (t) { return '<span class="pi-lab">' + t + '</span>'; };
+    return '<div class="pi-item">' +
+      '<label class="pi-c-name">' + lab('Item') +
+        '<input class="pi-name" list="piProducts" value="' + PR.esc(it.product_name || '') + '" placeholder="Product (type to search) or any item">' +
         '<input class="pi-sku" type="hidden" value="' + PR.esc(it.product_sku || '') + '">' +
-        '<input class="pi-pid" type="hidden" value="' + PR.esc(it.product_id || '') + '"></td>' +
-      '<td><input class="pi-hsn" value="' + PR.esc(it.hsn_code || '') + '" style="width:80px"></td>' +
-      '<td><input class="pi-qty" type="number" min="1" step="1" value="' + PR.esc(it.quantity || 1) + '" style="width:64px"></td>' +
-      '<td><input class="pi-rate" type="number" min="0" step="0.01" value="' + PR.esc(it.unit_price == null ? '' : it.unit_price) + '" style="width:100px"></td>' +
-      '<td><select class="pi-gst">' + [0, 5, 12, 18, 28].map(function (g) {
+        '<input class="pi-pid" type="hidden" value="' + PR.esc(it.product_id || '') + '"></label>' +
+      '<label>' + lab('HSN') + '<input class="pi-hsn" value="' + PR.esc(it.hsn_code || '') + '"></label>' +
+      '<label>' + lab('Qty') + '<input class="pi-qty" type="number" min="1" step="1" inputmode="numeric" value="' + PR.esc(it.quantity || 1) + '"></label>' +
+      '<label class="pi-c-rate">' + lab('Rate incl. GST (₹)') + '<input class="pi-rate" type="number" min="0" step="0.01" inputmode="decimal" value="' + PR.esc(it.unit_price == null ? '' : it.unit_price) + '"></label>' +
+      '<label>' + lab('GST') + '<select class="pi-gst">' + [0, 5, 12, 18, 28].map(function (g) {
         return '<option value="' + g + '"' + (Number(it.gst_rate == null ? 18 : it.gst_rate) === g ? ' selected' : '') + '>' + g + '%</option>';
-      }).join('') + '</select></td>' +
-      '<td class="nowrap pi-line">-</td>' +
-      '<td><button class="btn danger small pi-del" type="button" title="Remove">×</button></td>' +
-    '</tr>';
+      }).join('') + '</select></label>' +
+      '<div class="pi-c-amt">' + lab('Amount') + '<b class="pi-line">-</b></div>' +
+      '<button class="btn danger small pi-del" type="button" title="Remove item" aria-label="Remove item">×</button>' +
+    '</div>';
   }
 
   function field(id, label, value, extra) {
@@ -168,9 +182,7 @@
         '<h3 style="margin:10px 0 0">Items</h3>' +
         '<p class="hint" style="margin:0">Product chunne par HSN, GST aur website ki price apne-aap aa jaati hai. Dealer rate yahan badal dein (GST sahit, per piece).</p>' +
         productOptions() +
-        '<div class="table-scroll"><table class="grid"><thead><tr>' +
-          '<th>Item</th><th>HSN</th><th>Qty</th><th>Rate incl. GST (₹)</th><th>GST</th><th>Amount</th><th></th>' +
-        '</tr></thead><tbody id="piItems">' + items.map(itemRow).join('') + '</tbody></table></div>' +
+        '<div id="piItems" class="pi-items">' + items.map(itemRow).join('') + '</div>' +
         '<button class="btn ghost small" type="button" id="piAddItem">+ Add Item</button>' +
         '<div class="form-grid three" style="margin-top:12px">' +
           '<label>Discount (₹)<input id="pi_discount" type="number" min="0" step="0.01" value="' + PR.esc(p.discount_amount || 0) + '">' +
@@ -211,8 +223,8 @@
       var del = e.target.closest('.pi-del');
       if (!del) return;
       var rowsLeft = document.querySelectorAll('#piItems .pi-item');
-      if (rowsLeft.length > 1) del.closest('tr').remove();
-      else del.closest('tr').outerHTML = itemRow({});
+      if (rowsLeft.length > 1) del.closest('.pi-item').remove();
+      else del.closest('.pi-item').outerHTML = itemRow({});
       refreshTotals();
     });
     form.addEventListener('submit', function (e) {
@@ -220,13 +232,23 @@
       save(e.submitter && e.submitter.getAttribute('data-then'));
     });
     refreshTotals();
+    if (pi) {
+      // Edit / Copy are mostly about changing the rate: go straight to it
+      setTimeout(function () {
+        var rate = document.querySelector('#piItems .pi-rate');
+        if (!rate) return;
+        rate.scrollIntoView({ block: 'center' });
+        rate.focus();
+        try { rate.select(); } catch (err) { /* number inputs on some phones */ }
+      }, 150);
+    }
   }
 
   function onItemInput(e) {
     var nameInput = e.target.closest && e.target.closest('.pi-name');
     if (nameInput && e.type === 'change') {
       var match = products.find(function (p) { return p.name === nameInput.value; });
-      var row = nameInput.closest('tr');
+      var row = nameInput.closest('.pi-item');
       if (match) {
         row.querySelector('.pi-sku').value = match.sku || '';
         row.querySelector('.pi-pid').value = match.id;

@@ -434,3 +434,26 @@ table.grid td small { color: var(--muted); display: block; margin-top: 3px; }
 @media (max-width: 560px) {
   .notify-panel { position: fixed; left: 12px; right: 12px; top: 64px; width: auto; max-width: none; }
 }
+
+/* Proforma Invoice (admin/proforma): item rows as cards, list as cards on phones */
+.pi-items { display: grid; gap: 10px; margin: 8px 0; }
+.pi-item { display: grid; grid-template-columns: minmax(200px, 3fr) 0.9fr 0.7fr 1.2fr 0.8fr 1fr auto; gap: 8px; align-items: end;
+  padding: 10px; border: 1px solid var(--line); border-radius: 10px; background: #fff; }
+.pi-item label { display: flex; flex-direction: column; gap: 4px; margin: 0; font-size: 12px; }
+.pi-item input, .pi-item select { width: 100%; min-width: 0; }
+.pi-lab { font-size: 11px; font-weight: 700; color: var(--muted); }
+.pi-c-amt { display: flex; flex-direction: column; gap: 4px; padding-bottom: 8px; }
+.pi-c-rate input { font-weight: 800; border-color: #ff9a5c; }
+.pi-cards { display: none; }
+@media (max-width: 760px) {
+  .pi-item { grid-template-columns: 1fr 1fr 1fr; }
+  .pi-c-name { grid-column: 1 / -1; }
+  .pi-c-rate { grid-column: span 2; }
+  .pi-item .pi-del { justify-self: end; }
+  .pi-table { display: none; }
+  .pi-cards { display: grid; gap: 10px; }
+  .pi-card { border: 1px solid var(--line); border-radius: 12px; padding: 12px; display: grid; gap: 4px; background: #fff; }
+  .pi-card-top { display: flex; justify-content: space-between; align-items: center; gap: 8px; }
+  .pi-card-amt { font-size: 18px; font-weight: 800; }
+  .pi-card-actions { display: flex; flex-wrap: wrap; gap: 6px; margin-top: 6px; }
+}
