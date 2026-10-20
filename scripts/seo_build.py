@@ -34,11 +34,13 @@ Run it after changing SEO settings in the admin panel, then commit and push:
 Reads Supabase with the PUBLIC (publishable) key only - it needs no secrets.
 """
 import datetime
+import hashlib
 from html import unescape as html_unescape
 import io
 import json
 import os
 import re
+import subprocess
 import sys
 import urllib.parse
 import urllib.request
@@ -908,6 +910,39 @@ def main():
                 removed.append(name)
 
     # -------------------------------------------------------------- sitemap
+    # Pages without a real modified date (home, info pages, categories) used to
+    # get today's date on every build, so the sitemap claimed every page
+    # changed daily and Google learns to ignore lastmod. Keep the date of the
+    # last real change instead: hash the page's <main> (asset ?v= stamps
+    # removed) and only move the date when that hash changes.
+    dates_file = os.path.join(ROOT, "scripts", "sitemap_dates.json")
+    try:
+        known = json.load(io.open(dates_file, encoding="utf-8"))
+    except (OSError, ValueError):
+        known = {}
+    for n, (loc, lastmod, priority, changefreq, pics) in enumerate(sitemap):
+        if lastmod != today or not loc.startswith(site):
+            continue
+        path = os.path.join(ROOT, loc[len(site):].strip("/"), "index.html")
+        if not os.path.isfile(path):
+            continue
+        main = re.search(r"<main\b.*?</main>", io.open(path, encoding="utf-8").read(), re.S)
+        body = re.sub(r"\?v=[0-9a-f]+", "", main.group(0) if main else "")
+        digest = hashlib.sha1(body.encode("utf-8")).hexdigest()[:16]
+        old = known.get(loc)
+        if old and old[0] == digest:
+            lastmod = old[1]
+        elif not old:
+            # first run: the file's last commit is the best date we have
+            try:
+                lastmod = subprocess.run(["git", "log", "-1", "--format=%cs", "--", path], cwd=ROOT,
+                                         capture_output=True, text=True).stdout.strip() or today
+            except OSError:
+                pass
+        known[loc] = [digest, lastmod]
+        sitemap[n] = (loc, lastmod, priority, changefreq, pics)
+    io.open(dates_file, "w", encoding="utf-8", newline="\n").write(json.dumps(known, indent=1, sort_keys=True) + "\n")
+
     xml = ['<?xml version="1.0" encoding="UTF-8"?>',
            '<urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9"'
            ' xmlns:image="http://www.google.com/schemas/sitemap-image/1.1">']
