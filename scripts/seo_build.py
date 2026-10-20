@@ -372,7 +372,7 @@ def prerender_product(product, cat, images, related=None):
            '<div class="product-gallery-main"><div class="gallery-stage"><div class="gallery-track">']
     for i, url in enumerate(images or []):
         out.append('<div class="gallery-slide"><img src="%s" alt="%s"%s width="700" height="560"></div>'
-                   % (esc(url), alt + (" - image %d" % (i + 1) if i else ""), ' loading="lazy"' if i else ""))
+                   % (esc(url), alt + (" - image %d" % (i + 1) if i else ""), ' loading="lazy"' if i else ' fetchpriority="high"'))
     out.append('</div></div></div>')
     out.append('<div class="product-info">')
     if cat.get("name"):
