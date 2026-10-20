@@ -36,7 +36,7 @@
 
       '<div class="small-note" style="margin-bottom:12px">' +
         items.slice(0, 3).map(function (item) {
-          return PR.esc(item.product_name) + ' × ' + item.quantity;
+          return PR.itemName(item) + ' × ' + item.quantity;
         }).join('<br>') +
         (items.length > 3 ? '<br>and ' + (items.length - 3) + ' more…' : '') +
       '</div>' +

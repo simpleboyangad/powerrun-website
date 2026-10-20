@@ -91,7 +91,7 @@
         (items.length
           ? '<div class="table-scroll"><table class="grid"><thead><tr><th>Product</th><th>SKU</th><th>Qty</th><th>Amount</th></tr></thead><tbody>' +
             items.map(function (it) {
-              return '<tr><td>' + PR.esc(it.product_name) + '</td><td class="nowrap">' + PR.esc(it.product_sku || '-') +
+              return '<tr><td>' + PR.itemName(it) + '</td><td class="nowrap">' + PR.esc(it.product_sku || '-') +
                 '</td><td>' + it.quantity + '</td><td class="nowrap">' + PR.money(it.total_price) + '</td></tr>';
             }).join('') + '</tbody></table></div>'
           : '') +

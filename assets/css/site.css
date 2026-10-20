@@ -30,6 +30,7 @@ body {
 }
 
 a { text-decoration: none; color: inherit; }
+a.pr-item-link { color: var(--orange); font-weight: 700; text-decoration: underline; text-underline-offset: 2px; }
 img { max-width: 100%; }
 
 .visually-hidden {

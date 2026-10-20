@@ -28,6 +28,7 @@ body {
 }
 
 a { color: inherit; text-decoration: none; }
+a.pr-item-link { color: #e65100; font-weight: inherit; text-decoration: underline; text-underline-offset: 2px; }
 img { max-width: 100%; }
 
 /* --------------------------------------------------------------- login page */

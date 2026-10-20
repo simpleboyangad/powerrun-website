@@ -40,7 +40,7 @@
         '<div class="table-scroll"><table class="data-table"><thead><tr>' +
           '<th>Product</th><th>Qty</th><th>Total</th></tr></thead><tbody>' +
           (order.items || []).map(function (item) {
-            return '<tr><td>' + PR.esc(item.product_name) + '</td><td>' + item.quantity +
+            return '<tr><td>' + PR.itemName(item) + '</td><td>' + item.quantity +
                    '</td><td>' + PR.money(item.total_price) + '</td></tr>';
           }).join('') +
         '</tbody></table></div>' +

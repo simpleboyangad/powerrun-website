@@ -491,6 +491,62 @@
     }
   }, true);
 
+  /* Ordered items: render the name with PR.itemName(item); the observer below
+     turns it into a product link once it is in the page. Order items only keep
+     a name/SKU snapshot (the public order lookup has no product id), so the
+     product page is found by SKU, then by name; items whose product is gone
+     or hidden simply stay plain text. Admin pages open the product in a new tab. */
+  PR.itemName = function (item) {
+    return '<span class="pr-item-name" data-sku="' + PR.esc(item.product_sku || '') + '" data-name="' +
+      PR.esc(item.product_name || '') + '">' + PR.esc(item.product_name || '') + '</span>';
+  };
+  PR.linkItemNames = async function (host) {
+    var spans = Array.prototype.slice.call((host || document).querySelectorAll('span.pr-item-name:not([data-done])'));
+    if (!spans.length || !PR.sb) return;
+    spans.forEach(function (s) { s.setAttribute('data-done', '1'); });
+    var unique = function (list) { return list.filter(function (v, i) { return v && list.indexOf(v) === i; }); };
+    var skus = unique(spans.map(function (s) { return s.getAttribute('data-sku'); }));
+    var names = unique(spans.map(function (s) { return s.getAttribute('data-name'); }));
+    var quoted = function (list) { return '(' + list.map(function (v) { return '"' + v.replace(/"/g, '\\"') + '"'; }).join(',') + ')'; };
+    var bySku = {}, byName = {};
+    try {
+      var found = [];
+      if (skus.length) {
+        var r1 = await PR.sb.from('products').select('sku,name,slug').filter('sku', 'in', quoted(skus));
+        found = found.concat(r1.data || []);
+      }
+      if (names.length) {
+        var r2 = await PR.sb.from('products').select('sku,name,slug').filter('name', 'in', quoted(names));
+        found = found.concat(r2.data || []);
+      }
+      found.forEach(function (p) { if (p.sku) bySku[p.sku] = p.slug; if (p.name) byName[p.name] = p.slug; });
+    } catch (err) {
+      return;
+    }
+    var admin = /^\/admin\//.test(window.location.pathname);
+    spans.forEach(function (span) {
+      var slug = bySku[span.getAttribute('data-sku')] || byName[span.getAttribute('data-name')];
+      if (!slug) return;
+      var a = document.createElement('a');
+      a.className = 'pr-item-link';
+      a.href = '/products/' + encodeURIComponent(slug) + '/';
+      if (admin) { a.target = '_blank'; a.rel = 'noopener'; }
+      a.textContent = span.textContent;
+      span.replaceWith(a);
+    });
+  };
+  // Pages render orders with innerHTML at different times; link names as they appear.
+  (function () {
+    var timer = null;
+    var run = function () { timer = null; PR.linkItemNames(document); };
+    var start = function () {
+      new MutationObserver(function () {
+        if (!timer && document.querySelector('span.pr-item-name:not([data-done])')) timer = setTimeout(run, 50);
+      }).observe(document.body, { childList: true, subtree: true });
+    };
+    if (document.body) start(); else document.addEventListener('DOMContentLoaded', start);
+  })();
+
   /* WhatsApp link to a customer's own number (admin side). '' when the
      mobile is not a usable 10-digit Indian number. */
   PR.whatsappTo = function (mobile, text) {

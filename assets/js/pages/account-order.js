@@ -54,7 +54,7 @@
               '<th>Product</th><th>SKU</th><th>Qty</th><th>Unit Price</th><th>Total</th>' +
             '</tr></thead><tbody>' +
             items.map(function (item) {
-              return '<tr><td>' + PR.esc(item.product_name) + '</td>' +
+              return '<tr><td>' + PR.itemName(item) + '</td>' +
                 '<td>' + PR.esc(item.product_sku || '-') + '</td>' +
                 '<td>' + item.quantity + '</td>' +
                 '<td>' + PR.money(item.unit_price) + '</td>' +
