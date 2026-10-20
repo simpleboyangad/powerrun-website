@@ -16,7 +16,7 @@ Check that the charger matches your battery's voltage and chemistry before use -
     <g:condition>new</g:condition>
     <g:identifier_exists>no</g:identifier_exists>
     <g:product_type>Battery Chargers</g:product_type>
-    <g:price>749.00 INR</g:price>
+    <g:price>979.00 INR</g:price>
   </item>
   <item>
     <g:id>CHG-LI-42V-3A-GENERIC</g:id>
@@ -30,7 +30,7 @@ Check that the charger matches your battery's voltage and chemistry before use -
     <g:condition>new</g:condition>
     <g:identifier_exists>no</g:identifier_exists>
     <g:product_type>Battery Chargers</g:product_type>
-    <g:price>749.00 INR</g:price>
+    <g:price>979.00 INR</g:price>
   </item>
   <item>
     <g:id>CHG-PB-60V-3A-ELOW9</g:id>
@@ -45,7 +45,7 @@ Check that the charger matches your battery's voltage and chemistry before use -
     <g:brand>ELOW9</g:brand>
     <g:identifier_exists>no</g:identifier_exists>
     <g:product_type>Battery Chargers</g:product_type>
-    <g:price>749.00 INR</g:price>
+    <g:price>979.00 INR</g:price>
   </item>
   <item>
     <g:id>CHG-PB-60V-3A-QT7PULSE</g:id>
@@ -60,7 +60,7 @@ Check that the charger matches your battery's voltage and chemistry before use -
     <g:brand>QT7 Pulse</g:brand>
     <g:identifier_exists>no</g:identifier_exists>
     <g:product_type>Battery Chargers</g:product_type>
-    <g:price>679.00 INR</g:price>
+    <g:price>889.00 INR</g:price>
   </item>
   <item>
     <g:id>CHG-PB-60V-3A-SUN6</g:id>
@@ -75,7 +75,7 @@ Check that the charger matches your battery's voltage and chemistry before use -
     <g:brand>SUN6</g:brand>
     <g:identifier_exists>no</g:identifier_exists>
     <g:product_type>Battery Chargers</g:product_type>
-    <g:price>679.00 INR</g:price>
+    <g:price>889.00 INR</g:price>
   </item>
   <item>
     <g:id>CHG-PB-60V-4_5A-GRAPHY</g:id>
@@ -90,7 +90,7 @@ Check that the charger matches your battery's voltage and chemistry before use -
     <g:brand>GRAPHY</g:brand>
     <g:identifier_exists>no</g:identifier_exists>
     <g:product_type>Battery Chargers</g:product_type>
-    <g:price>889.00 INR</g:price>
+    <g:price>1159.00 INR</g:price>
   </item>
   <item>
     <g:id>CHG-PB-60V-4A-GRAPHY</g:id>
@@ -105,7 +105,7 @@ Check that the charger matches your battery's voltage and chemistry before use -
     <g:brand>GRAPHY</g:brand>
     <g:identifier_exists>no</g:identifier_exists>
     <g:product_type>Battery Chargers</g:product_type>
-    <g:price>859.00 INR</g:price>
+    <g:price>1119.00 INR</g:price>
   </item>
   <item>
     <g:id>CHG-PB-72V-4A-GRAPHY</g:id>
@@ -120,7 +120,7 @@ Check that the charger matches your battery's voltage and chemistry before use -
     <g:brand>GRAPHY</g:brand>
     <g:identifier_exists>no</g:identifier_exists>
     <g:product_type>Battery Chargers</g:product_type>
-    <g:price>889.00 INR</g:price>
+    <g:price>1159.00 INR</g:price>
   </item>
   <item>
     <g:id>CON-CHAKORI-F-X2</g:id>
@@ -134,7 +134,7 @@ These connectors carry no maker's brand. Sold and shipped by PowerRun Industries
     <g:condition>new</g:condition>
     <g:identifier_exists>no</g:identifier_exists>
     <g:product_type>Connectors &amp; Terminals</g:product_type>
-    <g:price>629.00 INR</g:price>
+    <g:price>819.00 INR</g:price>
   </item>
   <item>
     <g:id>CON-CHAKORI-M-6W</g:id>
@@ -148,7 +148,7 @@ These connectors carry no maker's brand. Sold and shipped by PowerRun Industries
     <g:condition>new</g:condition>
     <g:identifier_exists>no</g:identifier_exists>
     <g:product_type>Connectors &amp; Terminals</g:product_type>
-    <g:price>659.00 INR</g:price>
+    <g:price>859.00 INR</g:price>
   </item>
   <item>
     <g:id>CON-ESS-125A-OR</g:id>
@@ -162,7 +162,7 @@ These connectors carry no maker's brand. Sold and shipped by PowerRun Industries
     <g:condition>new</g:condition>
     <g:identifier_exists>no</g:identifier_exists>
     <g:product_type>Connectors &amp; Terminals</g:product_type>
-    <g:price>859.00 INR</g:price>
+    <g:price>1119.00 INR</g:price>
   </item>
   <item>
     <g:id>CON-ESS-250A-DUAL-BK</g:id>
@@ -176,7 +176,7 @@ These connectors carry no maker's brand. Sold and shipped by PowerRun Industries
     <g:condition>new</g:condition>
     <g:identifier_exists>no</g:identifier_exists>
     <g:product_type>Connectors &amp; Terminals</g:product_type>
-    <g:price>729.00 INR</g:price>
+    <g:price>949.00 INR</g:price>
   </item>
   <item>
     <g:id>CON-ESS-TERM-200A-BK-X2</g:id>
@@ -190,7 +190,7 @@ These connectors carry no maker's brand. Sold and shipped by PowerRun Industries
     <g:condition>new</g:condition>
     <g:identifier_exists>no</g:identifier_exists>
     <g:product_type>Connectors &amp; Terminals</g:product_type>
-    <g:price>429.00 INR</g:price>
+    <g:price>559.00 INR</g:price>
   </item>
   <item>
     <g:id>CON-ESS-TERM-200A-RD-X2</g:id>
@@ -204,7 +204,7 @@ These connectors carry no maker's brand. Sold and shipped by PowerRun Industries
     <g:condition>new</g:condition>
     <g:identifier_exists>no</g:identifier_exists>
     <g:product_type>Connectors &amp; Terminals</g:product_type>
-    <g:price>429.00 INR</g:price>
+    <g:price>559.00 INR</g:price>
   </item>
   <item>
     <g:id>CON-IEC-M-12AWG-X5</g:id>
@@ -218,7 +218,7 @@ These connectors carry no maker's brand. Sold and shipped by PowerRun Industries
     <g:condition>new</g:condition>
     <g:identifier_exists>no</g:identifier_exists>
     <g:product_type>Connectors &amp; Terminals</g:product_type>
-    <g:price>399.00 INR</g:price>
+    <g:price>519.00 INR</g:price>
   </item>
   <item>
     <g:id>CON-LINK-4AWG-200-RD-X2</g:id>
@@ -232,7 +232,7 @@ These connectors carry no maker's brand. Sold and shipped by PowerRun Industries
     <g:condition>new</g:condition>
     <g:identifier_exists>no</g:identifier_exists>
     <g:product_type>Connectors &amp; Terminals</g:product_type>
-    <g:price>619.00 INR</g:price>
+    <g:price>809.00 INR</g:price>
   </item>
   <item>
     <g:id>CON-OKW-2P-F-X5</g:id>
@@ -246,7 +246,7 @@ These connectors carry no maker's brand. Sold and shipped by PowerRun Industries
     <g:condition>new</g:condition>
     <g:identifier_exists>no</g:identifier_exists>
     <g:product_type>Connectors &amp; Terminals</g:product_type>
-    <g:price>359.00 INR</g:price>
+    <g:price>469.00 INR</g:price>
   </item>
   <item>
     <g:id>CON-SB120-X5</g:id>
@@ -260,7 +260,7 @@ These connectors carry no maker's brand. Sold and shipped by PowerRun Industries
     <g:condition>new</g:condition>
     <g:identifier_exists>no</g:identifier_exists>
     <g:product_type>Connectors &amp; Terminals</g:product_type>
-    <g:price>799.00 INR</g:price>
+    <g:price>1039.00 INR</g:price>
   </item>
   <item>
     <g:id>CON-SB175</g:id>
@@ -274,7 +274,7 @@ These connectors carry no maker's brand. Sold and shipped by PowerRun Industries
     <g:condition>new</g:condition>
     <g:identifier_exists>no</g:identifier_exists>
     <g:product_type>Connectors &amp; Terminals</g:product_type>
-    <g:price>349.00 INR</g:price>
+    <g:price>459.00 INR</g:price>
   </item>
   <item>
     <g:id>CON-SB50-PAIR-WIRED-X5</g:id>
@@ -288,7 +288,7 @@ These connectors carry no maker's brand. Sold and shipped by PowerRun Industries
     <g:condition>new</g:condition>
     <g:identifier_exists>no</g:identifier_exists>
     <g:product_type>Connectors &amp; Terminals</g:product_type>
-    <g:price>799.00 INR</g:price>
+    <g:price>1039.00 INR</g:price>
   </item>
   <item>
     <g:id>CON-SB50-PINS-X10</g:id>
@@ -302,7 +302,7 @@ These connectors carry no maker's brand. Sold and shipped by PowerRun Industries
     <g:condition>new</g:condition>
     <g:identifier_exists>no</g:identifier_exists>
     <g:product_type>Connectors &amp; Terminals</g:product_type>
-    <g:price>339.00 INR</g:price>
+    <g:price>449.00 INR</g:price>
   </item>
   <item>
     <g:id>CON-XT60-PAIR-WIRED-X5</g:id>
@@ -316,7 +316,7 @@ These connectors carry no maker's brand. Sold and shipped by PowerRun Industries
     <g:condition>new</g:condition>
     <g:identifier_exists>no</g:identifier_exists>
     <g:product_type>Connectors &amp; Terminals</g:product_type>
-    <g:price>519.00 INR</g:price>
+    <g:price>679.00 INR</g:price>
   </item>
   <item>
     <g:id>CON-XT60-PAIR-X10</g:id>
@@ -330,7 +330,7 @@ These connectors carry no maker's brand. Sold and shipped by PowerRun Industries
     <g:condition>new</g:condition>
     <g:identifier_exists>no</g:identifier_exists>
     <g:product_type>Connectors &amp; Terminals</g:product_type>
-    <g:price>389.00 INR</g:price>
+    <g:price>509.00 INR</g:price>
   </item>
   <item>
     <g:id>DALY-BAL-16S-1A</g:id>
@@ -345,7 +345,7 @@ Sold and shipped by PowerRun Industries with free pan-India delivery. PowerRun d
     <g:brand>Daly</g:brand>
     <g:identifier_exists>no</g:identifier_exists>
     <g:product_type>BMS &amp; Balancers</g:product_type>
-    <g:price>3449.00 INR</g:price>
+    <g:price>4489.00 INR</g:price>
   </item>
   <item>
     <g:id>DALY-BMS-7S-17S-60A-BLACK</g:id>
@@ -360,7 +360,7 @@ Sold and shipped by PowerRun Industries with free pan-India delivery. PowerRun d
     <g:brand>Daly</g:brand>
     <g:identifier_exists>no</g:identifier_exists>
     <g:product_type>BMS &amp; Balancers</g:product_type>
-    <g:price>2469.00 INR</g:price>
+    <g:price>3209.00 INR</g:price>
   </item>
   <item>
     <g:id>DALY-BMS-LFP-16S-100A</g:id>
@@ -375,7 +375,7 @@ Sold and shipped by PowerRun Industries with free pan-India delivery. PowerRun d
     <g:brand>Daly</g:brand>
     <g:identifier_exists>no</g:identifier_exists>
     <g:product_type>BMS &amp; Balancers</g:product_type>
-    <g:price>2839.00 INR</g:price>
+    <g:price>3699.00 INR</g:price>
   </item>
   <item>
     <g:id>DALY-BMS-LFP-16S-100A-SMART</g:id>
@@ -390,7 +390,7 @@ Sold and shipped by PowerRun Industries with free pan-India delivery. PowerRun d
     <g:brand>Daly</g:brand>
     <g:identifier_exists>no</g:identifier_exists>
     <g:product_type>BMS &amp; Balancers</g:product_type>
-    <g:price>4459.00 INR</g:price>
+    <g:price>5799.00 INR</g:price>
   </item>
   <item>
     <g:id>DALY-BMS-LFP-16S-200A</g:id>
@@ -405,7 +405,7 @@ Sold and shipped by PowerRun Industries with free pan-India delivery. PowerRun d
     <g:brand>Daly</g:brand>
     <g:identifier_exists>no</g:identifier_exists>
     <g:product_type>BMS &amp; Balancers</g:product_type>
-    <g:price>6079.00 INR</g:price>
+    <g:price>7909.00 INR</g:price>
   </item>
   <item>
     <g:id>DALY-BMS-LFP-16S-200A-SMART</g:id>
@@ -420,7 +420,7 @@ Sold and shipped by PowerRun Industries with free pan-India delivery. PowerRun d
     <g:brand>Daly</g:brand>
     <g:identifier_exists>no</g:identifier_exists>
     <g:product_type>BMS &amp; Balancers</g:product_type>
-    <g:price>7099.00 INR</g:price>
+    <g:price>9229.00 INR</g:price>
   </item>
   <item>
     <g:id>DALY-BMS-LFP-16S-60A</g:id>
@@ -435,7 +435,7 @@ Sold and shipped by PowerRun Industries with free pan-India delivery. PowerRun d
     <g:brand>Daly</g:brand>
     <g:identifier_exists>no</g:identifier_exists>
     <g:product_type>BMS &amp; Balancers</g:product_type>
-    <g:price>1949.00 INR</g:price>
+    <g:price>2539.00 INR</g:price>
   </item>
   <item>
     <g:id>DALY-BMS-LFP-20S-60A</g:id>
@@ -450,7 +450,7 @@ Sold and shipped by PowerRun Industries with free pan-India delivery. PowerRun d
     <g:brand>Daly</g:brand>
     <g:identifier_exists>no</g:identifier_exists>
     <g:product_type>BMS &amp; Balancers</g:product_type>
-    <g:price>2109.00 INR</g:price>
+    <g:price>2749.00 INR</g:price>
   </item>
   <item>
     <g:id>DALY-BMS-LFP-24S-60A</g:id>
@@ -465,7 +465,7 @@ Sold and shipped by PowerRun Industries with free pan-India delivery. PowerRun d
     <g:brand>Daly</g:brand>
     <g:identifier_exists>no</g:identifier_exists>
     <g:product_type>BMS &amp; Balancers</g:product_type>
-    <g:price>2439.00 INR</g:price>
+    <g:price>3179.00 INR</g:price>
   </item>
   <item>
     <g:id>DALY-BMS-LFP-4S-100A</g:id>
@@ -480,7 +480,7 @@ Sold and shipped by PowerRun Industries with free pan-India delivery. PowerRun d
     <g:brand>Daly</g:brand>
     <g:identifier_exists>no</g:identifier_exists>
     <g:product_type>BMS &amp; Balancers</g:product_type>
-    <g:price>1719.00 INR</g:price>
+    <g:price>2239.00 INR</g:price>
   </item>
   <item>
     <g:id>DALY-BMS-LFP-4S-100A-SMART</g:id>
@@ -495,7 +495,7 @@ Sold and shipped by PowerRun Industries with free pan-India delivery. PowerRun d
     <g:brand>Daly</g:brand>
     <g:identifier_exists>no</g:identifier_exists>
     <g:product_type>BMS &amp; Balancers</g:product_type>
-    <g:price>3069.00 INR</g:price>
+    <g:price>3989.00 INR</g:price>
   </item>
   <item>
     <g:id>DALY-BMS-LFP-4S-150A</g:id>
@@ -510,7 +510,7 @@ Sold and shipped by PowerRun Industries with free pan-India delivery. PowerRun d
     <g:brand>Daly</g:brand>
     <g:identifier_exists>no</g:identifier_exists>
     <g:product_type>BMS &amp; Balancers</g:product_type>
-    <g:price>3339.00 INR</g:price>
+    <g:price>4349.00 INR</g:price>
   </item>
   <item>
     <g:id>DALY-BMS-LFP-8S-100A</g:id>
@@ -525,7 +525,7 @@ Sold and shipped by PowerRun Industries with free pan-India delivery. PowerRun d
     <g:brand>Daly</g:brand>
     <g:identifier_exists>no</g:identifier_exists>
     <g:product_type>BMS &amp; Balancers</g:product_type>
-    <g:price>1769.00 INR</g:price>
+    <g:price>2299.00 INR</g:price>
   </item>
   <item>
     <g:id>DALY-BMS-LFP-8S-100A-SMART</g:id>
@@ -540,7 +540,7 @@ Sold and shipped by PowerRun Industries with free pan-India delivery. PowerRun d
     <g:brand>Daly</g:brand>
     <g:identifier_exists>no</g:identifier_exists>
     <g:product_type>BMS &amp; Balancers</g:product_type>
-    <g:price>3039.00 INR</g:price>
+    <g:price>3959.00 INR</g:price>
   </item>
   <item>
     <g:id>DALY-BMS-LFP-8S-200A</g:id>
@@ -555,7 +555,7 @@ Sold and shipped by PowerRun Industries with free pan-India delivery. PowerRun d
     <g:brand>Daly</g:brand>
     <g:identifier_exists>no</g:identifier_exists>
     <g:product_type>BMS &amp; Balancers</g:product_type>
-    <g:price>4419.00 INR</g:price>
+    <g:price>5749.00 INR</g:price>
   </item>
   <item>
     <g:id>DALY-BMS-NMC-13S-40A</g:id>
@@ -570,7 +570,7 @@ Sold and shipped by PowerRun Industries with free pan-India delivery. PowerRun d
     <g:brand>Daly</g:brand>
     <g:identifier_exists>no</g:identifier_exists>
     <g:product_type>BMS &amp; Balancers</g:product_type>
-    <g:price>929.00 INR</g:price>
+    <g:price>1209.00 INR</g:price>
   </item>
   <item>
     <g:id>DALY-BMS-NMC-20S-60A</g:id>
@@ -585,7 +585,7 @@ Sold and shipped by PowerRun Industries with free pan-India delivery. PowerRun d
     <g:brand>Daly</g:brand>
     <g:identifier_exists>no</g:identifier_exists>
     <g:product_type>BMS &amp; Balancers</g:product_type>
-    <g:price>2109.00 INR</g:price>
+    <g:price>2749.00 INR</g:price>
   </item>
   <item>
     <g:id>DALY-BT-MODULE</g:id>
@@ -600,7 +600,7 @@ Sold and shipped by PowerRun Industries with free pan-India delivery. PowerRun d
     <g:brand>Daly</g:brand>
     <g:identifier_exists>no</g:identifier_exists>
     <g:product_type>BMS &amp; Balancers</g:product_type>
-    <g:price>529.00 INR</g:price>
+    <g:price>689.00 INR</g:price>
   </item>
   <item>
     <g:id>JBD-BMS-10S-17S-60A-SMART</g:id>
@@ -615,7 +615,7 @@ Sold and shipped by PowerRun Industries with free pan-India delivery. PowerRun d
     <g:brand>JBD</g:brand>
     <g:identifier_exists>no</g:identifier_exists>
     <g:product_type>BMS &amp; Balancers</g:product_type>
-    <g:price>2439.00 INR</g:price>
+    <g:price>3179.00 INR</g:price>
   </item>
   <item>
     <g:id>JBD-BMS-3S-4S-100A-SMART</g:id>
@@ -630,7 +630,7 @@ Sold and shipped by PowerRun Industries with free pan-India delivery. PowerRun d
     <g:brand>JBD</g:brand>
     <g:identifier_exists>no</g:identifier_exists>
     <g:product_type>BMS &amp; Balancers</g:product_type>
-    <g:price>2179.00 INR</g:price>
+    <g:price>2839.00 INR</g:price>
   </item>
   <item>
     <g:id>JBD-BMS-8S-150A-SEMI</g:id>
@@ -645,7 +645,7 @@ Sold and shipped by PowerRun Industries with free pan-India delivery. PowerRun d
     <g:brand>JBD</g:brand>
     <g:identifier_exists>no</g:identifier_exists>
     <g:product_type>BMS &amp; Balancers</g:product_type>
-    <g:price>3319.00 INR</g:price>
+    <g:price>4319.00 INR</g:price>
   </item>
   <item>
     <g:id>JBD-BMS-8S-16S-100A-ESS</g:id>
@@ -660,7 +660,7 @@ Sold and shipped by PowerRun Industries with free pan-India delivery. PowerRun d
     <g:brand>JBD</g:brand>
     <g:identifier_exists>no</g:identifier_exists>
     <g:product_type>BMS &amp; Balancers</g:product_type>
-    <g:price>6739.00 INR</g:price>
+    <g:price>8769.00 INR</g:price>
   </item>
   <item>
     <g:id>JBD-BMS-8S-24S-100A-SMART</g:id>
@@ -675,7 +675,7 @@ Sold and shipped by PowerRun Industries with free pan-India delivery. PowerRun d
     <g:brand>JBD</g:brand>
     <g:identifier_exists>no</g:identifier_exists>
     <g:product_type>BMS &amp; Balancers</g:product_type>
-    <g:price>5059.00 INR</g:price>
+    <g:price>6579.00 INR</g:price>
   </item>
   <item>
     <g:id>JBD-BMS-8S-24S-200A-SMART</g:id>
@@ -690,7 +690,7 @@ Sold and shipped by PowerRun Industries with free pan-India delivery. PowerRun d
     <g:brand>JBD</g:brand>
     <g:identifier_exists>no</g:identifier_exists>
     <g:product_type>BMS &amp; Balancers</g:product_type>
-    <g:price>7779.00 INR</g:price>
+    <g:price>10119.00 INR</g:price>
   </item>
   <item>
     <g:id>JBD-BMS-LFP-16S-100A</g:id>
@@ -705,7 +705,7 @@ Sold and shipped by PowerRun Industries with free pan-India delivery. PowerRun d
     <g:brand>JBD</g:brand>
     <g:identifier_exists>no</g:identifier_exists>
     <g:product_type>BMS &amp; Balancers</g:product_type>
-    <g:price>2209.00 INR</g:price>
+    <g:price>2879.00 INR</g:price>
   </item>
   <item>
     <g:id>JBD-BMS-LFP-16S-50A</g:id>
@@ -720,7 +720,7 @@ Sold and shipped by PowerRun Industries with free pan-India delivery. PowerRun d
     <g:brand>JBD</g:brand>
     <g:identifier_exists>no</g:identifier_exists>
     <g:product_type>BMS &amp; Balancers</g:product_type>
-    <g:price>1379.00 INR</g:price>
+    <g:price>1799.00 INR</g:price>
   </item>
   <item>
     <g:id>JBD-BMS-LFP-4S-100A</g:id>
@@ -735,7 +735,7 @@ Sold and shipped by PowerRun Industries with free pan-India delivery. PowerRun d
     <g:brand>JBD</g:brand>
     <g:identifier_exists>no</g:identifier_exists>
     <g:product_type>BMS &amp; Balancers</g:product_type>
-    <g:price>1169.00 INR</g:price>
+    <g:price>1519.00 INR</g:price>
   </item>
   <item>
     <g:id>JBD-BMS-LFP-4S-200A</g:id>
@@ -750,7 +750,7 @@ Sold and shipped by PowerRun Industries with free pan-India delivery. PowerRun d
     <g:brand>JBD</g:brand>
     <g:identifier_exists>no</g:identifier_exists>
     <g:product_type>BMS &amp; Balancers</g:product_type>
-    <g:price>3199.00 INR</g:price>
+    <g:price>4159.00 INR</g:price>
   </item>
   <item>
     <g:id>JBD-BMS-LFP-8S-100A</g:id>
@@ -765,7 +765,7 @@ Sold and shipped by PowerRun Industries with free pan-India delivery. PowerRun d
     <g:brand>JBD</g:brand>
     <g:identifier_exists>no</g:identifier_exists>
     <g:product_type>BMS &amp; Balancers</g:product_type>
-    <g:price>1529.00 INR</g:price>
+    <g:price>1989.00 INR</g:price>
   </item>
   <item>
     <g:id>JBD-BMS-LFP-8S-200A</g:id>
@@ -780,7 +780,7 @@ Sold and shipped by PowerRun Industries with free pan-India delivery. PowerRun d
     <g:brand>JBD</g:brand>
     <g:identifier_exists>no</g:identifier_exists>
     <g:product_type>BMS &amp; Balancers</g:product_type>
-    <g:price>3549.00 INR</g:price>
+    <g:price>4619.00 INR</g:price>
   </item>
   <item>
     <g:id>JBD-BMS-LFP-8S-60A</g:id>
@@ -795,7 +795,7 @@ Sold and shipped by PowerRun Industries with free pan-India delivery. PowerRun d
     <g:brand>JBD</g:brand>
     <g:identifier_exists>no</g:identifier_exists>
     <g:product_type>BMS &amp; Balancers</g:product_type>
-    <g:price>1159.00 INR</g:price>
+    <g:price>1509.00 INR</g:price>
   </item>
   <item>
     <g:id>JBD-BMS-NMC-13S-40A</g:id>
@@ -810,7 +810,7 @@ Sold and shipped by PowerRun Industries with free pan-India delivery. PowerRun d
     <g:brand>JBD</g:brand>
     <g:identifier_exists>no</g:identifier_exists>
     <g:product_type>BMS &amp; Balancers</g:product_type>
-    <g:price>969.00 INR</g:price>
+    <g:price>1259.00 INR</g:price>
   </item>
   <item>
     <g:id>JBD-BMS-NMC-16S-60A</g:id>
@@ -825,7 +825,7 @@ Sold and shipped by PowerRun Industries with free pan-India delivery. PowerRun d
     <g:brand>JBD</g:brand>
     <g:identifier_exists>no</g:identifier_exists>
     <g:product_type>BMS &amp; Balancers</g:product_type>
-    <g:price>1619.00 INR</g:price>
+    <g:price>2109.00 INR</g:price>
   </item>
   <item>
     <g:id>JBD-BMS-NMC-20S-100A</g:id>
@@ -840,7 +840,7 @@ Sold and shipped by PowerRun Industries with free pan-India delivery. PowerRun d
     <g:brand>JBD</g:brand>
     <g:identifier_exists>no</g:identifier_exists>
     <g:product_type>BMS &amp; Balancers</g:product_type>
-    <g:price>2659.00 INR</g:price>
+    <g:price>3459.00 INR</g:price>
   </item>
   <item>
     <g:id>JBD-BT-MODULE</g:id>
@@ -855,7 +855,7 @@ Sold and shipped by PowerRun Industries with free pan-India delivery. PowerRun d
     <g:brand>JBD</g:brand>
     <g:identifier_exists>no</g:identifier_exists>
     <g:product_type>BMS &amp; Balancers</g:product_type>
-    <g:price>479.00 INR</g:price>
+    <g:price>629.00 INR</g:price>
   </item>
   <item>
     <g:id>JK-BAL-16S-2A</g:id>
@@ -870,7 +870,7 @@ Sold and shipped by PowerRun Industries with free pan-India delivery. PowerRun d
     <g:brand>JK BMS</g:brand>
     <g:identifier_exists>no</g:identifier_exists>
     <g:product_type>BMS &amp; Balancers</g:product_type>
-    <g:price>3799.00 INR</g:price>
+    <g:price>4939.00 INR</g:price>
   </item>
   <item>
     <g:id>JK-BAL-24S-15A</g:id>
@@ -885,7 +885,7 @@ Sold and shipped by PowerRun Industries with free pan-India delivery. PowerRun d
     <g:brand>JK BMS</g:brand>
     <g:identifier_exists>no</g:identifier_exists>
     <g:product_type>BMS &amp; Balancers</g:product_type>
-    <g:price>21179.00 INR</g:price>
+    <g:price>27539.00 INR</g:price>
   </item>
   <item>
     <g:id>JK-BAL-24S-2A</g:id>
@@ -900,7 +900,7 @@ Sold and shipped by PowerRun Industries with free pan-India delivery. PowerRun d
     <g:brand>JK BMS</g:brand>
     <g:identifier_exists>no</g:identifier_exists>
     <g:product_type>BMS &amp; Balancers</g:product_type>
-    <g:price>4289.00 INR</g:price>
+    <g:price>5579.00 INR</g:price>
   </item>
   <item>
     <g:id>JK-BAL-24S-2A-B</g:id>
@@ -915,7 +915,7 @@ Sold and shipped by PowerRun Industries with free pan-India delivery. PowerRun d
     <g:brand>JK BMS</g:brand>
     <g:identifier_exists>no</g:identifier_exists>
     <g:product_type>BMS &amp; Balancers</g:product_type>
-    <g:price>4289.00 INR</g:price>
+    <g:price>5579.00 INR</g:price>
   </item>
   <item>
     <g:id>JK-BAL-24S-4A</g:id>
@@ -930,7 +930,7 @@ Sold and shipped by PowerRun Industries with free pan-India delivery. PowerRun d
     <g:brand>JK BMS</g:brand>
     <g:identifier_exists>no</g:identifier_exists>
     <g:product_type>BMS &amp; Balancers</g:product_type>
-    <g:price>5779.00 INR</g:price>
+    <g:price>7519.00 INR</g:price>
   </item>
   <item>
     <g:id>JK-BAL-24S-5A</g:id>
@@ -945,7 +945,7 @@ Sold and shipped by PowerRun Industries with free pan-India delivery. PowerRun d
     <g:brand>JK BMS</g:brand>
     <g:identifier_exists>no</g:identifier_exists>
     <g:product_type>BMS &amp; Balancers</g:product_type>
-    <g:price>15259.00 INR</g:price>
+    <g:price>19839.00 INR</g:price>
   </item>
   <item>
     <g:id>JK-BAL-8S-2A</g:id>
@@ -960,7 +960,7 @@ Sold and shipped by PowerRun Industries with free pan-India delivery. PowerRun d
     <g:brand>JK BMS</g:brand>
     <g:identifier_exists>no</g:identifier_exists>
     <g:product_type>BMS &amp; Balancers</g:product_type>
-    <g:price>2639.00 INR</g:price>
+    <g:price>3439.00 INR</g:price>
   </item>
   <item>
     <g:id>JK-BCB-24S-4A</g:id>
@@ -975,7 +975,7 @@ Sold and shipped by PowerRun Industries with free pan-India delivery. PowerRun d
     <g:brand>JK BMS</g:brand>
     <g:identifier_exists>no</g:identifier_exists>
     <g:product_type>BMS &amp; Balancers</g:product_type>
-    <g:price>609.00 INR</g:price>
+    <g:price>799.00 INR</g:price>
   </item>
   <item>
     <g:id>JK-BMS-4S-8S-100A-PRO</g:id>
@@ -990,7 +990,7 @@ Sold and shipped by PowerRun Industries with free pan-India delivery. PowerRun d
     <g:brand>JK BMS</g:brand>
     <g:identifier_exists>no</g:identifier_exists>
     <g:product_type>BMS &amp; Balancers</g:product_type>
-    <g:price>3119.00 INR</g:price>
+    <g:price>4059.00 INR</g:price>
   </item>
   <item>
     <g:id>JK-BMS-4S-8S-200A-PRO</g:id>
@@ -1005,7 +1005,7 @@ Sold and shipped by PowerRun Industries with free pan-India delivery. PowerRun d
     <g:brand>JK BMS</g:brand>
     <g:identifier_exists>no</g:identifier_exists>
     <g:product_type>BMS &amp; Balancers</g:product_type>
-    <g:price>4659.00 INR</g:price>
+    <g:price>6059.00 INR</g:price>
   </item>
   <item>
     <g:id>JK-BMS-4S-8S-300A-PRO</g:id>
@@ -1020,7 +1020,7 @@ Sold and shipped by PowerRun Industries with free pan-India delivery. PowerRun d
     <g:brand>JK BMS</g:brand>
     <g:identifier_exists>no</g:identifier_exists>
     <g:product_type>BMS &amp; Balancers</g:product_type>
-    <g:price>6879.00 INR</g:price>
+    <g:price>8949.00 INR</g:price>
   </item>
   <item>
     <g:id>JK-BMS-4S-8S-40A-SMART</g:id>
@@ -1035,7 +1035,7 @@ Sold and shipped by PowerRun Industries with free pan-India delivery. PowerRun d
     <g:brand>JK BMS</g:brand>
     <g:identifier_exists>no</g:identifier_exists>
     <g:product_type>BMS &amp; Balancers</g:product_type>
-    <g:price>2579.00 INR</g:price>
+    <g:price>3359.00 INR</g:price>
   </item>
   <item>
     <g:id>JK-BMS-8S-16S-100A-ESS</g:id>
@@ -1050,7 +1050,7 @@ Sold and shipped by PowerRun Industries with free pan-India delivery. PowerRun d
     <g:brand>JK BMS</g:brand>
     <g:identifier_exists>no</g:identifier_exists>
     <g:product_type>BMS &amp; Balancers</g:product_type>
-    <g:price>7529.00 INR</g:price>
+    <g:price>9789.00 INR</g:price>
   </item>
   <item>
     <g:id>JK-BMS-8S-16S-150A-ESS</g:id>
@@ -1065,7 +1065,7 @@ Sold and shipped by PowerRun Industries with free pan-India delivery. PowerRun d
     <g:brand>JK BMS</g:brand>
     <g:identifier_exists>no</g:identifier_exists>
     <g:product_type>BMS &amp; Balancers</g:product_type>
-    <g:price>8839.00 INR</g:price>
+    <g:price>11499.00 INR</g:price>
   </item>
   <item>
     <g:id>JK-BMS-8S-16S-200A-ESS</g:id>
@@ -1080,7 +1080,7 @@ Sold and shipped by PowerRun Industries with free pan-India delivery. PowerRun d
     <g:brand>JK BMS</g:brand>
     <g:identifier_exists>no</g:identifier_exists>
     <g:product_type>BMS &amp; Balancers</g:product_type>
-    <g:price>10579.00 INR</g:price>
+    <g:price>13759.00 INR</g:price>
   </item>
   <item>
     <g:id>JK-BMS-8S-17S-80A-SMART</g:id>
@@ -1095,7 +1095,7 @@ Sold and shipped by PowerRun Industries with free pan-India delivery. PowerRun d
     <g:brand>JK BMS</g:brand>
     <g:identifier_exists>no</g:identifier_exists>
     <g:product_type>BMS &amp; Balancers</g:product_type>
-    <g:price>3399.00 INR</g:price>
+    <g:price>4419.00 INR</g:price>
   </item>
   <item>
     <g:id>JK-BMS-8S-20S-150A-SMART</g:id>
@@ -1110,7 +1110,7 @@ Sold and shipped by PowerRun Industries with free pan-India delivery. PowerRun d
     <g:brand>JK BMS</g:brand>
     <g:identifier_exists>no</g:identifier_exists>
     <g:product_type>BMS &amp; Balancers</g:product_type>
-    <g:price>4799.00 INR</g:price>
+    <g:price>6239.00 INR</g:price>
   </item>
   <item>
     <g:id>JK-BMS-8S-20S-200A-SMART</g:id>
@@ -1125,7 +1125,7 @@ Sold and shipped by PowerRun Industries with free pan-India delivery. PowerRun d
     <g:brand>JK BMS</g:brand>
     <g:identifier_exists>no</g:identifier_exists>
     <g:product_type>BMS &amp; Balancers</g:product_type>
-    <g:price>5749.00 INR</g:price>
+    <g:price>7479.00 INR</g:price>
   </item>
   <item>
     <g:id>JK-BMS-8S-24S-150A-PRO</g:id>
@@ -1140,7 +1140,7 @@ Sold and shipped by PowerRun Industries with free pan-India delivery. PowerRun d
     <g:brand>JK BMS</g:brand>
     <g:identifier_exists>no</g:identifier_exists>
     <g:product_type>BMS &amp; Balancers</g:product_type>
-    <g:price>6299.00 INR</g:price>
+    <g:price>8189.00 INR</g:price>
   </item>
   <item>
     <g:id>JK-BMS-8S-24S-200A-PRO</g:id>
@@ -1155,7 +1155,7 @@ Sold and shipped by PowerRun Industries with free pan-India delivery. PowerRun d
     <g:brand>JK BMS</g:brand>
     <g:identifier_exists>no</g:identifier_exists>
     <g:product_type>BMS &amp; Balancers</g:product_type>
-    <g:price>10419.00 INR</g:price>
+    <g:price>13549.00 INR</g:price>
   </item>
   <item>
     <g:id>JK-BMS-8S-24S-300A-PRO</g:id>
@@ -1170,7 +1170,7 @@ Sold and shipped by PowerRun Industries with free pan-India delivery. PowerRun d
     <g:brand>JK BMS</g:brand>
     <g:identifier_exists>no</g:identifier_exists>
     <g:product_type>BMS &amp; Balancers</g:product_type>
-    <g:price>11899.00 INR</g:price>
+    <g:price>15469.00 INR</g:price>
   </item>
   <item>
     <g:id>JK-BMS-8S-24S-80A-SEMI</g:id>
@@ -1185,7 +1185,7 @@ Sold and shipped by PowerRun Industries with free pan-India delivery. PowerRun d
     <g:brand>JK BMS</g:brand>
     <g:identifier_exists>no</g:identifier_exists>
     <g:product_type>BMS &amp; Balancers</g:product_type>
-    <g:price>3139.00 INR</g:price>
+    <g:price>4089.00 INR</g:price>
   </item>
   <item>
     <g:id>JK-BMS-8S-24S-80A-SMART</g:id>
@@ -1200,7 +1200,7 @@ Sold and shipped by PowerRun Industries with free pan-India delivery. PowerRun d
     <g:brand>JK BMS</g:brand>
     <g:identifier_exists>no</g:identifier_exists>
     <g:product_type>BMS &amp; Balancers</g:product_type>
-    <g:price>3709.00 INR</g:price>
+    <g:price>4829.00 INR</g:price>
   </item>
   <item>
     <g:id>JK-BMS-8S-32S-100A-SMART</g:id>
@@ -1215,7 +1215,7 @@ Sold and shipped by PowerRun Industries with free pan-India delivery. PowerRun d
     <g:brand>JK BMS</g:brand>
     <g:identifier_exists>no</g:identifier_exists>
     <g:product_type>BMS &amp; Balancers</g:product_type>
-    <g:price>10379.00 INR</g:price>
+    <g:price>13499.00 INR</g:price>
   </item>
   <item>
     <g:id>JK-BMS-8S-32S-150A-SMART</g:id>
@@ -1230,7 +1230,7 @@ Sold and shipped by PowerRun Industries with free pan-India delivery. PowerRun d
     <g:brand>JK BMS</g:brand>
     <g:identifier_exists>no</g:identifier_exists>
     <g:product_type>BMS &amp; Balancers</g:product_type>
-    <g:price>11329.00 INR</g:price>
+    <g:price>14729.00 INR</g:price>
   </item>
   <item>
     <g:id>JK-BMS-HV-MASTER-100A</g:id>
@@ -1245,7 +1245,7 @@ Sold and shipped by PowerRun Industries with free pan-India delivery. PowerRun d
     <g:brand>JK BMS</g:brand>
     <g:identifier_exists>no</g:identifier_exists>
     <g:product_type>BMS &amp; Balancers</g:product_type>
-    <g:price>112449.00 INR</g:price>
+    <g:price>146189.00 INR</g:price>
   </item>
   <item>
     <g:id>JK-BMS-HV-MASTER-200A</g:id>
@@ -1260,7 +1260,7 @@ Sold and shipped by PowerRun Industries with free pan-India delivery. PowerRun d
     <g:brand>JK BMS</g:brand>
     <g:identifier_exists>no</g:identifier_exists>
     <g:product_type>BMS &amp; Balancers</g:product_type>
-    <g:price>124839.00 INR</g:price>
+    <g:price>162299.00 INR</g:price>
   </item>
   <item>
     <g:id>JK-BMS-HV-SLAVE-16S</g:id>
@@ -1275,7 +1275,7 @@ Sold and shipped by PowerRun Industries with free pan-India delivery. PowerRun d
     <g:brand>JK BMS</g:brand>
     <g:identifier_exists>no</g:identifier_exists>
     <g:product_type>BMS &amp; Balancers</g:product_type>
-    <g:price>17509.00 INR</g:price>
+    <g:price>22769.00 INR</g:price>
   </item>
   <item>
     <g:id>JK-BMS-RELAY-32S-100A</g:id>
@@ -1290,7 +1290,7 @@ Sold and shipped by PowerRun Industries with free pan-India delivery. PowerRun d
     <g:brand>JK BMS</g:brand>
     <g:identifier_exists>no</g:identifier_exists>
     <g:product_type>BMS &amp; Balancers</g:product_type>
-    <g:price>43739.00 INR</g:price>
+    <g:price>56869.00 INR</g:price>
   </item>
   <item>
     <g:id>JK-DISPLAY-2-0IN</g:id>
@@ -1305,7 +1305,7 @@ Sold and shipped by PowerRun Industries with free pan-India delivery. PowerRun d
     <g:brand>JK BMS</g:brand>
     <g:identifier_exists>no</g:identifier_exists>
     <g:product_type>BMS &amp; Balancers</g:product_type>
-    <g:price>1069.00 INR</g:price>
+    <g:price>1389.00 INR</g:price>
   </item>
   <item>
     <g:id>JK-DISPLAY-2-0IN-USB</g:id>
@@ -1320,7 +1320,7 @@ Sold and shipped by PowerRun Industries with free pan-India delivery. PowerRun d
     <g:brand>JK BMS</g:brand>
     <g:identifier_exists>no</g:identifier_exists>
     <g:product_type>BMS &amp; Balancers</g:product_type>
-    <g:price>1079.00 INR</g:price>
+    <g:price>1409.00 INR</g:price>
   </item>
   <item>
     <g:id>JK-DISPLAY-2-3IN</g:id>
@@ -1335,7 +1335,7 @@ Sold and shipped by PowerRun Industries with free pan-India delivery. PowerRun d
     <g:brand>JK BMS</g:brand>
     <g:identifier_exists>no</g:identifier_exists>
     <g:product_type>BMS &amp; Balancers</g:product_type>
-    <g:price>1059.00 INR</g:price>
+    <g:price>1379.00 INR</g:price>
   </item>
   <item>
     <g:id>JK-DISPLAY-3-2IN</g:id>
@@ -1350,7 +1350,7 @@ Sold and shipped by PowerRun Industries with free pan-India delivery. PowerRun d
     <g:brand>JK BMS</g:brand>
     <g:identifier_exists>no</g:identifier_exists>
     <g:product_type>BMS &amp; Balancers</g:product_type>
-    <g:price>1049.00 INR</g:price>
+    <g:price>1369.00 INR</g:price>
   </item>
   <item>
     <g:id>JK-DISPLAY-4-3IN-B</g:id>
@@ -1365,7 +1365,7 @@ Sold and shipped by PowerRun Industries with free pan-India delivery. PowerRun d
     <g:brand>JK BMS</g:brand>
     <g:identifier_exists>no</g:identifier_exists>
     <g:product_type>BMS &amp; Balancers</g:product_type>
-    <g:price>3029.00 INR</g:price>
+    <g:price>3939.00 INR</g:price>
   </item>
   <item>
     <g:id>JK-PARALLEL-5A</g:id>
@@ -1380,7 +1380,7 @@ Sold and shipped by PowerRun Industries with free pan-India delivery. PowerRun d
     <g:brand>JK BMS</g:brand>
     <g:identifier_exists>no</g:identifier_exists>
     <g:product_type>BMS &amp; Balancers</g:product_type>
-    <g:price>1489.00 INR</g:price>
+    <g:price>1939.00 INR</g:price>
   </item>
   <item>
     <g:id>PR-001</g:id>
