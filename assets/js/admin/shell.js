@@ -25,6 +25,7 @@
     { key: 'products',  href: '/admin/products/',  icon: '📦', label: 'Products' },
     { key: 'categories', href: '/admin/categories/', icon: '🗂', label: 'Categories' },
     { key: 'orders',    href: '/admin/orders/',    icon: '🧾', label: 'Orders', badge: 'pending_orders' },
+    { key: 'proforma',  href: '/admin/proforma/',  icon: '📃', label: 'Proforma Invoice (PI)' },
 
     { key: 'crm-group', icon: '👥', label: 'CRM', children: [
       { key: 'crm',       href: '/admin/crm/',       icon: '📈', label: 'Overview' },

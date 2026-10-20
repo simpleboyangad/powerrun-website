@@ -1,0 +1,32 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>Proforma Invoice | PowerRun Admin</title>
+<meta name="robots" content="noindex,nofollow,noarchive">
+<link rel="icon" href="/favicon.ico" sizes="48x48">
+<link rel="icon" type="image/png" sizes="192x192" href="/assets/icon-192.png">
+<link rel="apple-touch-icon" href="/assets/apple-touch-icon.png">
+<link rel="stylesheet" href="/assets/css/site.css?v=181bd27a">
+<link rel="stylesheet" href="/assets/css/invoice.css?v=181bd27a">
+</head>
+<body class="invoice-body">
+<div class="invoice-toolbar no-print">
+  <a class="outline" href="/admin/proforma/" id="backLink">&larr; Back to PI list</a>
+  <select id="copySelect" hidden aria-label="Invoice copy">
+    <option>Original for Recipient</option>
+    <option>Duplicate for Transporter</option>
+    <option>Triplicate for Supplier</option>
+  </select>
+  <button class="btn orange" type="button" id="printBtn">PRINT / SAVE AS PDF</button>
+</div>
+<div id="invoiceContent"><p class="small-note" style="padding:40px">Loading the invoice…</p></div>
+<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2.48.0/dist/umd/supabase.js"></script>
+<script src="/assets/js/config.js?v=181bd27a"></script>
+<script src="/assets/js/core.js?v=181bd27a"></script>
+<script src="/assets/js/admin/shell.js?v=181bd27a"></script>
+<script src="/assets/js/invoice-doc.js?v=181bd27a"></script>
+<script src="/assets/js/admin/proforma-print.js"></script>
+</body>
+</html>

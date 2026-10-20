@@ -134,9 +134,49 @@
     };
   };
 
+  /* A manual proforma (table proforma_invoices) in the shape PR.invoiceHtml
+     reads. Line rates include GST, like the shop; the overall discount is
+     treated like a coupon (spread over the goods, lowers the taxable value)
+     and freight is taxed at the main item's rate. Place of supply: the
+     buyer's GSTIN state for a registered dealer, otherwise the ship-to state. */
+  PR.proformaOrder = function (pi) {
+    var items = (pi.items || []).filter(function (it) { return it && (it.product_name || '').trim(); })
+      .map(function (it) {
+        var qty = Math.max(1, num(it.quantity) || 1);
+        var rate = num(it.gst_rate);
+        var gross = r2(num(it.unit_price) * qty);
+        var taxable = r2(gross / (1 + rate / 100));
+        return {
+          product_name: it.product_name, product_sku: it.product_sku || '', hsn_code: it.hsn_code || '',
+          quantity: qty, gst_rate: rate, unit_price: num(it.unit_price),
+          taxable_amount: taxable, gst_amount: r2(gross - taxable), total_price: gross
+        };
+      });
+    var goods = items.reduce(function (s, it) { return s + it.total_price; }, 0);
+    var discount = Math.min(Math.max(0, num(pi.discount_amount)), goods);
+    var shipping = Math.max(0, num(pi.shipping_cost));
+    var same = pi.ship_same !== false;
+    var shipState = same ? pi.state : (pi.shipping_state || pi.state);
+    return {
+      order_number: pi.pi_number || 'DRAFT', created_at: pi.pi_date || pi.created_at,
+      customer_name: pi.customer_name || '', customer_business_name: pi.business_name || '',
+      customer_gstin: (pi.gstin || '').trim().toUpperCase(),
+      customer_mobile: pi.mobile || '', customer_email: pi.email || '',
+      address: pi.address || '', city: pi.city || '', state: pi.state || '', pincode: pi.pincode || '',
+      shipping_address: same ? pi.address : pi.shipping_address, shipping_city: same ? pi.city : pi.shipping_city,
+      shipping_state: shipState, shipping_pincode: same ? pi.pincode : pi.shipping_pincode,
+      place_of_supply: (pi.gstin || '').trim() ? (pi.state || shipState) : shipState,
+      order_items: items, coupon_discount: discount, shipping_cost: shipping,
+      total_amount: r2(goods - discount + shipping),
+      payment_status: pi.status === 'paid' ? 'paid' : 'pending'
+    };
+  };
+
   /* ---------------------------------------------------------- document */
   /* opts: { type: 'tax' | 'proforma', copy: 'Original for Recipient',
-             bank: true to print bank details (admin only - customers can't read them) } */
+             bank: true to print bank details (admin only - customers can't read them),
+             manual proforma (admin/proforma): proformaNo, proformaDate, validUntil,
+             paymentTerms, notes - the "Order No." row is left out } */
   PR.invoiceHtml = function (order, company, opts) {
     opts = opts || {};
     company = company || {};
@@ -182,9 +222,10 @@
             (tax
               ? '<tr><td>Invoice No.</td><td><b>' + esc(order.invoice_number) + '</b></td></tr>' +
                 '<tr><td>Invoice Date</td><td><b>' + PR.formatDate(order.invoice_date) + '</b></td></tr>'
-              : '<tr><td>Proforma No.</td><td><b>PI-' + esc(order.order_number) + '</b></td></tr>' +
-                '<tr><td>Date</td><td><b>' + PR.formatDate(new Date()) + '</b></td></tr>') +
-            '<tr><td>Order No.</td><td>' + esc(order.order_number) + ' · ' + PR.formatDate(order.created_at) + '</td></tr>' +
+              : '<tr><td>Proforma No.</td><td><b>' + esc(opts.proformaNo || ('PI-' + order.order_number)) + '</b></td></tr>' +
+                '<tr><td>Date</td><td><b>' + PR.formatDate(opts.proformaDate || new Date()) + '</b></td></tr>' +
+                (opts.validUntil ? '<tr><td>Valid Until</td><td>' + PR.formatDate(opts.validUntil) + '</td></tr>' : '')) +
+            (opts.proformaNo ? '' : '<tr><td>Order No.</td><td>' + esc(order.order_number) + ' · ' + PR.formatDate(order.created_at) + '</td></tr>') +
             '<tr><td>Place of Supply</td><td>' + esc(stateWithCode(f.placeOfSupply)) + '</td></tr>' +
             '<tr><td>Reverse Charge</td><td>No</td></tr>' +
           '</table>' +
@@ -275,6 +316,8 @@
               (company.bank_ifsc ? 'IFSC: <b>' + esc(company.bank_ifsc) + '</b><br>' : '') +
               (company.bank_branch ? 'Branch: ' + esc(company.bank_branch) : '') + '</p>'
             : '') +
+          (opts.paymentTerms ? '<h3>Payment Terms</h3><p>' + esc(opts.paymentTerms) + '</p>' : '') +
+          (opts.notes ? '<h3>Notes</h3><p style="white-space:pre-line">' + esc(opts.notes) + '</p>' : '') +
           '<h3>Terms</h3><p>' +
             (tax
               ? 'We declare that this invoice shows the actual price of the goods described and that all particulars are true and correct.<br>'
