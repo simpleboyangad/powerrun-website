@@ -38,6 +38,7 @@ def main():
         glob.glob("*.html")
         + glob.glob("*/index.html")
         + glob.glob("*/*/index.html")
+        + glob.glob("*/*/*/index.html")
     )
 
     changed = 0
