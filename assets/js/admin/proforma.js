@@ -44,11 +44,22 @@
   }
 
   function actions(pi) {
-    return '<button class="btn ghost small" type="button" data-edit-pi="' + PR.esc(pi.id) + '">Edit / Rate</button> ' +
-      '<button class="btn ghost small" type="button" data-copy-pi="' + PR.esc(pi.id) + '">Copy</button> ' +
-      '<a class="btn small" href="/admin/proforma/print/?id=' + encodeURIComponent(pi.id) + '" target="_blank" rel="noopener">Print / PDF</a> ' +
-      (PR.whatsappTo(pi.mobile, '') ? '<button class="btn ghost small" type="button" data-wa-pi="' + PR.esc(pi.id) + '">WhatsApp</button> ' : '') +
-      '<button class="btn danger small" type="button" data-delete-pi="' + PR.esc(pi.id) + '">Delete</button>';
+    var printUrl = '/admin/proforma/print/?id=' + encodeURIComponent(pi.id);
+    var wa = PR.whatsappTo(pi.mobile, '') ? '<button class="btn ghost small" type="button" data-wa-pi="' + PR.esc(pi.id) + '">WhatsApp</button> ' : '';
+    var copy = '<button class="btn ghost small" type="button" data-copy-pi="' + PR.esc(pi.id) + '">Copy</button> ';
+    if (pi.invoice_number) {
+      return '<a class="btn small" href="' + printUrl + '" target="_blank" rel="noopener">Tax Invoice / PDF</a> ' + copy + wa +
+        (pi.status === 'cancelled' ? '' : '<button class="btn danger small" type="button" data-cancel-pi="' + PR.esc(pi.id) + '">Cancel Invoice</button>');
+    }
+    return '<button class="btn ghost small" type="button" data-edit-pi="' + PR.esc(pi.id) + '">Edit / Rate</button> ' + copy +
+      '<a class="btn small" href="' + printUrl + '" target="_blank" rel="noopener">PI / PDF</a> ' +
+      (pi.status === 'cancelled' ? '' : '<a class="btn small" href="' + printUrl + '&amp;tax=preview" target="_blank" rel="noopener">Tax Invoice</a> ') +
+      wa + '<button class="btn danger small" type="button" data-delete-pi="' + PR.esc(pi.id) + '">Delete</button>';
+  }
+
+  function numberCell(pi) {
+    return '<b>' + PR.esc(pi.pi_number) + '</b>' +
+      (pi.invoice_number ? '<small><span class="pill delivered">TAX INVOICE</span> ' + PR.esc(pi.invoice_number) + '</small>' : '');
   }
 
   function render(host) {
@@ -72,7 +83,7 @@
               '<th>PI No.</th><th>Date</th><th>Party</th><th>Mobile</th><th>Amount</th><th>Status</th><th></th>' +
             '</tr></thead><tbody>' +
             rows.map(function (pi) {
-              return '<tr><td class="nowrap"><b>' + PR.esc(pi.pi_number) + '</b></td>' +
+              return '<tr><td class="nowrap">' + numberCell(pi) + '</td>' +
                 '<td class="nowrap">' + PR.formatDate(pi.pi_date) + '</td>' +
                 '<td>' + PR.esc(partyLabel(pi)) + '<small>' + PR.esc(pi.party_type === 'dealer' ? 'Dealer' : 'Customer') +
                   (pi.city ? ' · ' + PR.esc(pi.city) : '') + '</small></td>' +
@@ -84,7 +95,7 @@
             '</tbody></table></div>' +
             '<div class="pi-cards">' + rows.map(function (pi) {
               return '<div class="pi-card">' +
-                '<div class="pi-card-top"><b>' + PR.esc(pi.pi_number) + '</b>' + PRA.pill(pi.status) + '</div>' +
+                '<div class="pi-card-top"><div>' + numberCell(pi) + '</div>' + PRA.pill(pi.status) + '</div>' +
                 '<div>' + PR.esc(partyLabel(pi)) + '</div>' +
                 '<div class="hint">' + PR.formatDate(pi.pi_date) + (pi.city ? ' · ' + PR.esc(pi.city) : '') +
                   (pi.mobile ? ' · ' + PR.esc(pi.mobile) : '') + '</div>' +
@@ -139,6 +150,7 @@
   }
 
   function openForm(pi, copy) {
+    if (pi && pi.invoice_number && !copy) { PR.toast('Tax invoice ban chuka hai - badlav ke liye Copy karein.', 'error'); return; }
     editing = pi && !copy ? pi : null;
     var p = pi || {};
     var title = editing ? 'Edit ' + p.pi_number : (copy ? 'New PI (copy of ' + p.pi_number + ')' : 'New Proforma Invoice');
@@ -384,12 +396,28 @@
 
   function shareWhatsApp(pi) {
     var text = 'Namaste ' + (pi.customer_name || '') + ' ji, PowerRun Industries se.\n' +
-      'Aapka Proforma Invoice ' + pi.pi_number + ' taiyaar hai: ' + PR.money(pi.total_amount) + ' (GST sahit)' +
-      (pi.valid_until ? ', ' + PR.formatDate(pi.valid_until) + ' tak valid' : '') + '.\n' +
-      'PI ki PDF hum is chat mein bhej rahe hain. Payment ke baad order dispatch kar diya jayega.\n' +
+      (pi.invoice_number
+        ? 'Aapka Tax Invoice ' + pi.invoice_number + ' (' + PR.money(pi.total_amount) + ', GST sahit) taiyaar hai. Invoice ki PDF hum is chat mein bhej rahe hain.\n'
+        : 'Aapka Proforma Invoice ' + pi.pi_number + ' taiyaar hai: ' + PR.money(pi.total_amount) + ' (GST sahit)' +
+          (pi.valid_until ? ', ' + PR.formatDate(pi.valid_until) + ' tak valid' : '') + '.\n' +
+          'PI ki PDF hum is chat mein bhej rahe hain. Payment ke baad order dispatch kar diya jayega.\n') +
       'Koi sawal ho to isi number par message karein.';
     var link = PR.whatsappTo(pi.mobile, text);
     if (link) window.open(link, '_blank', 'noopener');
+  }
+
+  async function cancelInvoice(pi) {
+    if (!confirm('Tax Invoice ' + pi.invoice_number + ' cancel karein?\n\nInvoice number wahi rahega (GST series ke liye), ' +
+        'lekin ise Cancelled mark kar diya jayega. Sahi bill ke liye "Copy" se naya PI aur naya Tax Invoice banayein.')) return;
+    try {
+      await PR.call('cancel tax invoice', function (sb) {
+        return sb.from('proforma_invoices').update({ status: 'cancelled' }).eq('id', pi.id);
+      });
+      PR.toast('Invoice cancelled.', 'success');
+      await refresh();
+    } catch (err) {
+      PR.toast(err.message, 'error');
+    }
   }
 
   async function remove(pi) {
@@ -419,7 +447,8 @@
     if ((t = event.target.closest('[data-edit-pi]'))) { var a = byId('data-edit-pi', t); if (a) openForm(a); return; }
     if ((t = event.target.closest('[data-copy-pi]'))) { var b = byId('data-copy-pi', t); if (b) openForm(b, true); return; }
     if ((t = event.target.closest('[data-wa-pi]'))) { var c = byId('data-wa-pi', t); if (c) shareWhatsApp(c); return; }
-    if ((t = event.target.closest('[data-delete-pi]'))) { var d = byId('data-delete-pi', t); if (d) remove(d); }
+    if ((t = event.target.closest('[data-delete-pi]'))) { var d = byId('data-delete-pi', t); if (d) remove(d); return; }
+    if ((t = event.target.closest('[data-cancel-pi]'))) { var f = byId('data-cancel-pi', t); if (f) cancelInvoice(f); }
   });
   document.addEventListener('input', function (event) {
     if (event.target.id !== 'piSearch') return;

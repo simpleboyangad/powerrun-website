@@ -176,7 +176,8 @@
   /* opts: { type: 'tax' | 'proforma', copy: 'Original for Recipient',
              bank: true to print bank details (admin only - customers can't read them),
              manual proforma (admin/proforma): proformaNo, proformaDate, validUntil,
-             paymentTerms, notes - the "Order No." row is left out } */
+             paymentTerms, notes - the "Order No." row is left out; with type 'tax'
+             proformaNo prints as "PI Ref.", and preview: true adds a not-issued banner } */
   PR.invoiceHtml = function (order, company, opts) {
     opts = opts || {};
     company = company || {};
@@ -204,6 +205,10 @@
     };
 
     return '<div class="invoice-sheet gst-invoice">' +
+      (opts.preview
+        ? '<div class="inv-preview no-print-hide">PREVIEW - ye abhi Tax Invoice nahi hai. Number ' + esc(order.invoice_number) +
+          ' "Confirm" dabane par lagega (tab tak koi aur invoice ban gaya to agla number milega).</div>'
+        : '') +
       '<div class="invoice-head">' +
         '<div>' +
           '<img src="/assets/powerrun-logo.png" alt="PowerRun Industries">' +
@@ -221,7 +226,8 @@
           '<table class="inv-meta">' +
             (tax
               ? '<tr><td>Invoice No.</td><td><b>' + esc(order.invoice_number) + '</b></td></tr>' +
-                '<tr><td>Invoice Date</td><td><b>' + PR.formatDate(order.invoice_date) + '</b></td></tr>'
+                '<tr><td>Invoice Date</td><td><b>' + PR.formatDate(order.invoice_date) + '</b></td></tr>' +
+                (opts.proformaNo ? '<tr><td>PI Ref.</td><td>' + esc(opts.proformaNo) + '</td></tr>' : '')
               : '<tr><td>Proforma No.</td><td><b>' + esc(opts.proformaNo || ('PI-' + order.order_number)) + '</b></td></tr>' +
                 '<tr><td>Date</td><td><b>' + PR.formatDate(opts.proformaDate || new Date()) + '</b></td></tr>' +
                 (opts.validUntil ? '<tr><td>Valid Until</td><td>' + PR.formatDate(opts.validUntil) + '</td></tr>' : '')) +

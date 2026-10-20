@@ -112,3 +112,7 @@ table.inv-hsn th { background: #f1f1f2; color: #333; }
   }
   @page { size: A4; margin: 14mm 14mm 20mm; @bottom-right { content: "Page " counter(page) " of " counter(pages); font-size: 9px; color: #999; } }
 }
+
+/* tax invoice preview banner (admin/proforma print) */
+.inv-preview { margin: -6px 0 14px; padding: 10px 14px; border: 2px dashed #e65100; border-radius: 10px;
+  background: #fff4ec; color: #a33b00; font-weight: 800; text-align: center; }
