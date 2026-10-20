@@ -357,6 +357,48 @@ def twin_of(p, pool):
     return next((q for q in pool if q["slug"] == base), None)
 
 
+# Buying guides on the blog, linked from the products they are about, so the
+# guides are not reachable only from other guides.
+BLOG = {
+    "inverter": [("hybrid-inverter-vs-normal-inverter", "Hybrid inverter vs normal inverter"),
+                 ("what-size-solar-inverter-for-home", "What size solar inverter do I need?"),
+                 ("5kw-solar-system-cost", "5 kW solar system cost (Hindi)")],
+    "battery": [("battery-backup-time-calculation", "Battery backup time calculation"),
+                ("lithium-vs-lead-acid-inverter-battery", "Lithium vs lead-acid inverter battery"),
+                ("hybrid-inverter-vs-normal-inverter", "Hybrid inverter vs normal inverter")],
+    "panel": [("how-many-solar-panels-do-i-need", "How many solar panels do I need?"),
+              ("5kw-solar-system-cost", "5 kW solar system cost (Hindi)"),
+              ("what-size-solar-inverter-for-home", "What size solar inverter do I need?")],
+    "rickshaw": [("e-rickshaw-lithium-battery-guide", "E-rickshaw lithium battery buying guide"),
+                 ("e-rickshaw-lithium-battery-guide-hi", "ई-रिक्शा लिथियम बैटरी गाइड")],
+    "scooty": [("e-scooty-battery-buying-guide", "E-scooty battery guide: 60V 30Ah vs 45Ah"),
+               ("e-scooty-battery-buying-guide-hi", "ई-स्कूटी बैटरी गाइड")],
+    "bms": [("how-to-choose-bms-for-lifepo4-battery", "How to choose a BMS for a LiFePO4 battery"),
+            ("smart-bms-vs-active-balancer", "Smart BMS vs active balancer"),
+            ("how-to-choose-bms-for-lifepo4-battery-hi", "LiFePO4 बैटरी के लिए BMS कैसे चुनें")],
+}
+
+
+def blog_kind(p, cat_slug):
+    name = p["name"].lower()
+    if p.get("brand"):
+        return "bms" if cat_slug == "bms-balancers" else None
+    for key, kind in (("inverter", "inverter"), ("solar panel", "panel"), ("rickshaw", "rickshaw"),
+                      ("scooty", "scooty"), ("battery", "battery")):
+        if key in name:
+            return kind
+    return None
+
+
+def guides_block(p, cat_slug):
+    kind = blog_kind(p, cat_slug)
+    if not kind:
+        return []
+    return ['<h3>Related guides</h3>',
+            '<ul class="prose">%s</ul>' % "".join('<li><a href="/blog/%s/">%s</a></li>' % (slug, esc(title))
+                                                  for slug, title in BLOG[kind])]
+
+
 # --------------------------------------------- PowerRun's own range (no brand)
 # The same rule the battery and solar calculators use: ~90% usable LiFePO4
 # capacity x ~90% inverter efficiency, and ~4 units a day per installed kW.
@@ -572,7 +614,7 @@ def panel_guide(p, sp, pool):
     return out
 
 
-def own_guide(p, pool):
+def own_guide(p, pool, cat_slug=""):
     sp = specs(p)
     if is_inverter(p):
         body = inverter_guide(p, sp, pool)
@@ -584,6 +626,7 @@ def own_guide(p, pool):
         body = []
     if not body:
         return ""
+    body += guides_block(p, cat_slug)
     return ('    <section class="section" id="fitGuide" style="padding-top:0">\n'
             '      <div class="section-head"><div><h2>SIZING &amp; <span>SETUP GUIDE</span></h2>'
             '<p class="section-sub" lang="hi">साइज़ और सेटअप गाइड</p></div></div>\n'
@@ -595,7 +638,7 @@ def own_guide(p, pool):
 def guide_html(p, cat_slug, pool):
     """The section, or "" for products it does not apply to."""
     if not p.get("brand"):
-        return own_guide(p, pool)
+        return own_guide(p, pool, cat_slug)
     sp = specs(p)
     kind = (sp.get("type") or "").lower()
     body = []
@@ -616,6 +659,7 @@ def guide_html(p, cat_slug, pool):
     body += siblings_table(p, sp, family_of(p, pool))
     if not body:
         return ""
+    body += guides_block(p, cat_slug)
     return ('    <section class="section" id="fitGuide" style="padding-top:0">\n'
             '      <div class="section-head"><div><h2>SIZING &amp; <span>FIT GUIDE</span></h2>'
             '<p class="section-sub" lang="hi">साइज़ और फ़िट गाइड</p></div></div>\n'
