@@ -23,7 +23,7 @@ sys.path.insert(0, os.path.dirname(os.path.abspath(__file__)))
 import supabase_admin as sa  # noqa: E402
 
 ROOT = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
-FUNCTIONS = ["razorpay-create-order", "razorpay-verify-payment"]
+FUNCTIONS = ["razorpay-create-order", "razorpay-verify-payment", "razorpay-webhook"]
 
 
 def multipart(fields, files):

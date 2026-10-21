@@ -1,5 +1,5 @@
 -- PowerRun Industries - baseline schema of project nnkopxkyxcmtiunftlgr
--- Generated 2026-10-21 09:29 by scripts/schema_snapshot.py (read-only). Structure only, no data.
+-- Generated 2026-10-21 09:47 by scripts/schema_snapshot.py (read-only). Structure only, no data.
 -- Apply to an EMPTY Supabase project, then the later numbered migrations are already included.
 set check_function_bodies = off;
 
@@ -442,6 +442,19 @@ create table public."page_seo" (
   "created_at" timestamp with time zone default now() not null,
   "updated_at" timestamp with time zone default now() not null
 );
+create table public."payment_events" (
+  "id" bigint generated always as identity not null,
+  "provider" text default 'razorpay'::text not null,
+  "event_id" text not null,
+  "event_type" text not null,
+  "razorpay_order_id" text,
+  "razorpay_payment_id" text,
+  "amount_paise" bigint,
+  "currency" text,
+  "order_id" uuid,
+  "result" text,
+  "received_at" timestamp with time zone default now() not null
+);
 create table public."pr_pi_number_counters" (
   "fy" text not null,
   "last_number" integer default 0 not null
@@ -722,6 +735,16 @@ create table public."site_settings" (
   "value" jsonb not null,
   "updated_at" timestamp with time zone default now() not null
 );
+create table public."stock_ledger" (
+  "id" bigint generated always as identity not null,
+  "at" timestamp with time zone default now() not null,
+  "product_id" uuid not null,
+  "change" integer not null,
+  "balance" integer,
+  "reason" text not null,
+  "actor" uuid,
+  "actor_role" text
+);
 create table public."warranties" (
   "id" uuid default gen_random_uuid() not null,
   "order_id" uuid,
@@ -781,6 +804,7 @@ alter table public."notifications" add constraint "notifications_pkey" PRIMARY K
 alter table public."order_items" add constraint "order_items_pkey" PRIMARY KEY (id);
 alter table public."orders" add constraint "orders_pkey" PRIMARY KEY (id);
 alter table public."page_seo" add constraint "page_seo_pkey" PRIMARY KEY (id);
+alter table public."payment_events" add constraint "payment_events_pkey" PRIMARY KEY (id);
 alter table public."pr_pi_number_counters" add constraint "pr_pi_number_counters_pkey" PRIMARY KEY (fy);
 alter table public."pr_quote_number_counters" add constraint "pr_quote_number_counters_pkey" PRIMARY KEY (fy);
 alter table public."product_costs" add constraint "product_costs_pkey" PRIMARY KEY (product_id);
@@ -794,6 +818,7 @@ alter table public."quotations" add constraint "quotations_pkey" PRIMARY KEY (id
 alter table public."service_tickets" add constraint "service_tickets_pkey" PRIMARY KEY (id);
 alter table public."shipments" add constraint "shipments_pkey" PRIMARY KEY (id);
 alter table public."site_settings" add constraint "site_settings_pkey" PRIMARY KEY (key);
+alter table public."stock_ledger" add constraint "stock_ledger_pkey" PRIMARY KEY (id);
 alter table public."warranties" add constraint "warranties_pkey" PRIMARY KEY (id);
 alter table public."admin_users" add constraint "admin_users_email_key" UNIQUE (email);
 alter table public."admin_users" add constraint "admin_users_user_id_key" UNIQUE (user_id);
@@ -804,6 +829,7 @@ alter table public."invoices" add constraint "invoices_invoice_number_key" UNIQU
 alter table public."invoices" add constraint "invoices_order_id_key" UNIQUE (order_id);
 alter table public."orders" add constraint "orders_order_number_key" UNIQUE (order_number);
 alter table public."page_seo" add constraint "page_seo_page_key_key" UNIQUE (page_key);
+alter table public."payment_events" add constraint "payment_events_event_id_key" UNIQUE (event_id);
 alter table public."product_reviews" add constraint "product_reviews_product_id_user_id_key" UNIQUE (product_id, user_id);
 alter table public."products" add constraint "products_sku_key" UNIQUE (sku);
 alter table public."products" add constraint "products_slug_key" UNIQUE (slug);
@@ -866,6 +892,7 @@ alter table public."order_items" add constraint "order_items_order_id_fkey" FORE
 alter table public."order_items" add constraint "order_items_product_id_fkey" FOREIGN KEY (product_id) REFERENCES products(id) ON DELETE SET NULL;
 alter table public."orders" add constraint "orders_customer_id_fkey" FOREIGN KEY (customer_id) REFERENCES customers(id) ON DELETE SET NULL;
 alter table public."orders" add constraint "orders_user_id_fkey" FOREIGN KEY (user_id) REFERENCES auth.users(id) ON DELETE SET NULL;
+alter table public."payment_events" add constraint "payment_events_order_id_fkey" FOREIGN KEY (order_id) REFERENCES orders(id) ON DELETE SET NULL;
 alter table public."product_costs" add constraint "product_costs_product_id_fkey" FOREIGN KEY (product_id) REFERENCES products(id) ON DELETE CASCADE;
 alter table public."product_images" add constraint "product_images_product_id_fkey" FOREIGN KEY (product_id) REFERENCES products(id) ON DELETE CASCADE;
 alter table public."product_reviews" add constraint "product_reviews_order_id_fkey" FOREIGN KEY (order_id) REFERENCES orders(id) ON DELETE SET NULL;
@@ -888,6 +915,7 @@ alter table public."service_tickets" add constraint "service_tickets_product_id_
 alter table public."service_tickets" add constraint "service_tickets_user_id_fkey" FOREIGN KEY (user_id) REFERENCES auth.users(id);
 alter table public."service_tickets" add constraint "service_tickets_warranty_id_fkey" FOREIGN KEY (warranty_id) REFERENCES warranties(id) ON DELETE SET NULL;
 alter table public."shipments" add constraint "shipments_order_id_fkey" FOREIGN KEY (order_id) REFERENCES orders(id) ON DELETE CASCADE;
+alter table public."stock_ledger" add constraint "stock_ledger_product_id_fkey" FOREIGN KEY (product_id) REFERENCES products(id) ON DELETE CASCADE;
 alter table public."warranties" add constraint "warranties_customer_id_fkey" FOREIGN KEY (customer_id) REFERENCES customers(id);
 alter table public."warranties" add constraint "warranties_order_id_fkey" FOREIGN KEY (order_id) REFERENCES orders(id) ON DELETE CASCADE;
 alter table public."warranties" add constraint "warranties_product_id_fkey" FOREIGN KEY (product_id) REFERENCES products(id) ON DELETE CASCADE;
@@ -924,6 +952,7 @@ CREATE UNIQUE INDEX orders_invoice_number_key ON public.orders USING btree (invo
 CREATE INDEX orders_order_status_idx ON public.orders USING btree (order_status);
 CREATE UNIQUE INDEX orders_review_token_idx ON public.orders USING btree (review_token);
 CREATE INDEX page_seo_sort_idx ON public.page_seo USING btree (sort_order, page_name);
+CREATE INDEX payment_events_rzp_order_idx ON public.payment_events USING btree (razorpay_order_id);
 CREATE INDEX idx_product_images_product ON public.product_images USING btree (product_id);
 CREATE UNIQUE INDEX product_reviews_order_product_idx ON public.product_reviews USING btree (order_id, product_id) WHERE (order_id IS NOT NULL);
 CREATE INDEX product_reviews_product_idx ON public.product_reviews USING btree (product_id);
@@ -945,6 +974,7 @@ CREATE INDEX quotations_status_idx ON public.quotations USING btree (status);
 CREATE INDEX quotations_type_idx ON public.quotations USING btree (quotation_type);
 CREATE INDEX service_tickets_customer_id_idx ON public.service_tickets USING btree (customer_id);
 CREATE INDEX service_tickets_mobile_idx ON public.service_tickets USING btree (mobile);
+CREATE INDEX stock_ledger_product_at_idx ON public.stock_ledger USING btree (product_id, at DESC);
 CREATE INDEX warranties_customer_id_idx ON public.warranties USING btree (customer_id);
 CREATE INDEX warranties_mobile_idx ON public.warranties USING btree (mobile);
 CREATE UNIQUE INDEX warranties_warranty_number_key ON public.warranties USING btree (warranty_number) WHERE (warranty_number IS NOT NULL);
@@ -1371,6 +1401,12 @@ begin
   ) grouped;
 
   -- ---- 3. availability ---------------------------------------------------
+  -- lock the ordered products until this order commits, so two orders can
+  -- never both take the last unit (migration 36)
+  perform 1 from products
+   where id in (select l.product_id from jsonb_to_recordset(v_lines) as l(product_id uuid, quantity integer))
+   order by id for update;
+
   if exists (
     select 1 from jsonb_to_recordset(v_lines) as l(product_id uuid, quantity integer)
     left join products p on p.id = l.product_id and p.is_active is true
@@ -1554,6 +1590,7 @@ begin
   join products p on p.id = l.product_id;
 
   -- ---- 7. stock ----------------------------------------------------------
+  perform set_config('powerrun.stock_reason', 'order ' || v_order_number, true);
   update products p
      set stock = greatest(coalesce(p.stock, 0) - l.quantity, 0)
     from jsonb_to_recordset(v_lines) as l(product_id uuid, quantity integer)
@@ -2224,6 +2261,97 @@ begin
 end;
 $function$;
 
+CREATE OR REPLACE FUNCTION public.pr_record_razorpay_payment(p_event_id text, p_event_type text, p_rzp_order_id text, p_rzp_payment_id text, p_amount_paise bigint, p_currency text)
+ RETURNS text
+ LANGUAGE plpgsql
+ SECURITY DEFINER
+ SET search_path TO 'public'
+AS $function$
+declare
+  v_event  bigint;
+  v_order  orders%rowtype;
+  v_result text;
+  v_short  text;
+begin
+  insert into payment_events (event_id, event_type, razorpay_order_id, razorpay_payment_id, amount_paise, currency)
+  values (p_event_id, p_event_type, p_rzp_order_id, p_rzp_payment_id, p_amount_paise, p_currency)
+  on conflict (event_id) do nothing
+  returning id into v_event;
+  if v_event is null then
+    return 'duplicate';                                   -- Razorpay retried the same event
+  end if;
+
+  select * into v_order from orders where razorpay_order_id = p_rzp_order_id for update;
+  if not found then
+    v_result := 'unknown_order';
+  elsif p_event_type not in ('payment.captured', 'order.paid') then
+    v_result := 'logged';                                 -- e.g. payment.failed: nothing to change
+  elsif upper(coalesce(p_currency, '')) <> 'INR' or p_amount_paise <> round(v_order.total_amount * 100) then
+    v_result := 'amount_mismatch';                        -- never mark paid; owner checks Razorpay
+  elsif v_order.payment_status = 'paid' then
+    v_result := 'already_paid';
+  elsif v_order.order_status = 'cancelled' then
+    -- paid after the order was cancelled: take the stock back if it is still there
+    select p.name into v_short
+      from order_items oi join products p on p.id = oi.product_id
+     where oi.order_id = v_order.id and p.availability = 'in_stock' and coalesce(p.stock, 0) < oi.quantity
+     limit 1;
+    if v_short is null then
+      perform 1 from products where id in (select product_id from order_items where order_id = v_order.id)
+       order by id for update;
+      perform set_config('powerrun.stock_reason', 'paid after cancel ' || v_order.order_number, true);
+      update products p set stock = greatest(coalesce(p.stock, 0) - oi.quantity, 0)
+        from order_items oi where oi.order_id = v_order.id and p.id = oi.product_id and p.availability = 'in_stock';
+      update products set availability = 'out_of_stock'
+       where id in (select product_id from order_items where order_id = v_order.id)
+         and availability = 'in_stock' and coalesce(stock, 0) = 0;
+      update orders set payment_status = 'paid', order_status = 'confirmed', razorpay_payment_id = p_rzp_payment_id,
+             payment_verified_at = now(), cancelled_reason = null,
+             notes = trim(coalesce(notes, '') || ' [Paid after cancellation; stock re-reserved]')
+       where id = v_order.id;
+      v_result := 'paid_after_cancel_restored';
+    else
+      update orders set payment_status = 'paid', razorpay_payment_id = p_rzp_payment_id, payment_verified_at = now(),
+             cancelled_reason = trim(coalesce(cancelled_reason, '') || ' | PAID AFTER CANCEL - no stock for "' || v_short || '": refund or arrange stock')
+       where id = v_order.id;
+      v_result := 'paid_after_cancel_needs_action';
+    end if;
+  else
+    update orders set payment_status = 'paid',
+           order_status = case when order_status in ('pending', 'new') then 'confirmed' else order_status end,
+           razorpay_payment_id = p_rzp_payment_id, payment_verified_at = now()
+     where id = v_order.id;
+    v_result := 'paid';
+  end if;
+
+  update payment_events set result = v_result, order_id = v_order.id where id = v_event;
+  return v_result;
+end;
+$function$;
+
+CREATE OR REPLACE FUNCTION public.pr_stock_ledger()
+ RETURNS trigger
+ LANGUAGE plpgsql
+ SECURITY DEFINER
+ SET search_path TO 'public'
+AS $function$
+declare
+  v_old integer := case when tg_op = 'UPDATE' then coalesce(old.stock, 0) else 0 end;
+  v_new integer := coalesce(new.stock, 0);
+begin
+  if v_new = v_old then
+    return new;
+  end if;
+  insert into stock_ledger (product_id, change, balance, reason, actor, actor_role)
+  values (new.id, v_new - v_old, v_new,
+          coalesce(nullif(current_setting('powerrun.stock_reason', true), ''),
+                   case when tg_op = 'INSERT' then 'new product'
+                        when public.is_admin() then 'admin edit' else 'system' end),
+          auth.uid(), coalesce(auth.role(), current_user));
+  return new;
+end;
+$function$;
+
 CREATE OR REPLACE FUNCTION public.pr_valid_gstin(p_gstin text)
  RETURNS boolean
  LANGUAGE plpgsql
@@ -2365,6 +2493,7 @@ CREATE OR REPLACE FUNCTION public.restock_cancelled_order()
 AS $function$
 begin
   if new.order_status = 'cancelled' and coalesce(old.order_status, '') <> 'cancelled' then
+    perform set_config('powerrun.stock_reason', 'cancelled ' || new.order_number, true);
     update products p
        set stock = coalesce(p.stock, 0) + oi.quantity,
            availability = case when p.availability = 'out_of_stock' then 'in_stock' else p.availability end
@@ -2911,6 +3040,7 @@ alter table public."notifications" enable row level security;
 alter table public."order_items" enable row level security;
 alter table public."orders" enable row level security;
 alter table public."page_seo" enable row level security;
+alter table public."payment_events" enable row level security;
 alter table public."pr_pi_number_counters" enable row level security;
 alter table public."pr_quote_number_counters" enable row level security;
 alter table public."product_costs" enable row level security;
@@ -2924,6 +3054,7 @@ alter table public."quotations" enable row level security;
 alter table public."service_tickets" enable row level security;
 alter table public."shipments" enable row level security;
 alter table public."site_settings" enable row level security;
+alter table public."stock_ledger" enable row level security;
 alter table public."warranties" enable row level security;
 create policy "admin_users_admin_write" on public."admin_users" as permissive for all to "authenticated" using (is_admin()) with check (is_admin());
 create policy "admin_users_self_read" on public."admin_users" as permissive for select to "authenticated" using (((user_id = auth.uid()) OR is_admin()));
@@ -2967,6 +3098,7 @@ create policy "orders_admin_write" on public."orders" as permissive for all to "
 create policy "orders_owner_read" on public."orders" as permissive for select to "authenticated" using ((is_admin() OR ((user_id IS NOT NULL) AND (user_id = auth.uid()))));
 create policy "page_seo_admin_write" on public."page_seo" as permissive for all to "authenticated" using (is_admin()) with check (is_admin());
 create policy "page_seo_public_read" on public."page_seo" as permissive for select to "anon", "authenticated" using (true);
+create policy "payment_events_admin_read" on public."payment_events" as permissive for select to "authenticated" using (is_admin());
 create policy "pr_pi_number_counters_admin_all" on public."pr_pi_number_counters" as permissive for all to "authenticated" using (is_admin()) with check (is_admin());
 create policy "pr_quote_number_counters_admin_all" on public."pr_quote_number_counters" as permissive for all to "authenticated" using (is_admin()) with check (is_admin());
 create policy "product_costs_admin_all" on public."product_costs" as permissive for all to "authenticated" using (is_admin()) with check (is_admin());
@@ -2995,6 +3127,7 @@ create policy "shipments_owner_read" on public."shipments" as permissive for sel
   WHERE ((o.id = shipments.order_id) AND (o.user_id IS NOT NULL) AND (o.user_id = auth.uid())))));
 create policy "site_settings_admin_write" on public."site_settings" as permissive for all to "authenticated" using (is_admin()) with check (is_admin());
 create policy "site_settings_public_read" on public."site_settings" as permissive for select to "anon", "authenticated" using ((key = ANY (ARRAY['shipping'::text, 'payments'::text, 'company'::text])));
+create policy "stock_ledger_admin_read" on public."stock_ledger" as permissive for select to "authenticated" using (is_admin());
 create policy "warranties_admin_read" on public."warranties" as permissive for select to "authenticated" using (is_admin());
 create policy "warranties_admin_write" on public."warranties" as permissive for all to "authenticated" using (is_admin()) with check (is_admin());
 
@@ -3015,6 +3148,7 @@ CREATE TRIGGER page_seo_touch BEFORE UPDATE ON public.page_seo FOR EACH ROW EXEC
 CREATE TRIGGER product_costs_audit AFTER INSERT OR DELETE OR UPDATE ON public.product_costs FOR EACH ROW EXECUTE FUNCTION pr_audit();
 CREATE TRIGGER product_reviews_touch BEFORE UPDATE ON public.product_reviews FOR EACH ROW EXECUTE FUNCTION product_reviews_touch_updated_at();
 CREATE TRIGGER products_audit AFTER INSERT OR DELETE OR UPDATE ON public.products FOR EACH ROW EXECUTE FUNCTION pr_audit();
+CREATE TRIGGER products_stock_ledger AFTER INSERT OR UPDATE OF stock ON public.products FOR EACH ROW EXECUTE FUNCTION pr_stock_ledger();
 CREATE TRIGGER proforma_invoices_audit AFTER INSERT OR DELETE OR UPDATE ON public.proforma_invoices FOR EACH ROW EXECUTE FUNCTION pr_audit();
 CREATE TRIGGER proforma_invoices_freeze BEFORE DELETE OR UPDATE ON public.proforma_invoices FOR EACH ROW EXECUTE FUNCTION pr_freeze_issued_pi();
 CREATE TRIGGER proforma_invoices_updated_at BEFORE UPDATE ON public.proforma_invoices FOR EACH ROW EXECUTE FUNCTION set_updated_at();
@@ -3065,6 +3199,7 @@ revoke all on public."notifications" from anon, authenticated;
 revoke all on public."order_items" from anon, authenticated;
 revoke all on public."orders" from anon, authenticated;
 revoke all on public."page_seo" from anon, authenticated;
+revoke all on public."payment_events" from anon, authenticated;
 revoke all on public."pr_pi_number_counters" from anon, authenticated;
 revoke all on public."pr_quote_number_counters" from anon, authenticated;
 revoke all on public."product_costs" from anon, authenticated;
@@ -3078,6 +3213,7 @@ revoke all on public."quotations" from anon, authenticated;
 revoke all on public."service_tickets" from anon, authenticated;
 revoke all on public."shipments" from anon, authenticated;
 revoke all on public."site_settings" from anon, authenticated;
+revoke all on public."stock_ledger" from anon, authenticated;
 revoke all on public."warranties" from anon, authenticated;
 grant delete, insert, references, select, trigger, truncate, update on public."admin_users" to authenticated;
 grant select on public."audit_log" to authenticated;
@@ -3106,6 +3242,7 @@ grant delete, insert, references, select, trigger, truncate, update on public."o
 grant delete, insert, references, select, trigger, truncate, update on public."orders" to authenticated;
 grant select on public."page_seo" to anon;
 grant delete, insert, references, select, trigger, truncate, update on public."page_seo" to authenticated;
+grant select on public."payment_events" to authenticated;
 grant insert, select, update on public."pr_pi_number_counters" to authenticated;
 grant insert, select, update on public."pr_quote_number_counters" to authenticated;
 grant delete, insert, select, update on public."product_costs" to authenticated;
@@ -3123,6 +3260,7 @@ grant delete, insert, references, select, trigger, truncate, update on public."s
 grant delete, insert, references, select, trigger, truncate, update on public."shipments" to authenticated;
 grant select on public."site_settings" to anon;
 grant delete, insert, references, select, trigger, truncate, update on public."site_settings" to authenticated;
+grant select on public."stock_ledger" to authenticated;
 grant delete, insert, references, select, trigger, truncate, update on public."warranties" to authenticated;
 grant all on public."admin_users" to service_role;
 grant all on public."audit_log" to service_role;
@@ -3149,6 +3287,7 @@ grant all on public."notifications" to service_role;
 grant all on public."order_items" to service_role;
 grant all on public."orders" to service_role;
 grant all on public."page_seo" to service_role;
+grant all on public."payment_events" to service_role;
 grant all on public."pr_pi_number_counters" to service_role;
 grant all on public."pr_quote_number_counters" to service_role;
 grant all on public."product_costs" to service_role;
@@ -3162,6 +3301,7 @@ grant all on public."quotations" to service_role;
 grant all on public."service_tickets" to service_role;
 grant all on public."shipments" to service_role;
 grant all on public."site_settings" to service_role;
+grant all on public."stock_ledger" to service_role;
 grant all on public."warranties" to service_role;
 grant usage, select on sequence public."pr_calc_number_seq" to authenticated, service_role;
 grant usage, select on sequence public."pr_dealer_number_seq" to authenticated, service_role;
@@ -3224,6 +3364,8 @@ revoke execute on function public."pr_norm_mobile"(p text) from public, anon, au
 grant execute on function public."pr_norm_mobile"(p text) to anon, authenticated;
 revoke execute on function public."pr_public_rate_limit"() from public, anon, authenticated;
 revoke execute on function public."pr_quotation_expiry_job"() from public, anon, authenticated;
+revoke execute on function public."pr_record_razorpay_payment"(p_event_id text, p_event_type text, p_rzp_order_id text, p_rzp_payment_id text, p_amount_paise bigint, p_currency text) from public, anon, authenticated;
+revoke execute on function public."pr_stock_ledger"() from public, anon, authenticated;
 revoke execute on function public."pr_valid_gstin"(p_gstin text) from public, anon, authenticated;
 grant execute on function public."pr_valid_gstin"(p_gstin text) to anon, authenticated;
 revoke execute on function public."pr_valid_mobile"(p text) from public, anon, authenticated;
