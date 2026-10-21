@@ -26,7 +26,8 @@ import sys
 import urllib.error
 import urllib.request
 
-PROJECT_REF = "nnkopxkyxcmtiunftlgr"
+# POWERRUN_PROJECT_REF points the tools at another project (e.g. staging); default = production
+PROJECT_REF = os.environ.get("POWERRUN_PROJECT_REF") or "nnkopxkyxcmtiunftlgr"
 API = "https://api.supabase.com/v1"
 
 TOKEN_PATHS = [

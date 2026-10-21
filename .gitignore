@@ -16,3 +16,6 @@ photos/original/
 
 # Private research files (not for the website)
 private/
+
+# Automation audit reports (contain security findings) - local only
+docs/automation/
