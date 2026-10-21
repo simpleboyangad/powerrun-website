@@ -116,6 +116,7 @@
             '<li><a href="/lithium-batteries/">Lithium Batteries</a></li>' +
             '<li><a href="/solar-panels/">Solar Panels</a></li>' +
             '<li><a href="/e-rickshaw-batteries/">E-Rickshaw Batteries</a></li>' +
+            '<li><a href="/ev-batteries/">E-Scooty Batteries</a></li>' +
             '<li><a href="/bms-balancers/">BMS &amp; Balancers</a></li>' +
             '<li><a href="/battery-connectors/">Connectors &amp; Terminals</a></li>' +
             '<li><a href="/battery-chargers/">Battery Chargers</a></li>' +

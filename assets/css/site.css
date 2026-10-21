@@ -473,7 +473,8 @@ img { max-width: 100%; }
 .detail-actions .btn, .detail-actions .outline { flex: 1; min-width: 150px; }
 
 .spec-table-wrap { margin: 22px 0; }
-.spec-table-wrap > b { display: block; margin-bottom: 8px; font-size: 15px; }
+.spec-table-wrap > b, .spec-table-wrap > .spec-heading { display: block; margin: 0 0 8px; font-size: 15px; font-weight: 700; line-height: 1.4; letter-spacing: 0; text-transform: none; }
+.delivery-note { margin: 10px 0 0; font-size: 14px; color: inherit; }
 .spec-table {
   width: 100%; border-collapse: collapse; border: 1px solid #eee; border-radius: 10px; overflow: hidden;
 }

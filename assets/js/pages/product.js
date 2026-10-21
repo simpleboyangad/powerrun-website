@@ -97,8 +97,25 @@
 
   /* ALT text: the image's own text, then the product-wide ALT set in the
      admin SEO section, then the product name. */
+  var IMAGE_KINDS = {  // same table as IMAGE_KINDS in scripts/seo_build.py
+    'why-powerrun': 'why choose PowerRun',
+    'specifications': 'specifications chart',
+    'why-lithium': 'lithium vs lead-acid benefits',
+    'connections': 'wiring and connections diagram',
+    'build': 'internal build and cells',
+    'solar-grid-battery': 'solar, grid and battery connection diagram',
+    'mono-vs-poly': 'mono vs poly panel comparison'
+  };
+
   function imageAlt(p, img, index) {
-    return img.alt || (p.raw && p.raw.image_alt) || (p.name + (index ? ' - image ' + (index + 1) : ''));
+    if (img.alt) return img.alt;
+    var kind = index && /\/\d+-\d+-\d+-([a-z0-9-]+?)(?:-w\d+)?\.(?:jpe?g|png|webp)$/.exec(img.url || '');
+    if (kind && IMAGE_KINDS[kind[1]]) return p.name + ' - ' + IMAGE_KINDS[kind[1]];
+    var base = (p.raw && p.raw.image_alt) || p.name;
+    if (!index) return base;
+    var total = (p.images && p.images.length) || 0;
+    return base + (p.category && !(p.raw && p.raw.image_alt) ? ' (' + p.category + ')' : '') +
+      ' - view ' + (index + 1) + (total > index ? ' of ' + total : '');
   }
 
   function gallery(p) {
@@ -259,20 +276,20 @@
   function specs(p) {
     var html = '';
     if (p.specRows.length) {
-      html += '<div class="spec-table-wrap"><b>Specifications</b><table class="spec-table"><tbody>' +
+      html += '<div class="spec-table-wrap"><h2 class="spec-heading">Specifications</h2><table class="spec-table"><tbody>' +
         p.specRows.map(function (row) {
           return '<tr><td>' + PR.esc(row.label) + '</td><td>' + PR.esc(row.value) + '</td></tr>';
         }).join('') + '</tbody></table></div>';
     } else if (p.specText) {
-      html += '<div class="spec-table-wrap"><b>Specifications</b>' +
+      html += '<div class="spec-table-wrap"><h2 class="spec-heading">Specifications</h2>' +
               '<p class="prose">' + PR.esc(p.specText) + '</p></div>';
     }
     if (p.features.length) {
-      html += '<div class="spec-table-wrap"><b>Key Features</b><ul class="feature-list">' +
+      html += '<div class="spec-table-wrap"><h2 class="spec-heading">Key Features</h2><ul class="feature-list">' +
         p.features.map(function (f) { return '<li>' + PR.esc(f) + '</li>'; }).join('') + '</ul></div>';
     }
     if (p.description) {
-      html += '<div class="spec-table-wrap"><b>Product Description</b>' +
+      html += '<div class="spec-table-wrap"><h2 class="spec-heading">Product Description</h2>' +
               '<p class="prose">' + PR.esc(p.description) + '</p></div>';
     }
     return html;
@@ -296,6 +313,9 @@
           (p.sku ? '<div class="sku">SKU: ' + PR.esc(p.sku) + '</div>' : '') +
           (p.shortDescription ? '<p class="prose" style="margin:12px 0 0">' + PR.esc(p.shortDescription) + '</p>' : '') +
           PR.priceBlock(p) +
+          (Number.isFinite(p.price) && p.price > 0
+            ? '<p class="delivery-note">🚚 <b>Free delivery across India</b> · dispatch in 1–2 working days</p>'
+            : '') +
           (Number.isFinite(p.price) && p.price > 0
             ? '<div class="emi-note">⚡ <b>EMI options available on request</b> · ask us on WhatsApp or call</div>'
             : '') +
@@ -330,7 +350,7 @@
                 'DOWNLOAD DATASHEET <small>PDF</small></a>'
             : '') +
           '<div class="trust-badges">' +
-            '<div class="trust-badge"><span class="ic">🚚</span><div><b>Pan India Delivery</b><small>Safely packed, tracked online</small></div></div>' +
+            '<div class="trust-badge"><span class="ic">🚚</span><div><b>Free Pan India Delivery</b><small>Safely packed, tracked online</small></div></div>' +
             // Resold parts (p.brand set) carry no PowerRun warranty; only the
             // 7-day replacement from the refund policy applies to them.
             (p.brand
