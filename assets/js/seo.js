@@ -287,7 +287,6 @@
       var title = clean(opts.title || page.title || g.meta_title || document.title);
       var description = clean(opts.description || page.description || g.meta_description ||
         (document.querySelector('meta[name="description"]') || {}).content, 300);
-      var keywords = opts.keywords || page.keywords || g.keywords || '';
       var canonical = opts.canonical || page.canonical_url || seo.canonicalFor(page.path);
       var image = absolute(opts.image || page.og_image || g.og_image || '/assets/powerrun-logo.png');
       var twitterImage = absolute(opts.image || page.og_image || g.twitter_image || g.og_image || image);
@@ -296,7 +295,9 @@
 
       if (title) document.title = title;
       meta('description', description);
-      meta('keywords', keywords);
+      // no <meta name="keywords">: search engines ignore it (see seo_build.head_block)
+      var oldKw = document.querySelector('meta[name="keywords"]');
+      if (oldKw) oldKw.parentNode.removeChild(oldKw);
       meta('robots', (indexable ? 'index' : 'noindex') + ',' + (followable ? 'follow' : 'nofollow') +
         (indexable ? ',max-image-preview:large' : ''));
       link('canonical', canonical);

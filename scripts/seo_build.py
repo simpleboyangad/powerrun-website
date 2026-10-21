@@ -135,8 +135,8 @@ def head_block(title, description, canonical, image, site_name, keywords="",
         "<title>%s</title>" % esc(title),
         '<meta name="description" content="%s">' % esc(description),
     ]
-    if keywords:
-        lines.append('<meta name="keywords" content="%s">' % esc(keywords))
+    # keywords are kept in the admin as focus/secondary keywords for writing
+    # copy, but not printed: search engines ignore <meta name="keywords">
     lines += [
         '<meta name="robots" content="%s">' % esc(robots),
         '<link rel="canonical" href="%s">' % esc(canonical),
@@ -357,6 +357,37 @@ def images_of(product):
                                            key=lambda x: x.get("sort_order") or 0)]
 
 
+# What each standard gallery photo shows, from its file name
+# (.../1789575777355-2-3-specifications-w2.jpg). Same table as
+# IMAGE_KINDS in assets/js/pages/product.js.
+IMAGE_KINDS = {
+    "why-powerrun": "why choose PowerRun",
+    "specifications": "specifications chart",
+    "why-lithium": "lithium vs lead-acid benefits",
+    "connections": "wiring and connections diagram",
+    "build": "internal build and cells",
+    "solar-grid-battery": "solar, grid and battery connection diagram",
+    "mono-vs-poly": "mono vs poly panel comparison",
+}
+
+
+def image_kind(url):
+    m = re.search(r"/\d+-\d+-\d+-([a-z0-9-]+?)(?:-w\d+)?\.(?:jpe?g|png|webp)$", url or "")
+    return IMAGE_KINDS.get(m.group(1)) if m else None
+
+
+def gallery_alt(product, cat, url, index, total, alt):
+    """ALT for gallery photo <index>: the first photo keeps the product ALT;
+    the others say what they show (from the file name), or at least which
+    view of how many - never a bare "image 2"."""
+    if not index:
+        return alt
+    kind = image_kind(url)
+    if kind:
+        return "%s - %s" % (esc(product["name"]), kind)
+    return "%s%s - view %d of %d" % (alt, " (%s)" % esc(cat["name"]) if cat.get("name") and not product.get("image_alt") else "", index + 1, total)
+
+
 def prerender_product(product, cat, images, related=None):
     """Static version of the product view in assets/js/pages/product.js, using
     the same classes so the page looks right before the script takes over.
@@ -371,8 +402,9 @@ def prerender_product(product, cat, images, related=None):
            '<div class="product-detail-view">',
            '<div class="product-gallery-main"><div class="gallery-stage"><div class="gallery-track">']
     for i, url in enumerate(images or []):
+        label = gallery_alt(product, cat, url, i, len(images), alt)
         out.append('<div class="gallery-slide"><img src="%s" alt="%s"%s width="700" height="560"></div>'
-                   % (esc(url), alt + (" - image %d" % (i + 1) if i else ""), ' loading="lazy"' if i else ' fetchpriority="high"'))
+                   % (esc(url), label, ' loading="lazy"' if i else ' fetchpriority="high"'))
     out.append('</div></div></div>')
     out.append('<div class="product-info">')
     if cat.get("name"):
@@ -389,6 +421,7 @@ def prerender_product(product, cat, images, related=None):
             row += ('<span class="price-mrp">%s</span><span class="discount-badge">-%d%%</span>'
                     % (money(mrp), round((1 - float(price) / float(mrp)) * 100)))
         out.append(row + '</div>')
+        out.append('<p class="delivery-note">🚚 <b>Free delivery across India</b> · dispatch in 1–2 working days</p>')
     else:
         out.append('<div class="price-row"><span class="price-now">Price on request</span></div>')
     if product.get("brand"):
@@ -399,18 +432,18 @@ def prerender_product(product, cat, images, related=None):
         out.append('<p class="small-note" style="margin-top:14px">%s</p>' % esc(product["warranty"]))
     rows, text = spec_rows(product.get("specifications"))
     if rows:
-        out.append('<div class="spec-table-wrap"><b>Specifications</b><table class="spec-table"><tbody>'
+        out.append('<div class="spec-table-wrap"><h2 class="spec-heading">Specifications</h2><table class="spec-table"><tbody>'
                    + "".join('<tr><td>%s</td><td>%s</td></tr>' % (esc(k), esc(v)) for k, v in rows)
                    + '</tbody></table></div>')
     elif text:
-        out.append('<div class="spec-table-wrap"><b>Specifications</b><p class="prose">%s</p></div>' % esc(text))
+        out.append('<div class="spec-table-wrap"><h2 class="spec-heading">Specifications</h2><p class="prose">%s</p></div>' % esc(text))
     features = product.get("features")
     features = features if isinstance(features, list) else ([features] if features else [])
     if features:
-        out.append('<div class="spec-table-wrap"><b>Key Features</b><ul class="feature-list">'
+        out.append('<div class="spec-table-wrap"><h2 class="spec-heading">Key Features</h2><ul class="feature-list">'
                    + "".join('<li>%s</li>' % esc(f) for f in features) + '</ul></div>')
     if product.get("description"):
-        out.append('<div class="spec-table-wrap"><b>Product Description</b><p class="prose">%s</p></div>'
+        out.append('<div class="spec-table-wrap"><h2 class="spec-heading">Product Description</h2><p class="prose">%s</p></div>'
                    % esc(product["description"]))
     out.append('<div class="internal-links"><b>Explore more</b><div class="link-chips">'
                + ('<a href="%s">All %s</a>'

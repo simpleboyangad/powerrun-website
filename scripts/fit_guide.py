@@ -482,11 +482,13 @@ def storage_guide(p, sp, pool):
                     'built for a %d V DC battery: %s. Check the inverter battery setting is on LiFePO4 / lithium before '
                     'first charge.</p>' % (dc, v, dc, ", ".join(link(q) for q in invs))]
         panel_kw = kwh / UNITS_PER_KW_DAY
+        panels = int(max(1, -(-panel_kw * 1000 // 550)))
         out += ['<h3>Solar to recharge it in a day</h3>',
                 '<p class="prose">In most of India 1 kW of panels makes about %d units (kWh) on a clear day, so '
-                'about %.1f kW of panels refills this battery from empty in one sunny day - for example %d panels '
-                'of 550 W. Solar running your daytime load at the same time needs more panels on top.</p>'
-                % (UNITS_PER_KW_DAY, panel_kw, max(1, -(-panel_kw * 1000 // 550)))]
+                'this battery needs about %.1f kW of panels to refill from empty in one sunny day. Panels come in '
+                'whole units, so in practice that is %d panel%s of 550 W (%.1f kW). Solar running your daytime load '
+                'at the same time needs more panels on top.</p>'
+                % (UNITS_PER_KW_DAY, panel_kw, panels, "" if panels == 1 else "s", panels * 0.55)]
     else:
         out += ['<h3>Energy and charging</h3>',
                 '<p class="prose">The %s stores %.2f kWh (%g V &times; %g Ah). A full charge from empty takes '
