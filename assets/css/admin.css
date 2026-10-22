@@ -212,6 +212,21 @@ table.grid td small { color: var(--muted); display: block; margin-top: 3px; }
 .pill.sent { background: #e7f0ff; color: #1a4b9c; }
 .pill.accepted { background: #e7f6ed; color: #14663a; }
 .pill.draft, .pill.expired { background: #eceef1; color: #444; }
+.pill.executed { background: #e7f6ed; color: #14663a; }
+
+/* Approval Center */
+.apr-list { display: grid; gap: 12px; max-width: 760px; }
+.apr-card { border: 1px solid var(--line); border-radius: 12px; padding: 14px; background: #fff; display: grid; gap: 6px; }
+.apr-top { display: flex; justify-content: space-between; align-items: center; gap: 8px; font-size: 16px; }
+.apr-meta { font-size: 12px; color: var(--muted); }
+.apr-reason { padding: 8px 10px; background: #f7f7f8; border-radius: 8px; white-space: pre-wrap; }
+.apr-line { display: flex; gap: 10px; font-size: 14px; }
+.apr-line span { min-width: 96px; color: var(--muted); text-transform: capitalize; }
+.apr-line b { font-weight: 600; overflow-wrap: anywhere; }
+.apr-error { color: #8c1d18; }
+.apr-actions { display: flex; gap: 8px; margin-top: 6px; }
+.apr-actions .btn { flex: 1; min-height: 42px; }
+@media (max-width: 520px) { .apr-line { flex-direction: column; gap: 0; } }
 .pill.customer { background: #eceef1; color: #444; }
 .pill.dealer { background: #fff4e0; color: #96590a; }
 .pill.project { background: #efe7ff; color: #5b2ea6; }
