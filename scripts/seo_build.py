@@ -718,6 +718,7 @@ def main():
     org = {
         "@context": "https://schema.org", "@type": "Organization",
         "@id": site + "/#organization", "name": site_name, "url": site + "/",
+        "alternateName": ["PowerRun", "Power Run Industries"],
         "logo": site + "/assets/icon-512.png", "email": "service@powerrun.in", "telephone": "+91 80575 73040",
         "areaServed": "IN",
         # every official profile, so Google ties the brand together
@@ -752,7 +753,12 @@ def main():
         if page["page_key"] == "home":
             schema.append({
                 "@context": "https://schema.org", "@type": "WebSite", "@id": site + "/#website",
-                "url": site + "/", "name": site_name, "publisher": {"@id": site + "/#organization"},
+                "url": site + "/", "name": site_name,
+                # Google picks the site name shown in results from these; "PowerRun"
+                # alone is shared with a Windows tool and a marathon, so spell out ours.
+                "alternateName": ["PowerRun", "Power Run Industries", "powerrun.in"],
+                "inLanguage": "en-IN",
+                "publisher": {"@id": site + "/#organization"},
                 "potentialAction": {
                     "@type": "SearchAction",
                     "target": {"@type": "EntryPoint",
