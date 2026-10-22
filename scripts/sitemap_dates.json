@@ -1,7 +1,7 @@
 {
  "https://powerrun.in/": [
-  "cf6d79e22cbf7087",
-  "2026-10-13"
+  "1ad43b7308ab518e",
+  "2026-10-22"
  ],
  "https://powerrun.in/about/": [
   "3568aea15488c7f1",
@@ -16,16 +16,16 @@
   "2026-10-20"
  ],
  "https://powerrun.in/battery-connectors/": [
-  "f175d60c5561718d",
-  "2026-10-20"
+  "a49ca0ccae35fceb",
+  "2026-10-22"
  ],
  "https://powerrun.in/blog/": [
   "fb4b538513f90170",
   "2026-10-13"
  ],
  "https://powerrun.in/bms-balancers/": [
-  "e3a524fc4033e94e",
-  "2026-10-20"
+  "fc7347f5019cb9dc",
+  "2026-10-22"
  ],
  "https://powerrun.in/contact/": [
   "5331bff1cb2fa3dc",
@@ -36,24 +36,28 @@
   "2026-10-13"
  ],
  "https://powerrun.in/e-rickshaw-batteries/": [
-  "70ec41285e134881",
-  "2026-10-13"
+  "2ad85dcbe48954e7",
+  "2026-10-22"
+ ],
+ "https://powerrun.in/ev-batteries/": [
+  "654e0b3201a40dba",
+  "2026-10-21"
  ],
  "https://powerrun.in/hybrid-inverters/": [
   "fff93eedfd7e4618",
   "2026-10-13"
  ],
  "https://powerrun.in/lithium-batteries/": [
-  "052af9b488974e40",
-  "2026-10-13"
+  "e13476ca96f067bb",
+  "2026-10-22"
  ],
  "https://powerrun.in/privacy-policy/": [
   "c996dcd5c60602f9",
   "2026-10-13"
  ],
  "https://powerrun.in/products/": [
-  "747a6f2f4a6422b5",
-  "2026-10-20"
+  "44d97867a53f8f8e",
+  "2026-10-22"
  ],
  "https://powerrun.in/products/battery-interconnect-cable-4-awg-200-mm-sc35-6-lugs-red-pack-of-2/": [
   "a86a8607b0e38263",
@@ -212,8 +216,8 @@
   "2026-10-20"
  ],
  "https://powerrun.in/products/jbd-lifepo4-bms-16s-50a/": [
-  "4d6618a9d9529b99",
-  "2026-10-20"
+  "a853026eccec18ff",
+  "2026-10-22"
  ],
  "https://powerrun.in/products/jbd-lifepo4-bms-20s-100a/": [
   "e00612d5846c9b27",
@@ -464,8 +468,8 @@
   "2026-10-20"
  ],
  "https://powerrun.in/products/lithium-battery-charger-29-2v-3a/": [
-  "7a86c8571cb2bd1b",
-  "2026-10-20"
+  "86dede20b73a2ccf",
+  "2026-10-22"
  ],
  "https://powerrun.in/products/lithium-battery-charger-29-2v-5a/": [
   "c12c07cd2f124c60",
