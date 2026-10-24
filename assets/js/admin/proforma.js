@@ -49,6 +49,7 @@
     var copy = '<button class="btn ghost small" type="button" data-copy-pi="' + PR.esc(pi.id) + '">Copy</button> ';
     if (pi.invoice_number) {
       return '<a class="btn small" href="' + printUrl + '" target="_blank" rel="noopener">Tax Invoice / PDF</a> ' + copy + wa +
+        '<a class="btn gray small" href="/admin/credit-notes/?type=pi&amp;id=' + encodeURIComponent(pi.id) + '">Credit Note</a> ' +
         (pi.status === 'cancelled' ? '' : '<button class="btn danger small" type="button" data-cancel-pi="' + PR.esc(pi.id) + '">Cancel Invoice</button>');
     }
     return '<button class="btn ghost small" type="button" data-edit-pi="' + PR.esc(pi.id) + '">Edit / Rate</button> ' + copy +
@@ -414,6 +415,10 @@
         return sb.from('proforma_invoices').update({ status: 'cancelled' }).eq('id', pi.id);
       });
       PR.toast('Invoice cancelled.', 'success');
+      if (confirm('GST ke liye is cancelled invoice ka Credit Note banana zaroori hai. Abhi banayein?')) {
+        window.location.href = '/admin/credit-notes/?type=pi&id=' + encodeURIComponent(pi.id);
+        return;
+      }
       await refresh();
     } catch (err) {
       PR.toast(err.message, 'error');

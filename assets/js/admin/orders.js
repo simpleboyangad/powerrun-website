@@ -175,6 +175,10 @@
           ? ''
           : '<button class="btn small" type="button" id="taxInvoiceBtn">' +
               (order.invoice_number ? 'Print Tax Invoice' : 'Issue Tax Invoice') + '</button>') +
+        (order.invoice_number
+          ? ' <a class="btn gray small" href="/admin/credit-notes/?type=order&amp;id=' + encodeURIComponent(order.id) +
+              '" title="Cancel / return / discount ke baad GST credit note">Credit Note</a>'
+          : '') +
       '</div>' +
 
       '<div class="hint" style="margin-top:12px">' +
@@ -366,6 +370,11 @@
       });
       PRA.closeDrawer();
       PR.toast('Order ' + order.order_number + ' updated.', 'success');
+      if (status === 'cancelled' && order.order_status !== 'cancelled' && order.invoice_number &&
+          confirm('Is order ka Tax Invoice ' + order.invoice_number + ' ban chuka tha. GST ke liye Credit Note banana zaroori hai. Abhi banayein?')) {
+        window.location.href = '/admin/credit-notes/?type=order&id=' + encodeURIComponent(order.id);
+        return;
+      }
       await refresh();
       PRA.loadBadges();
     } catch (err) {

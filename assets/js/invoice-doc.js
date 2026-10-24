@@ -79,7 +79,9 @@
         : num(item.total_price);
       return {
         name: item.product_name, sku: item.product_sku, hsn: item.hsn_code || '',
-        qty: qty, rate: rate, gross: gross
+        qty: qty, rate: rate, gross: gross,
+        // credit notes refer back to the exact invoice line
+        key: item.line_key || (item.id ? 'item:' + item.id : null), productId: item.product_id || null
       };
     });
 
@@ -97,7 +99,7 @@
     if (shipping > 0) {
       var main = lines.slice().sort(function (a, b) { return b.gross - a.gross; })[0];
       lines.push({
-        name: 'Freight & Delivery Charges', sku: '', hsn: '9965', qty: 1,
+        name: 'Freight & Delivery Charges', sku: '', hsn: '9965', qty: 1, key: 'freight',
         rate: main ? main.rate : 0, gross: shipping, couponShare: 0, isCharge: true
       });
     }
@@ -140,7 +142,8 @@
      and freight is taxed at the main item's rate. Place of supply: the
      buyer's GSTIN state for a registered dealer, otherwise the ship-to state. */
   PR.proformaOrder = function (pi) {
-    var items = (pi.items || []).filter(function (it) { return it && (it.product_name || '').trim(); })
+    var items = (pi.items || []).map(function (it, index) { return it && Object.assign({ _index: index }, it); })
+      .filter(function (it) { return it && (it.product_name || '').trim(); })
       .map(function (it) {
         var qty = Math.max(1, num(it.quantity) || 1);
         var rate = num(it.gst_rate);
@@ -149,6 +152,7 @@
         return {
           product_name: it.product_name, product_sku: it.product_sku || '', hsn_code: it.hsn_code || '',
           quantity: qty, gst_rate: rate, unit_price: num(it.unit_price),
+          line_key: 'line:' + it._index, product_id: it.product_id || null,
           taxable_amount: taxable, gst_amount: r2(gross - taxable), total_price: gross
         };
       });
