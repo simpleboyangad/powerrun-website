@@ -72,9 +72,12 @@ def service_key():
     token = os.path.join(HOME, "supabase.token")
     if os.path.isfile(token) and os.path.getsize(token) > 0:
         import pr_data
-        key = pr_data.service_key()
-        remember_key(key)
-        return key
+        try:
+            key = pr_data.service_key()
+            remember_key(key)
+            return key
+        except SystemExit as err:   # token expired / revoked: fall back to the saved key
+            print("Supabase token not usable (%s) - using the saved service key" % str(err).splitlines()[0])
     key = recall_key()
     if not key:
         sys.exit("No service key: save the Supabase token (supabase.token) once and run again.")
