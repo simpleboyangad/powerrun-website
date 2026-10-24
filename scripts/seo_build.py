@@ -409,7 +409,8 @@ def prerender_product(product, cat, images, related=None):
     out.append('<div class="product-info">')
     if cat.get("name"):
         out.append('<span class="detail-badge">%s</span>' % esc(cat["name"].upper()))
-    out.append('<h1>%s</h1>' % name)
+    # heading spells out the brand ("PR Hybrid Inverter" -> "PowerRun Hybrid Inverter"); name, SKU and bills keep "PR"
+    out.append('<h1>%s</h1>' % esc(re.sub(r"^PR ", "PowerRun ", product["name"])))
     if product.get("sku"):
         out.append('<div class="sku">SKU: %s</div>' % esc(product["sku"]))
     if product.get("short_description"):

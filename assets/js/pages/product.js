@@ -309,7 +309,7 @@
         '<div class="product-gallery-main">' + gallery(p) + '</div>' +
         '<div class="product-info">' +
           (p.category ? '<span class="detail-badge">' + PR.esc(String(p.category).toUpperCase()) + '</span>' : '') +
-          '<h1>' + PR.esc(p.name) + '</h1>' +
+          '<h1>' + PR.esc(p.name.replace(/^PR /, 'PowerRun ')) + '</h1>' +
           (p.sku ? '<div class="sku">SKU: ' + PR.esc(p.sku) + '</div>' : '') +
           (p.shortDescription ? '<p class="prose" style="margin:12px 0 0">' + PR.esc(p.shortDescription) + '</p>' : '') +
           PR.priceBlock(p) +
