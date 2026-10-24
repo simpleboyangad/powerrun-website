@@ -608,6 +608,7 @@ img { max-width: 100%; }
 .pill.pending { background: #fff4e0; color: #96590a; }
 .pill.confirmed, .pill.processing { background: #e7f0ff; color: #1a4b9c; }
 .pill.shipped { background: #efe7ff; color: #5b2ea6; }
+.pill.packed { background: #e7f0ff; color: #1a4b9c; }
 .pill.delivered, .pill.paid { background: #e7f6ed; color: #14663a; }
 .pill.cancelled, .pill.failed { background: #fdecea; color: #8c1d18; }
 .pill.refunded { background: #eee; color: #444; }

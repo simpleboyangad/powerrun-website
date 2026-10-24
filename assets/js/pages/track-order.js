@@ -3,20 +3,27 @@
   'use strict';
   var PR = window.PR;
 
-  var STEPS = ['pending', 'confirmed', 'processing', 'shipped', 'delivered'];
+  var STEPS = ['pending', 'confirmed', 'packed', 'shipped', 'delivered'];
+  var STEP_AT = { confirmed: 'confirmed_at', packed: 'packed_at', shipped: 'shipped_at', delivered: 'delivered_at' };
 
-  function timeline(status) {
+  function stepIndex(status) {
+    return status === 'processing' ? 1 : STEPS.indexOf(status);   // old orders: 'processing' = confirmed
+  }
+
+  function timeline(status, order) {
     if (status === 'cancelled') {
       return '<p class="form-message error" style="margin-top:14px">This order was cancelled. ' +
              'Please contact us if this is unexpected.</p>';
     }
-    var reached = STEPS.indexOf(status);
+    var reached = stepIndex(status);
     return '<div class="table-scroll"><table class="data-table"><tbody>' +
       STEPS.map(function (step, index) {
         var done = index <= reached;
         return '<tr><td style="width:40px">' + (done ? '✅' : '⬜') + '</td>' +
                '<td style="text-transform:capitalize;font-weight:' + (done ? '800' : '400') + '">' +
-               step + '</td></tr>';
+               step + (STEP_AT[step] && order[STEP_AT[step]]
+                 ? ' <small style="font-weight:400;color:#6d6d6d">' + PR.formatDateTime(order[STEP_AT[step]]) + '</small>' : '') +
+               '</td></tr>';
       }).join('') + '</tbody></table></div>';
   }
 
@@ -35,7 +42,7 @@
             ' ' + PR.esc(order.tracking_number) + '</b></div>'
           : '') +
         PR.orderBreakdownHtml(order) +
-        '<h2 style="margin:22px 0 8px;font-size:17px">Progress</h2>' + timeline(order.order_status) +
+        '<h2 style="margin:22px 0 8px;font-size:17px">Progress</h2>' + timeline(order.order_status, order) +
         '<h2 style="margin:22px 0 8px;font-size:17px">Items</h2>' +
         '<div class="table-scroll"><table class="data-table"><thead><tr>' +
           '<th>Product</th><th>Qty</th><th>Total</th></tr></thead><tbody>' +

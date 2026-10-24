@@ -3,21 +3,29 @@
   'use strict';
   var PR = window.PR;
 
-  var STEPS = ['pending', 'confirmed', 'processing', 'shipped', 'delivered'];
+  var STEPS = ['pending', 'confirmed', 'packed', 'shipped', 'delivered'];
+  var STEP_AT = { confirmed: 'confirmed_at', packed: 'packed_at', shipped: 'shipped_at', delivered: 'delivered_at' };
 
-  function timeline(status) {
+  function stepIndex(status) {
+    return status === 'processing' ? 1 : STEPS.indexOf(status);   // old orders: 'processing' = confirmed
+  }
+
+  function timeline(status, order) {
     if (status === 'cancelled') {
       return '<div class="form-message error" style="margin-top:12px">This order was cancelled. ' +
              'Please contact us if that is unexpected.</div>';
     }
-    var reached = STEPS.indexOf(status);
+    var reached = stepIndex(status);
     return '<div style="display:flex;flex-wrap:wrap;gap:6px;margin-top:12px">' +
       STEPS.map(function (step, index) {
         var done = index <= reached;
         return '<div style="flex:1;min-width:92px;text-align:center;padding:10px 6px;border-radius:8px;' +
                'background:' + (done ? '#e7f6ed' : '#f4f4f4') + ';color:' + (done ? '#14663a' : '#999') + ';' +
                'font-size:12px;font-weight:800;text-transform:capitalize">' +
-               (done ? '✓ ' : '') + step + '</div>';
+               (done ? '✓ ' : '') + step +
+               (STEP_AT[step] && order[STEP_AT[step]]
+                 ? '<div style="font-weight:400;font-size:11px;text-transform:none">' + PR.formatDate(order[STEP_AT[step]]) + '</div>' : '') +
+               '</div>';
       }).join('') + '</div>';
   }
 
@@ -39,7 +47,7 @@
                 '<span class="pill ' + PR.esc(order.payment_status) + '">' + PR.esc(order.payment_status) + '</span>' +
               '</div>' +
             '</div>' +
-            timeline(order.order_status) +
+            timeline(order.order_status, order) +
             (order.tracking_number
               ? '<div class="order-summary" style="margin-top:16px"><b>Shipment</b>' +
                 '<div class="summary-row"><span>Courier</span><b>' + PR.esc(order.courier_partner || '-') + '</b></div>' +

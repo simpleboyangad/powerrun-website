@@ -201,6 +201,7 @@ table.grid td small { color: var(--muted); display: block; margin-top: 3px; }
 .pill.pending, .pill.new, .pill.open { background: #fff4e0; color: #96590a; }
 .pill.confirmed, .pill.processing, .pill.contacted, .pill.in_progress { background: #e7f0ff; color: #1a4b9c; }
 .pill.shipped, .pill.qualified { background: #efe7ff; color: #5b2ea6; }
+.pill.packed { background: #e7f0ff; color: #1a4b9c; }
 .pill.delivered, .pill.paid, .pill.approved, .pill.resolved, .pill.closed, .pill.active { background: #e7f6ed; color: #14663a; }
 .pill.cancelled, .pill.failed, .pill.rejected, .pill.inactive { background: #fdecea; color: #8c1d18; }
 .pill.refunded { background: #eceef1; color: #444; }
