@@ -23,6 +23,7 @@
   var NAV = [
     { key: 'dashboard', href: '/admin/dashboard/', icon: '▦', label: 'Dashboard' },
     { key: 'reports',   href: '/admin/reports/',   icon: '📊', label: 'Reports' },
+    { key: 'agent-reports', href: '/admin/agent-reports/', icon: '🤖', label: 'Agent Report', badge: 'agent_reports_today' },
     { key: 'products',  href: '/admin/products/',  icon: '📦', label: 'Products' },
     { key: 'categories', href: '/admin/categories/', icon: '🗂', label: 'Categories' },
     { key: 'orders',    href: '/admin/orders/',    icon: '🧾', label: 'Orders', badge: 'pending_orders' },

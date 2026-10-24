@@ -16,6 +16,8 @@ Usage (PYTHONUTF8=1):
   python scripts/agent_client.py --agent sales whoami
   python scripts/agent_client.py --agent sales get orders "select=order_number,order_status&limit=5"
   python scripts/agent_client.py --agent support rpc agent_add_followup '{"p_lead_id": "...", ...}'
+  python scripts/agent_client.py --agent sales save-report --kind sales_support --file private/reports/<date>-sales-support.md \\
+         --summary "Aaj 5 kaam: ..." [--title "..."] [--date YYYY-MM-DD]     (shows in Admin -> Agent Report)
   python scripts/agent_client.py --agent sales request stock_adjust '{"product_id": "...", "change": 5}' \\
          --reason "Supplier delivered 5" [--amount 0] [--target-table products --target-id <uuid>]
 
@@ -117,6 +119,10 @@ def main():
     q.add_argument("action"); q.add_argument("payload")
     q.add_argument("--reason", required=True); q.add_argument("--amount", type=float)
     q.add_argument("--target-table"); q.add_argument("--target-id")
+    sv = sub.add_parser("save-report")
+    sv.add_argument("--kind", required=True, choices=["sales_support", "seo", "instagram", "monthly", "other"])
+    sv.add_argument("--file", required=True); sv.add_argument("--summary", default="")
+    sv.add_argument("--title"); sv.add_argument("--date")
     a = ap.parse_args()
 
     key, token = sign_in(a.agent)
@@ -127,6 +133,12 @@ def main():
         out = call("GET", "/rest/v1/%s?%s" % (a.table, a.query), key, token)
     elif a.cmd == "rpc":
         out = call("POST", "/rest/v1/rpc/" + a.fn, key, token, json.loads(a.args))
+    elif a.cmd == "save-report":
+        body = open(a.file, encoding="utf-8").read()
+        first = next((ln.lstrip("# ").strip() for ln in body.splitlines() if ln.strip()), a.kind)
+        out = {"saved": call("POST", "/rest/v1/rpc/agent_save_report", key, token, {
+            "p_kind": a.kind, "p_date": a.date, "p_title": a.title or first[:200],
+            "p_summary": a.summary or None, "p_body": body})}
     else:
         out = call("POST", "/rest/v1/rpc/request_approval", key, token, {
             "p_action": a.action, "p_target_table": a.target_table, "p_target_id": a.target_id,
