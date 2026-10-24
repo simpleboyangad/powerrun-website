@@ -473,3 +473,14 @@ table.grid td small { color: var(--muted); display: block; margin-top: 3px; }
   .pi-card-amt { font-size: 18px; font-weight: 800; }
   .pi-card-actions { display: flex; flex-wrap: wrap; gap: 6px; margin-top: 6px; }
 }
+
+/* Reports */
+table.grid th.num, table.grid td.num { text-align: right; }
+.rep-chart { position: relative; padding: 18px 0 0; }
+.rep-chart svg { display: block; width: 100%; height: 180px; }
+.rep-chart-max { position: absolute; top: 0; left: 0; font-size: 11px; color: var(--muted); }
+.rep-chart-axis { display: flex; justify-content: space-between; font-size: 11px; color: var(--muted); margin-top: 4px; }
+.rep-bar { fill: var(--orange); }
+.rep-hit { fill: transparent; }
+.rep-hit:hover + .rep-bar, g:hover > .rep-bar { fill: #c94f00; }
+.rep-axis { stroke: var(--line); stroke-width: 0.3; vector-effect: non-scaling-stroke; }

@@ -212,6 +212,9 @@
           '<label>Tracking Number<input id="od_tracking" maxlength="80" value="' +
             PR.esc(order.tracking_number || '') + '"></label>' +
         '</div>' +
+        '<label style="display:flex;gap:8px;align-items:center;flex-direction:row;font-weight:400">' +
+          '<input type="checkbox" id="od_test" style="width:auto"' + (order.is_test ? ' checked' : '') + '> ' +
+          'Test order (Reports mein nahi ginega)</label>' +
         '<label>Internal Notes<textarea id="od_notes" maxlength="1000">' +
           PR.esc(order.notes || '') + '</textarea></label>' +
         '<div class="page-actions" style="justify-content:flex-end">' +
@@ -362,6 +365,8 @@
       tracking_number: document.getElementById('od_tracking').value.trim() || null,
       notes: document.getElementById('od_notes').value.trim() || null
     };
+    var testBox = document.getElementById('od_test');
+    if (testBox && 'is_test' in order) payload.is_test = testBox.checked;
 
     PR.setBusy(button, true, 'SAVING…');
     try {
