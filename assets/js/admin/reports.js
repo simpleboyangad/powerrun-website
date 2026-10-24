@@ -101,6 +101,9 @@
           stat('Confirmed (payment mila)', os.confirmed_count || 0, 'good', money(os.confirmed_value)) +
           stat('Pending (payment baaki)', os.pending_count || 0, os.pending_count ? 'warn' : '', money(os.pending_value)) +
           stat('Cancelled', r.cancelled.count, r.cancelled.count ? 'bad' : '', money(r.cancelled.value)) +
+          stat('PI bheja (paisa baaki)', os.pi_sent_count || 0, os.pi_sent_count ? 'warn' : '', money(os.pi_sent_value)) +
+          stat('Advance mila', os.advance_count || 0, os.advance_value > 0 ? 'good' : '', money(os.advance_value)) +
+          stat('Abhi lena baaki', money(os.unpaid_value), os.unpaid_value > 0 ? 'warn' : '', 'Pending orders − advance') +
         '</div>' +
         '<div class="stat-group-title">PI / Dealer</div>' +
         '<div class="stats">' +
@@ -111,7 +114,7 @@
         '</div>' +
         '<div class="stat-group-title">Kul (sab milakar)</div>' +
         '<div class="stats">' +
-          stat('Pakki sale (payment mila)', money(r.received), 'good', 'Website + PI, jin par Paid mark hai') +
+          stat('Kul payment mila', money(r.received), 'good', 'Paid orders + advance + paid PI') +
           stat('Credit Notes', r.credit_notes.count, r.credit_notes.count ? 'warn' : '', money(r.credit_notes.value)) +
           stat('GST (orders)', money(r.orders.gst), '', 'Order value mein shamil') +
         '</div>' +
@@ -134,9 +137,18 @@
       return '<div class="stats">' +
           stat('Kul baaki', money(r.total), 'accent', 'Orders + PI jinka paisa nahi aaya') +
           stat('COD - deliver, paisa nahi', r.cod_delivered_unpaid.length, r.cod_delivered_unpaid.length ? 'bad' : 'good') +
+          stat('PI bheja, intezaar', (r.pi_sent_waiting || []).length, (r.pi_sent_waiting || []).length ? 'warn' : '') +
           stat('COD - raste mein', r.cod_open.count, '', money(r.cod_open.value)) +
           stat('Online adhoore', r.online_unpaid.length, r.online_unpaid.length ? 'warn' : '') +
         '</div>' +
+        section('PI bheja - payment ka intezaar', table(['Order', 'Customer', { t: 'Amount', num: 1 }, { t: 'Advance', num: 1 }, { t: 'Baaki', num: 1 }, 'PI bheja'],
+          (r.pi_sent_waiting || []).map(function (x) {
+            var days = x.pi_sent_at ? Math.floor((Date.now() - new Date(x.pi_sent_at)) / 86400000) : null;
+            return ['<a href="/admin/orders/?order=' + encodeURIComponent(x.order_number) + '">' + PR.esc(x.order_number) + '</a>',
+                    PR.esc(x.customer) + '<small>' + PR.esc(x.mobile || '') + '</small>', money(x.amount),
+                    x.advance > 0 ? money(x.advance) : '-', '<b>' + money(x.due) + '</b>',
+                    when(x.pi_sent_at) + (days != null ? '<small>' + (days === 0 ? 'aaj' : days + ' din pehle') + '</small>' : '')];
+          }), 'Koi PI pending nahi')) +
         section('Deliver ho gaya, paisa nahi aaya', table(['Order', 'Customer', 'City', { t: 'Amount', num: 1 }, 'Delivered'],
           r.cod_delivered_unpaid.map(function (x) {
             return ['<a href="/admin/orders/?order=' + encodeURIComponent(x.order_number) + '">' + PR.esc(x.order_number) + '</a>',

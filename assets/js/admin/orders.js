@@ -6,6 +6,12 @@
 
   var ORDER_STATUSES = ['pending', 'confirmed', 'packed', 'shipped', 'delivered', 'cancelled'];
   var PAYMENT_STATUSES = ['pending', 'paid', 'failed', 'refunded'];
+  var PAY_REQUEST = {
+    none: 'Nahi bheja',
+    pi_sent: 'PI bheja - payment ka intezaar',
+    advance: 'Advance mila',
+    paid: 'Poora payment mila'
+  };
 
   var orders = [];
   var contentHost = null;
@@ -26,9 +32,11 @@
   }
 
   function render(host) {
-    var visible = filterStatus
-      ? orders.filter(function (o) { return o.order_status === filterStatus; })
-      : orders;
+    var visible = filterStatus === 'pi_waiting'
+      ? orders.filter(piWaiting)
+      : filterStatus
+        ? orders.filter(function (o) { return o.order_status === filterStatus; })
+        : orders;
 
     host.innerHTML =
       '<div class="panel">' +
@@ -41,6 +49,7 @@
               return '<option value="' + s + '"' + (filterStatus === s ? ' selected' : '') + '>' +
                 s.charAt(0).toUpperCase() + s.slice(1) + '</option>';
             }).join('') +
+            '<option value="pi_waiting"' + (filterStatus === 'pi_waiting' ? ' selected' : '') + '>PI bheja, paisa baaki</option>' +
           '</select>' +
           '<span class="count" id="orderCount">' + visible.length + ' shown</span>' +
         '</div>' +
@@ -67,6 +76,25 @@
     }
   }
 
+  function piWaiting(o) {
+    return o.order_status !== 'cancelled' && o.payment_status !== 'paid' &&
+      (o.payment_request === 'pi_sent' || o.payment_request === 'advance');
+  }
+
+  function payBadge(o) {
+    if (o.payment_status === 'paid') return '';
+    if (Number(o.advance_amount) > 0) return ' <small class="pill sent">ADV ' + PR.money(o.advance_amount) + '</small>';
+    if (o.payment_request === 'pi_sent') return ' <small class="pill sent">PI SENT</small>';
+    return '';
+  }
+
+  function piMessage(order) {
+    return 'Namaste ' + (order.customer_name || '').split(' ')[0] + ' ji, PowerRun Industries se aapke order ' + order.order_number +
+      ' ka Proforma Invoice (PI) ' + PR.money(order.total_amount) + ' bhej rahe hain.\n\n' +
+      'Payment ke liye bank / UPI details PI mein di gayi hain. Payment karke screenshot is number par bhej dein, ' +
+      'order turant dispatch kar denge. 🙏';
+  }
+
   function row(order) {
     return '<tr>' +
       '<td class="nowrap"><b>' + PR.esc(order.order_number) + '</b></td>' +
@@ -77,7 +105,7 @@
       '<td class="nowrap">' + PR.formatDate(order.created_at) + '</td>' +
       '<td>' + itemCount(order) + '</td>' +
       '<td class="nowrap"><b>' + PR.money(order.total_amount) + '</b></td>' +
-      '<td>' + PRA.pill(order.payment_status) + '</td>' +
+      '<td class="nowrap">' + PRA.pill(order.payment_status) + payBadge(order) + '</td>' +
       '<td>' + PRA.pill(order.order_status) + '</td>' +
       '<td class="nowrap"><button class="btn ghost small" type="button" data-view-order="' +
         PR.esc(order.id) + '">Open</button></td>' +
@@ -206,6 +234,33 @@
             '<span class="hint">Only mark as paid once you have confirmed the money was received.</span>' +
           '</label>' +
         '</div>' +
+        ('payment_request' in order
+          ? '<div style="margin:6px 0 14px;padding:12px;border:1px solid #eef0f3;border-radius:10px">' +
+              '<b style="font-size:12px;color:#6d6d6d">PAYMENT REQUEST (PI / ADVANCE)</b>' +
+              '<div class="form-grid" style="margin-top:8px">' +
+                '<label>Status<select id="od_payreq">' + Object.keys(PAY_REQUEST).map(function (k) {
+                  return '<option value="' + k + '"' + (order.payment_request === k ? ' selected' : '') + '>' + PAY_REQUEST[k] + '</option>';
+                }).join('') + '</select>' +
+                  (order.pi_sent_at ? '<span class="hint">PI bheja: ' + PR.formatDateTime(order.pi_sent_at) + '</span>' : '') + '</label>' +
+                '<label>Advance mila (₹)<input id="od_advance" type="number" min="0" max="' + PR.esc(order.total_amount) +
+                  '" step="1" inputmode="numeric" value="' + (Number(order.advance_amount) || '') + '" placeholder="0">' +
+                  '<span class="hint">' + (Number(order.advance_amount) > 0
+                    ? 'Baaki: ' + PR.money(Number(order.total_amount) - Number(order.advance_amount)) +
+                      (order.advance_received_at ? ' · ' + PR.formatDate(order.advance_received_at) : '')
+                    : 'Order total ' + PR.money(order.total_amount)) + '</span></label>' +
+              '</div>' +
+              (order.order_status !== 'cancelled' && order.payment_status !== 'paid'
+                ? '<div class="page-actions" style="margin-top:4px">' +
+                    '<a class="btn gray small" href="/admin/invoice/?type=proforma&amp;id=' + encodeURIComponent(order.id) +
+                      '" target="_blank" rel="noopener">1. PI kholo → Save as PDF</a>' +
+                    (PR.whatsappTo(order.customer_mobile, '')
+                      ? '<a class="btn small" id="piWaBtn" href="' + PR.esc(PR.whatsappTo(order.customer_mobile, piMessage(order))) +
+                        '" target="_blank" rel="noopener">2. WhatsApp par PI bhejo</a>'
+                      : '') +
+                  '</div><span class="hint">WhatsApp khulne par PDF attach karke bhejein. Button dabate hi order par "PI bheja" lag jayega.</span>'
+                : '') +
+            '</div>'
+          : '') +
         '<div class="form-grid">' +
           '<label>Courier Partner<input id="od_courier" maxlength="80" value="' +
             PR.esc(order.courier_partner || '') + '"></label>' +
@@ -232,11 +287,29 @@
 
     loadSerials(order);
     loadTimeline(order);
+    var piWa = document.getElementById('piWaBtn');
+    if (piWa) piWa.addEventListener('click', function () { markPiSent(order); });
     document.getElementById('orderUpdateForm').addEventListener('submit', function (event) {
       saveOrder(event, order);
     });
     var taxBtn = document.getElementById('taxInvoiceBtn');
     if (taxBtn) taxBtn.addEventListener('click', function () { taxInvoice(order, taxBtn); });
+  }
+
+  async function markPiSent(order) {
+    if (order.payment_request !== 'none') return;
+    try {
+      await PR.call('mark PI sent', function (sb) {
+        return sb.from('orders').update({ payment_request: 'pi_sent' }).eq('id', order.id);
+      });
+      order.payment_request = 'pi_sent';
+      var sel = document.getElementById('od_payreq');
+      if (sel) sel.value = 'pi_sent';
+      PR.toast('Order par "PI bheja" mark ho gaya.', 'success');
+      refresh();
+    } catch (err) {
+      PR.toast(err.message, 'error');
+    }
   }
 
   /* Warranty products need one serial number per unit before the order can be packed. */
@@ -365,6 +438,18 @@
       tracking_number: document.getElementById('od_tracking').value.trim() || null,
       notes: document.getElementById('od_notes').value.trim() || null
     };
+    var payReq = document.getElementById('od_payreq');
+    if (payReq) {
+      var adv = Number(document.getElementById('od_advance').value) || 0;
+      if (adv < 0 || adv > Number(order.total_amount)) {
+        PR.toast('Advance 0 se ' + PR.money(order.total_amount) + ' ke beech hona chahiye.', 'error');
+        return;
+      }
+      payload.payment_request = payReq.value;
+      payload.advance_amount = adv;
+      if (payReq.value === 'paid') payload.payment_status = 'paid';
+      if (adv > 0 && payReq.value === 'none') payload.payment_request = 'advance';
+    }
     var testBox = document.getElementById('od_test');
     if (testBox && 'is_test' in order) payload.is_test = testBox.checked;
 
