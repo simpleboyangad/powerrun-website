@@ -281,6 +281,38 @@ def identity(p):
     return p
 
 
+def seo_meta(name, short):
+    """Search title and description. People search "<part> price" and "price in
+    India", so the title carries that when it fits in ~62 characters; lead-acid
+    chargers lead with voltage/current because that is how they are searched.
+    No rupee amount in the description, so it never goes stale after a price change."""
+    core, tag = name, "PowerRun"
+    m = re.match(r"(.+?) Lead-Acid Battery Charger (\d+V) ([\d.]+A)$", name)
+    if m:
+        core, tag = "%s %s Lead-Acid E-Scooter Charger" % (m.group(2), m.group(3)), m.group(1)
+    short_core = re.sub(r" - Pack of (\d+)$", r" (Pack of \1)", core)
+    title = next((c + suf + tag for c in (core, short_core)
+                  for suf in (" Price in India | ", " Price | ", " | ") if len(c + suf + tag) <= 62), None)
+    if not title:
+        c = re.sub(r" with Rubber Cap", "", re.sub(r",? SC\d+-\d+ Lugs", "", short_core))
+        title = c + " | " + tag if len(c + " | " + tag) <= 70 else c
+    spec = (short or "").strip().rstrip(".")
+    f = re.search(r"\bfor (\d|e-|inverter)", spec)
+    if f and f.start() > 0:
+        spec = spec[f.start():]
+    if spec.lower().startswith(name.lower()):
+        spec = spec[len(name):].lstrip(" ,")
+    desc = "Buy %s online in India." % name + (" " + spec[0].upper() + spec[1:] + "." if spec else "")
+    tail = " GST bill, 7-day replacement, all-India delivery."
+    if len(desc + tail) <= 160:
+        desc += tail
+    elif len(desc + " 7-day replacement.") <= 160:
+        desc += " 7-day replacement."
+    while len(desc) > 160 and "," in desc:
+        desc = desc[:desc.rfind(",")] + "."
+    return title, desc
+
+
 def finish(p):
     """Slug, price and the shared copy (SKU comes from identity())."""
     p["slug"] = re.sub(r"[^a-z0-9]+", "-", p["name"].lower()).strip("-")
@@ -292,8 +324,7 @@ def finish(p):
         "delivery as per our refund policy. Not sure which model fits your pack? Send us your cell type, "
         "series count (S) and current on WhatsApp and we will help you choose."
         % (p["name"], BRAND, p["use"], " ".join(f + "." for f in p["features"]), MAKER))
-    p["meta_title"] = (p["name"] + " | PowerRun")[:70]
-    p["meta_description"] = ("Buy %s - %s Pan-India delivery from PowerRun." % (p["name"], p["short"]))[:160]
+    p["meta_title"], p["meta_description"] = seo_meta(p["name"], p["short"])
     p["focus_keyword"] = re.sub(r"\s*\(.*?\)", "", p["name"]).lower()
     return p
 
