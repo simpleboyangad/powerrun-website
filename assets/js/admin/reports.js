@@ -98,11 +98,9 @@
       return '<div class="stat-group-title" style="margin-top:4px">Website Orders</div>' +
         '<div class="stats">' +
           stat('Orders aaye (cancelled chhodkar)', r.orders.count, 'accent', money(r.orders.value) + ' · ' + r.units + ' units') +
-          stat('Confirmed', os.confirmed_count || 0, 'good', money(os.confirmed_value)) +
-          stat('Pending (confirm baaki)', os.pending_count || 0, os.pending_count ? 'warn' : '', money(os.pending_value)) +
+          stat('Confirmed (payment mila)', os.confirmed_count || 0, 'good', money(os.confirmed_value)) +
+          stat('Pending (payment baaki)', os.pending_count || 0, os.pending_count ? 'warn' : '', money(os.pending_value)) +
           stat('Cancelled', r.cancelled.count, r.cancelled.count ? 'bad' : '', money(r.cancelled.value)) +
-          stat('Payment mila', os.paid_count || 0, 'good', money(os.paid_value)) +
-          stat('Payment baaki', money(os.unpaid_value), os.unpaid_value > 0 ? 'warn' : '', 'COD + adhoore online') +
         '</div>' +
         '<div class="stat-group-title">PI / Dealer</div>' +
         '<div class="stats">' +
@@ -113,12 +111,12 @@
         '</div>' +
         '<div class="stat-group-title">Kul (sab milakar)</div>' +
         '<div class="stats">' +
-          stat('Kul payment mila', money(r.received), 'good', 'Website + PI') +
-          stat('Pakki sale', money(r.confirmed_sales), 'accent', 'Confirmed orders + PI tax invoice − credit note') +
+          stat('Pakki sale (payment mila)', money(r.received), 'good', 'Website + PI, jin par Paid mark hai') +
           stat('Credit Notes', r.credit_notes.count, r.credit_notes.count ? 'warn' : '', money(r.credit_notes.value)) +
           stat('GST (orders)', money(r.orders.gst), '', 'Order value mein shamil') +
         '</div>' +
-        '<p class="hint">Website orders order ki date se, PI apni PI date se gine gaye hain. "Payment mila" = order / PI par Paid mark hai.</p>' +
+        '<p class="hint">Order tabhi Confirmed gina jata hai jab us par Payment Status <b>Paid</b> ho (COD: paisa milne par Paid karein). ' +
+          'Website orders order ki date se, PI apni PI date se gine gaye hain.</p>' +
         section('Roz ki sale', dailyChart(r.daily, range.from, range.to) ||
           '<p class="hint">Chart ke liye 2 ya zyada din chunein.</p>') +
         section('Product-wise (top 30)', table(['Product', { t: 'Units', num: 1 }, { t: 'Value', num: 1 }],
