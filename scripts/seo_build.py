@@ -856,6 +856,9 @@ def main():
         images = [i["image_url"] for i in sorted(product.get("product_images") or [],
                                                  key=lambda x: x.get("sort_order") or 0)]
         title = product.get("meta_title") or (product["name"] + " | " + site_name)
+        if len(title) > 65 and " | " in title:
+            # long titles lose the brand suffix so Google shows them in full
+            title = title.rsplit(" | ", 1)[0]
         description = clean(product.get("meta_description") or product.get("short_description")
                             or (product["name"] + " from " + site_name + "."), 300)
         cat = cat_by_id.get(product.get("category_id")) or {}

@@ -295,7 +295,7 @@ def seo_meta(name, short):
                   for suf in (" Price in India | ", " Price | ", " | ") if len(c + suf + tag) <= 62), None)
     if not title:
         c = re.sub(r" with Rubber Cap", "", re.sub(r",? SC\d+-\d+ Lugs", "", short_core))
-        title = c + " | " + tag if len(c + " | " + tag) <= 70 else c
+        title = c + " | " + tag if len(c + " | " + tag) <= 65 else c
     spec = (short or "").strip().rstrip(".")
     f = re.search(r"\bfor (\d|e-|inverter)", spec)
     if f and f.start() > 0:
