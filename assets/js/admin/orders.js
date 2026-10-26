@@ -14,6 +14,7 @@
   };
 
   var orders = [];
+  var bankReady = true;
   var contentHost = null;
   var filterStatus = '';
 
@@ -34,6 +35,8 @@
   function render(host) {
     var visible = filterStatus === 'pi_waiting'
       ? orders.filter(piWaiting)
+      : filterStatus === 'pi_todo'
+        ? orders.filter(piTodo)
       : filterStatus
         ? orders.filter(function (o) { return o.order_status === filterStatus; })
         : orders;
@@ -49,10 +52,19 @@
               return '<option value="' + s + '"' + (filterStatus === s ? ' selected' : '') + '>' +
                 s.charAt(0).toUpperCase() + s.slice(1) + '</option>';
             }).join('') +
+            '<option value="pi_todo"' + (filterStatus === 'pi_todo' ? ' selected' : '') + '>PI bhejna baaki</option>' +
             '<option value="pi_waiting"' + (filterStatus === 'pi_waiting' ? ' selected' : '') + '>PI bheja, paisa baaki</option>' +
           '</select>' +
           '<span class="count" id="orderCount">' + visible.length + ' shown</span>' +
         '</div>' +
+        (filterStatus === 'pi_todo' && !bankReady
+          ? '<div class="form-message error" style="margin-bottom:12px">Pehle Admin → Settings mein bank details aur UPI ID bhariye - ' +
+            'bina inke customer ko PI par payment ki jaankari nahi milegi.</div>'
+          : '') +
+        (filterStatus === 'pi_todo' && visible.length
+          ? '<p class="hint">Har order ke aage <b>PI bhejo</b> dabayein: WhatsApp mein PI link wala message taiyaar milega, ' +
+            'bas Send karein. Order par apne aap "PI bheja" lag jayega.</p>'
+          : '') +
         (visible.length
           ? '<div class="table-scroll"><table class="grid" id="orderTable"><thead><tr>' +
               '<th>Order ID</th><th>Customer</th><th>Mobile</th><th>Email</th><th>Date</th>' +
@@ -81,8 +93,19 @@
       (o.payment_request === 'pi_sent' || o.payment_request === 'advance');
   }
 
+  function piTodo(o) {
+    return !o.is_test && o.order_status !== 'cancelled' && o.order_status !== 'delivered' && o.payment_status !== 'paid' &&
+      (o.payment_request || 'none') === 'none' && o.payment_method !== 'razorpay';
+  }
+
+  function piLink(order) {
+    return PR.config.SITE_URL + '/pi/?t=' + order.pi_token;
+  }
+
   function payBadge(o) {
     if (o.payment_status === 'paid') return '';
+    if (o.pi_viewed_at) return ' <small class="pill delivered" title="Customer ne ' + PR.formatDateTime(o.pi_viewed_at) + ' ko PI dekha">PI DEKHA</small>' +
+      (Number(o.advance_amount) > 0 ? ' <small class="pill sent">ADV ' + PR.money(o.advance_amount) + '</small>' : '');
     if (Number(o.advance_amount) > 0) return ' <small class="pill sent">ADV ' + PR.money(o.advance_amount) + '</small>';
     if (o.payment_request === 'pi_sent') return ' <small class="pill sent">PI SENT</small>';
     return '';
@@ -90,9 +113,10 @@
 
   function piMessage(order) {
     return 'Namaste ' + (order.customer_name || '').split(' ')[0] + ' ji, PowerRun Industries se aapke order ' + order.order_number +
-      ' ka Proforma Invoice (PI) ' + PR.money(order.total_amount) + ' bhej rahe hain.\n\n' +
-      'Payment ke liye bank / UPI details PI mein di gayi hain. Payment karke screenshot is number par bhej dein, ' +
-      'order turant dispatch kar denge. 🙏';
+      ' ka Proforma Invoice (PI) ' + PR.money(Number(order.total_amount) - Number(order.advance_amount || 0)) + ':\n' +
+      (order.pi_token ? piLink(order) + '\n\n' : '\n') +
+      'Link par UPI / bank se payment kar sakte hain. Payment karke screenshot is number par bhej dein, ' +
+      'order turant dispatch kar denge. Cash on Delivery bhi available hai. 🙏';
   }
 
   function row(order) {
@@ -107,7 +131,12 @@
       '<td class="nowrap"><b>' + PR.money(order.total_amount) + '</b></td>' +
       '<td class="nowrap">' + PRA.pill(order.payment_status) + payBadge(order) + '</td>' +
       '<td>' + PRA.pill(order.order_status) + '</td>' +
-      '<td class="nowrap"><button class="btn ghost small" type="button" data-view-order="' +
+      '<td class="nowrap">' +
+        (filterStatus === 'pi_todo' && PR.whatsappTo(order.customer_mobile, '')
+          ? '<a class="btn small" data-pi-send="' + PR.esc(order.id) + '" href="' +
+              PR.esc(PR.whatsappTo(order.customer_mobile, piMessage(order))) + '" target="_blank" rel="noopener">📄 PI bhejo</a> '
+          : '') +
+        '<button class="btn ghost small" type="button" data-view-order="' +
         PR.esc(order.id) + '">Open</button></td>' +
     '</tr>';
   }
@@ -251,13 +280,17 @@
               '</div>' +
               (order.order_status !== 'cancelled' && order.payment_status !== 'paid'
                 ? '<div class="page-actions" style="margin-top:4px">' +
-                    '<a class="btn gray small" href="/admin/invoice/?type=proforma&amp;id=' + encodeURIComponent(order.id) +
-                      '" target="_blank" rel="noopener">1. PI kholo → Save as PDF</a>' +
+                    (order.pi_token
+                      ? '<a class="btn gray small" href="' + PR.esc(piLink(order)) + '" target="_blank" rel="noopener">PI dekho (customer wala)</a>'
+                      : '<a class="btn gray small" href="/admin/invoice/?type=proforma&amp;id=' + encodeURIComponent(order.id) +
+                        '" target="_blank" rel="noopener">PI kholo → Save as PDF</a>') +
                     (PR.whatsappTo(order.customer_mobile, '')
                       ? '<a class="btn small" id="piWaBtn" href="' + PR.esc(PR.whatsappTo(order.customer_mobile, piMessage(order))) +
-                        '" target="_blank" rel="noopener">2. WhatsApp par PI bhejo</a>'
+                        '" target="_blank" rel="noopener">📄 WhatsApp par PI bhejo</a>'
                       : '') +
-                  '</div><span class="hint">WhatsApp khulne par PDF attach karke bhejein. Button dabate hi order par "PI bheja" lag jayega.</span>'
+                  '</div><span class="hint">Message mein PI ka link hai (UPI / bank details ke saath) - bas Send karein. ' +
+                    'Button dabate hi order par "PI bheja" lag jayega.' +
+                    (order.pi_viewed_at ? ' Customer ne PI dekha: ' + PR.formatDateTime(order.pi_viewed_at) + '.' : '') + '</span>'
                 : '') +
             '</div>'
           : '') +
@@ -480,6 +513,12 @@
   }
 
   document.addEventListener('click', function (event) {
+    var send = event.target.closest('[data-pi-send]');
+    if (send) {
+      var o = orders.find(function (x) { return String(x.id) === send.getAttribute('data-pi-send'); });
+      if (o) markPiSent(o);
+      return;
+    }
     var open = event.target.closest('[data-view-order]');
     if (!open) return;
     var order = orders.find(function (o) { return String(o.id) === String(open.getAttribute('data-view-order')); });
@@ -489,6 +528,11 @@
   PRA.boot('orders', 'Orders', async function (host) {
     contentHost = host;
     filterStatus = PR.param('status') || '';
+    try {
+      var st = await PR.getSettings();
+      var priv = st.company_private || {};
+      bankReady = !!(priv.bank_account_number || priv.upi_id);
+    } catch (err) { bankReady = true; }
     host.innerHTML = '<div class="panel">' + PRA.skeleton(8) + '</div>';
     await loadAll();
     render(host);

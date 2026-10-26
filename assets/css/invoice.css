@@ -116,3 +116,16 @@ table.inv-hsn th { background: #f1f1f2; color: #333; }
 /* tax invoice preview banner (admin/proforma print) */
 .inv-preview { margin: -6px 0 14px; padding: 10px 14px; border: 2px dashed #e65100; border-radius: 10px;
   background: #fff4ec; color: #a33b00; font-weight: 800; text-align: center; }
+
+/* customer PI page (/pi/): payment box above the sheet */
+.pi-pay { background: #fff; width: 210mm; max-width: calc(100% - 24px); margin: 18px auto 0; padding: 18px 20px;
+  border-radius: 12px; box-shadow: 0 6px 24px rgba(0, 0, 0, .12); display: grid; gap: 10px; }
+.pi-pay h2 { margin: 0; font-size: 22px; }
+.pi-pay p { margin: 0; }
+.pi-small { font-size: 13px; color: #555; }
+.pi-upi { text-align: center; }
+.pi-qr-wrap { display: grid; justify-items: center; gap: 6px; }
+.pi-qr-wrap #piQr img, .pi-qr-wrap #piQr canvas { display: block; }
+.pi-bank { display: grid; gap: 2px; padding: 10px 12px; background: #f7f7f8; border-radius: 10px; font-size: 14px; }
+.pi-wa { background: #25d366 !important; border-color: #25d366 !important; color: #fff !important; text-align: center; }
+@media (max-width: 760px) { .pi-qr-wrap { display: none; } }

@@ -133,7 +133,11 @@
             '<label>IFSC<input id="co_bank_ifsc" maxlength="15" value="' + PR.esc(company.bank_ifsc || '') + '"></label>' +
             '<label>Branch<input id="co_bank_branch" maxlength="100" value="' + PR.esc(company.bank_branch || '') + '"></label>' +
           '</div>' +
-          '<p class="hint">Bank details print on quotations and admin proforma invoices (never shown to customers). The signatory prints on quotations and GST invoices.</p>' +
+          '<div class="form-grid">' +
+            '<label>UPI ID<input id="co_upi_id" maxlength="60" placeholder="e.g. powerrun@sbi" value="' + PR.esc(company.upi_id || '') + '">' +
+              '<span class="hint">Customer ke PI link par UPI button aur QR code isi se banta hai.</span></label>' +
+          '</div>' +
+          '<p class="hint">Bank details and UPI ID print on quotations and proforma invoices, and show on the customer's PI link (only to the customer who has that order's link). The signatory prints on quotations and GST invoices.</p>' +
           '<div class="page-actions" style="justify-content:flex-end">' +
             '<button class="btn" type="submit" id="saveCompanyBtn">SAVE COMPANY DETAILS</button></div>' +
         '</form>' +
@@ -282,7 +286,8 @@
         bank_account_name: document.getElementById('co_bank_account_name').value.trim(),
         bank_account_number: document.getElementById('co_bank_account_number').value.trim(),
         bank_ifsc: document.getElementById('co_bank_ifsc').value.trim().toUpperCase(),
-        bank_branch: document.getElementById('co_bank_branch').value.trim()
+        bank_branch: document.getElementById('co_bank_branch').value.trim(),
+        upi_id: document.getElementById('co_upi_id').value.trim()
       } }], document.getElementById('saveCompanyBtn'), 'companyMessage');
     });
 
