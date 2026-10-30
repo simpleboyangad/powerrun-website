@@ -76,10 +76,31 @@ Deno.serve(async (req) => {
     return json({ error: 'This order amount cannot be collected online.' }, 400);
   }
 
+  const auth = 'Basic ' + btoa(`${keyId}:${keySecret}`);
+
+  // "Pay again" after the customer closed the window: reuse the Razorpay order that is
+  // still open for the same amount, so the webhook keeps matching the payment to this order.
+  if (order.razorpay_order_id) {
+    const existing = await fetch(`https://api.razorpay.com/v1/orders/${order.razorpay_order_id}`, {
+      headers: { Authorization: auth },
+    });
+    if (existing.ok) {
+      const prev = await existing.json();
+      if (prev.amount === amount && prev.status !== 'paid') {
+        return json({
+          razorpay_order_id: prev.id,
+          amount: prev.amount,
+          currency: prev.currency,
+          order_number: order.order_number,
+        });
+      }
+    }
+  }
+
   const response = await fetch('https://api.razorpay.com/v1/orders', {
     method: 'POST',
     headers: {
-      Authorization: 'Basic ' + btoa(`${keyId}:${keySecret}`),
+      Authorization: auth,
       'Content-Type': 'application/json',
     },
     body: JSON.stringify({

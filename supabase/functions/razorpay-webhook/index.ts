@@ -88,5 +88,14 @@ Deno.serve(async (req) => {
     console.error('pr_record_razorpay_payment failed:', error.message);
     return reply({ error: 'Could not record the event' }, 500);  // Razorpay retries
   }
+
+  // keep Razorpay's reason for a failed payment, so the owner can see why customers fail
+  const reason = [payment.error_description, payment.error_reason, payment.error_source]
+    .filter(Boolean).map(String).join(' | ').slice(0, 300);
+  if (reason) {
+    const { error: noteError } = await supabase.from('payment_events')
+      .update({ error_reason: reason }).eq('event_id', eventId);
+    if (noteError) console.error('Could not store the failure reason:', noteError.message);
+  }
   return reply({ result: data });
 });

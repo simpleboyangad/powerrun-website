@@ -11,6 +11,31 @@
 
   var current = { lines: [], subtotal: 0 };
   var settings = null;
+  var placed = null;   // { order, customer } once an online order exists - "pay again" reuses it
+
+  /* Instagram / Facebook open links in their own browser, where UPI apps often do not open. */
+  function inAppBrowser() {
+    return /Instagram|FBAN|FBAV|FB_IAB|Line\//i.test(navigator.userAgent || '');
+  }
+
+  function loadRazorpay() {
+    if (!PR.config.RAZORPAY_KEY_ID || window.Razorpay || document.getElementById('rzpScript')) return;
+    var script = document.createElement('script');
+    script.id = 'rzpScript';
+    script.src = 'https://checkout.razorpay.com/v1/checkout.js';
+    script.async = true;
+    document.head.appendChild(script);
+  }
+
+  function waitForRazorpay(ms) {
+    return new Promise(function (resolve) {
+      var start = Date.now();
+      (function check() {
+        if (window.Razorpay || Date.now() - start > ms) return resolve(!!window.Razorpay);
+        setTimeout(check, 200);
+      })();
+    });
+  }
   var paymentMethod = 'cod';
   var appliedCoupon = null; // { code, discount_amount, message } or null
 
@@ -117,6 +142,8 @@
   function razorpayAvailable() {
     var payments = settings.payments || {};
     if (!PR.config.RAZORPAY_KEY_ID) return false;
+    // settings that could not be loaded (slow network) must not hide online payment
+    if (payments.razorpay_enabled == null) return true;
     return !!payments.razorpay_enabled || PR.param('rzp_test') === '1';
   }
 
@@ -149,6 +176,12 @@
         '<span><b>' + PR.esc(option.title) + '</b><small>' + PR.esc(option.note) + '</small></span>' +
       '</label>';
     }).join('');
+
+    if (razorpayReady && inAppBrowser()) {
+      host.insertAdjacentHTML('afterend', '<p class="form-message" style="margin-top:8px;background:#fff8e1;color:#7a5200;border:1px solid #f3d27a">' +
+        'Aap Instagram / Facebook ke andar se khol rahe hain - yahan UPI app nahi khulte. Upar ⋮ menu se ' +
+        '<b>"Open in Chrome / browser"</b> karke pay karein, ya Razorpay mein QR scan karein.</p>');
+    }
 
     host.addEventListener('change', function (event) {
       if (event.target.name !== 'payment_method') return;
@@ -225,9 +258,11 @@
   }
 
   async function payWithRazorpay(order, customer, button) {
-    if (!window.Razorpay) {
-      throw new Error('The payment library did not load. Please refresh and try again.');
+    loadRazorpay();
+    if (!(await waitForRazorpay(15000))) {
+      throw new Error('Payment page load nahi hua (internet slow hai). Neeche "Dobara pay karein" dabayein ya COD chunein.');
     }
+    PR.setBusy(button, true, 'PAYMENT WINDOW KHUL RAHI HAI…');
 
     // The Edge Function creates the Razorpay order server-side using the key
     // secret. The secret is never present in this page.
@@ -256,8 +291,7 @@
         modal: {
           ondismiss: function () {
             PR.setBusy(button, false);
-            PR.toast('Payment cancelled. Your order ' + order.order_number +
-                     ' is saved and awaiting payment.', 'error');
+            showRetry(order, customer, 'Payment window band ho gayi.');
             resolve(false);
           }
         },
@@ -288,11 +322,53 @@
       rzp.on('payment.failed', function (response) {
         console.error('[PowerRun] Razorpay payment failed:', response.error);
         PR.setBusy(button, false);
-        PR.toast('Payment failed: ' + (response.error && response.error.description) +
-                 '. Order ' + order.order_number + ' is saved as unpaid.', 'error');
+        showRetry(order, customer, 'Payment nahi hua: ' + ((response.error && response.error.description) || 'kripya dobara try karein') + '.');
         resolve(false);
       });
       rzp.open();
+    });
+  }
+
+  function showRetry(order, customer, why) {
+    var form = document.getElementById('checkoutForm');
+    var box = document.getElementById('payRetry');
+    if (!box) {
+      document.getElementById('placeOrderBtn').insertAdjacentHTML('beforebegin', '<div id="payRetry"></div>');
+      box = document.getElementById('payRetry');
+    }
+    document.getElementById('placeOrderBtn').hidden = true;
+    box.innerHTML = '<div class="pay-retry">' +
+      '<b>Aapka order ' + PR.esc(order.order_number) + ' save ho gaya hai ✓</b>' +
+      '<p>' + PR.esc(why) + ' Naya order mat banaiye - neeche se isi order ka payment karein:</p>' +
+      '<button class="btn orange block" type="button" id="retryPayBtn">DOBARA PAY KAREIN (UPI / CARD)</button>' +
+      '<button class="btn block outline" type="button" id="switchCodBtn">CASH ON DELIVERY MEIN BADLEIN</button>' +
+      '<a class="small-note" href="' + PR.esc(PR.whatsapp('Order ' + order.order_number + ' ka online payment nahi ho raha')) +
+        '" target="_blank" rel="noopener">Dikkat aa rahi hai? WhatsApp par madad lein</a>' +
+    '</div>';
+    box.scrollIntoView({ behavior: 'smooth', block: 'center' });
+    document.getElementById('retryPayBtn').addEventListener('click', async function (e) {
+      var btn = e.currentTarget;
+      PR.setBusy(btn, true, 'PAYMENT WINDOW KHUL RAHI HAI…');
+      try {
+        var paid = await payWithRazorpay(order, customer, btn);
+        if (paid) goToConfirmation(order.order_number, customer.mobile);
+      } catch (err) {
+        PR.setBusy(btn, false);
+        PR.showFormError(form, err.message);
+      }
+    });
+    document.getElementById('switchCodBtn').addEventListener('click', async function (e) {
+      var btn = e.currentTarget;
+      PR.setBusy(btn, true, 'BADAL RAHE HAIN…');
+      try {
+        await PR.call('switch to COD', function (sb) {
+          return sb.rpc('switch_order_to_cod', { p_order_id: order.order_id, p_mobile: customer.mobile });
+        });
+        goToConfirmation(order.order_number, customer.mobile);
+      } catch (err) {
+        PR.setBusy(btn, false);
+        PR.showFormError(form, err.message);
+      }
     });
   }
 
@@ -304,8 +380,9 @@
 
     var customer = collect();
     if (!customer) return;
+    if (placed) { showRetry(placed.order, placed.customer, 'Payment abhi baaki hai.'); return; }
 
-    PR.setBusy(button, true, 'PLACING ORDER…');
+    PR.setBusy(button, true, paymentMethod === 'razorpay' ? 'ORDER SAVE HO RAHA HAI… (10 SEC RUKIYE)' : 'PLACING ORDER…');
 
     try {
       // Re-resolve the cart immediately before ordering so that a price or
@@ -334,6 +411,7 @@
       }
 
       if (paymentMethod === 'razorpay') {
+        placed = { order: order, customer: customer };
         var paid = await payWithRazorpay(order, customer, button);
         if (!paid) return;   // order exists, payment pending - message already shown
       }
@@ -343,6 +421,7 @@
       PR.setBusy(button, false);
       PR.showFormError(form, err.message);
       PR.toast(err.message, 'error');
+      if (placed) showRetry(placed.order, placed.customer, '');
     }
   }
 
@@ -446,6 +525,7 @@
       }
     });
 
+    loadRazorpay();   // start downloading the payment window before anything else
     try {
       settings = await PR.getSettings();
       var resolved = await PR.cart.resolve();
@@ -464,12 +544,7 @@
       renderPaymentMethods();
       PR.track('begin_checkout', PR.cart.gaPayload(resolved.lines));
 
-      if (razorpayAvailable()) {
-        var script = document.createElement('script');
-        script.src = 'https://checkout.razorpay.com/v1/checkout.js';
-        script.async = true;
-        document.head.appendChild(script);
-      }
+      if (razorpayAvailable()) loadRazorpay();
 
       document.getElementById('checkoutForm').addEventListener('submit', submit);
       await prefillFromProfile();

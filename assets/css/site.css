@@ -912,3 +912,8 @@ img { max-width: 100%; }
 .faq-item p:not(:last-child) { padding-bottom: 6px; }
 .faq-item p.faq-hi { color: #555; }
 .faq .section-sub[lang="hi"] { margin-top: 4px; }
+
+/* checkout: pay again after the payment window was closed */
+.pay-retry { display: grid; gap: 10px; padding: 14px; border: 2px solid var(--orange); border-radius: 12px; background: #fff8f4; margin-bottom: 12px; }
+.pay-retry p { margin: 0; font-size: 14px; }
+.pay-retry .small-note { text-align: center; }

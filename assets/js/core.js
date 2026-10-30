@@ -305,7 +305,10 @@
       (rows || []).forEach(function (row) { settingsCache[row.key] = row.value; });
     } catch (err) {
       console.warn('[PowerRun] falling back to default settings:', err.message);
-      settingsCache = {};
+      // not cached: the next call tries again; online payment is not hidden just
+      // because this request failed (checkout treats an unknown switch as on)
+      var fallback = { shipping: { flat_rate: 0, free_above: 0 }, payments: { cod_enabled: true } };
+      return fallback;
     }
     if (!settingsCache.shipping) settingsCache.shipping = { flat_rate: 0, free_above: 0 };
     if (!settingsCache.payments) settingsCache.payments = { razorpay_enabled: false, cod_enabled: true };
