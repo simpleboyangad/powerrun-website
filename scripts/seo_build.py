@@ -157,7 +157,7 @@ def head_block(title, description, canonical, image, site_name, keywords="",
     # The ids match the ones assets/js/seo.js uses, so the run-time script
     # UPDATES these blocks instead of adding a second copy.
     ids = {"Organization": "ld-organization", "WebSite": "ld-website",
-           "Product": "ld-product", "BreadcrumbList": "ld-breadcrumb", "FAQPage": "ld-faq"}
+           "Store": "ld-store", "Product": "ld-product", "BreadcrumbList": "ld-breadcrumb", "FAQPage": "ld-faq"}
     for node in (schema or []):
         lines.append('<script type="application/ld+json" id="%s">%s</script>'
                      % (ids.get(node.get("@type"), "ld-extra"),
@@ -751,6 +751,16 @@ def main():
         if indexable:
             robots += ",max-image-preview:large"
         schema = [org]
+        # The shop itself, for "battery shop near me" / Kasganj searches and the
+        # Google Business Profile; only on the two pages that show the address.
+        if page["page_key"] in ("home", "contact") and org.get("address"):
+            schema.append({
+                "@context": "https://schema.org", "@type": "Store", "@id": site + "/#store",
+                "name": site_name, "url": site + "/", "image": site + "/assets/icon-512.png",
+                "telephone": org["telephone"], "email": org["email"], "address": org["address"],
+                "hasMap": GOOGLE_BUSINESS_PROFILE, "priceRange": "\u20b9\u20b9",
+                "parentOrganization": {"@id": site + "/#organization"},
+            })
         if page["page_key"] == "home":
             schema.append({
                 "@context": "https://schema.org", "@type": "WebSite", "@id": site + "/#website",
