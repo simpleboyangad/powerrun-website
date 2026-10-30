@@ -360,16 +360,20 @@ def twin_of(p, pool):
 # Buying guides on the blog, linked from the products they are about, so the
 # guides are not reachable only from other guides.
 BLOG = {
-    "inverter": [("hybrid-inverter-vs-normal-inverter", "Hybrid inverter vs normal inverter"),
+    "inverter": [("hybrid-solar-inverter-price-list", "Hybrid solar inverter price list"),
+                 ("hybrid-inverter-vs-normal-inverter", "Hybrid inverter vs normal inverter"),
                  ("what-size-solar-inverter-for-home", "What size solar inverter do I need?"),
                  ("5kw-solar-system-cost", "5 kW solar system cost (Hindi)")],
-    "battery": [("battery-backup-time-calculation", "Battery backup time calculation"),
+    "battery": [("lithium-battery-for-inverter-price", "Lithium battery for inverter price"),
+                ("battery-backup-time-calculation", "Battery backup time calculation"),
                 ("lithium-vs-lead-acid-inverter-battery", "Lithium vs lead-acid inverter battery"),
                 ("hybrid-inverter-vs-normal-inverter", "Hybrid inverter vs normal inverter")],
     "panel": [("how-many-solar-panels-do-i-need", "How many solar panels do I need?"),
               ("5kw-solar-system-cost", "5 kW solar system cost (Hindi)"),
               ("what-size-solar-inverter-for-home", "What size solar inverter do I need?")],
-    "rickshaw": [("e-rickshaw-lithium-battery-guide", "E-rickshaw lithium battery buying guide"),
+    "rickshaw": [("e-rickshaw-lithium-battery-price", "E-rickshaw lithium battery price list 2026"),
+                 ("e-rickshaw-lithium-battery-price-hi", "ई-रिक्शा लिथियम बैटरी प्राइस लिस्ट"),
+                 ("e-rickshaw-lithium-battery-guide", "E-rickshaw lithium battery buying guide"),
                  ("e-rickshaw-lithium-battery-guide-hi", "ई-रिक्शा लिथियम बैटरी गाइड")],
     "scooty": [("e-scooty-battery-buying-guide", "E-scooty battery guide: 60V 30Ah vs 45Ah"),
                ("e-scooty-battery-buying-guide-hi", "ई-स्कूटी बैटरी गाइड")],
