@@ -19,6 +19,7 @@ import sys
 
 sys.path.insert(0, os.path.dirname(os.path.abspath(__file__)))
 from seo_build import fetch  # noqa: E402
+import fit_guide  # noqa: E402  (same "(Variant B)" rule as seo_build)
 
 ROOT = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
 SITE = "https://powerrun.in"
@@ -44,7 +45,7 @@ def feed_title(p):
 
 def build():
     rows = fetch(
-        "products?select=sku,name,slug,brand,short_description,description,price,mrp,stock,meta_title,"
+        "products?select=sku,name,slug,brand,short_description,description,price,mrp,stock,meta_title,canonical_url,"
         "categories!products_category_id_fkey(name),product_images(image_url,sort_order)"
         "&is_active=eq.true&order=sku"
     )
@@ -66,6 +67,9 @@ def build():
             continue  # Merchant Center requires an image; skip products without a usable one
 
         link = "{}/products/{}/".format(SITE, p["slug"])
+        canonical = (p.get("canonical_url") or "").strip()
+        if (canonical and canonical.rstrip("/") != link.rstrip("/")) or (not canonical and fit_guide.twin_of(p, rows)):
+            continue  # a variant page that points Google at its main product (seo_build): list the main one only
         desc = p.get("description") or p.get("short_description") or p["name"]
         price = p["price"]
         availability = "in_stock" if (p.get("stock") or 0) > 0 else "out_of_stock"

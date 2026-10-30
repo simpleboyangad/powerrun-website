@@ -1033,21 +1033,6 @@ Sold and shipped by PowerRun Industries with free pan-India delivery. PowerRun d
     <g:price>5579.00 INR</g:price>
   </item>
   <item>
-    <g:id>JK-BAL-24S-2A-B</g:id>
-    <title>JK Smart Active Balancer 24S 2A (Variant B)</title>
-    <description>The JK Smart Active Balancer 24S 2A (Variant B) is a JK BMS part for keeping the cells of a lithium pack (up to 24S) at the same voltage. Active balancing up to 2 A. For packs up to 24S. Bluetooth app monitoring. Keeps cell voltages even for longer pack life.
-
-Sold and shipped by PowerRun Industries with free pan-India delivery. PowerRun does not offer a separate warranty on JK parts; damaged, defective or wrong items are replaced within 7 days of delivery as per our refund policy. Not sure which model fits your pack? Send us your cell type, series count (S) and current on WhatsApp and we will help you choose.</description>
-    <link>https://powerrun.in/products/jk-smart-active-balancer-24s-2a-variant-b/</link>
-    <g:image_link>https://nnkopxkyxcmtiunftlgr.supabase.co/storage/v1/object/public/product-images/jk-bms/jk-smart-active-balancer-24s-2a-variant-b/0-photo.jpg</g:image_link>
-    <g:availability>in_stock</g:availability>
-    <g:condition>new</g:condition>
-    <g:brand>JK BMS</g:brand>
-    <g:identifier_exists>no</g:identifier_exists>
-    <g:product_type>BMS &amp; Balancers</g:product_type>
-    <g:price>5579.00 INR</g:price>
-  </item>
-  <item>
     <g:id>JK-BAL-24S-4A</g:id>
     <title>JK Smart Active Balancer 24S 4A</title>
     <description>The JK Smart Active Balancer 24S 4A is a JK BMS part for keeping the cells of a lithium pack (up to 24S) at the same voltage. Active balancing up to 4 A. For packs up to 24S. Bluetooth app monitoring. Keeps cell voltages even for longer pack life.
@@ -1646,21 +1631,6 @@ Sold and shipped by PowerRun Industries with free pan-India delivery. PowerRun d
     <g:identifier_exists>no</g:identifier_exists>
     <g:product_type>BMS &amp; Balancers</g:product_type>
     <g:price>4369.00 INR</g:price>
-  </item>
-  <item>
-    <g:id>JK-DISPLAY-4-3IN-B</g:id>
-    <title>JK BMS SOC Display 4.3 inch (Variant B)</title>
-    <description>The JK BMS SOC Display 4.3 inch (Variant B) is a JK BMS part for showing the battery state of charge from a JK BMS on the pack or the vehicle. 4.3 inch LCD screen. Shows battery state of charge. For JK BMS.
-
-Sold and shipped by PowerRun Industries with free pan-India delivery. PowerRun does not offer a separate warranty on JK parts; damaged, defective or wrong items are replaced within 7 days of delivery as per our refund policy. Not sure which model fits your pack? Send us your cell type, series count (S) and current on WhatsApp and we will help you choose.</description>
-    <link>https://powerrun.in/products/jk-bms-soc-display-4-3-inch-variant-b/</link>
-    <g:image_link>https://nnkopxkyxcmtiunftlgr.supabase.co/storage/v1/object/public/product-images/jk-bms/jk-bms-soc-display-4-3-inch-variant-b/0-photo.jpg</g:image_link>
-    <g:availability>in_stock</g:availability>
-    <g:condition>new</g:condition>
-    <g:brand>JK BMS</g:brand>
-    <g:identifier_exists>no</g:identifier_exists>
-    <g:product_type>BMS &amp; Balancers</g:product_type>
-    <g:price>3939.00 INR</g:price>
   </item>
   <item>
     <g:id>JK-PARALLEL-5A</g:id>
