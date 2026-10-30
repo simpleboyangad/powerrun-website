@@ -295,6 +295,59 @@
 
   /* -------------------------------------------------------------- settings */
   var settingsCache = null;
+  /* --------------------------------------------------------- product search
+     Used by the header search box (layout.js) and the Products page. Every word
+     counts in any order ("16s bms" finds "JBD BMS 16S 50A"), "100 ah" is read as
+     "100ah", common Hinglish spellings are understood (batri, invertor, riksha) and
+     a word mistyped after its first 4 letters still matches. When no product has
+     every word, the closest ones are returned instead of nothing. */
+  var SEARCH_SYNONYMS = {
+    batri: 'battery', betri: 'battery', bateri: 'battery', battry: 'battery', batery: 'battery', batteries: 'battery',
+    invertor: 'inverter', inverters: 'inverter', invertar: 'inverter',
+    erickshaw: 'rickshaw', riksha: 'rickshaw', rikshaw: 'rickshaw', rickshaws: 'rickshaw',
+    scooty: 'scooter', scooties: 'scooter', lfp: 'lifepo4', panels: 'panel', chargers: 'charger',
+    balancers: 'balancer', bmss: 'bms'
+  };
+
+  PR.searchNorm = function (text) {
+    return String(text || '').toLowerCase()
+      .replace(/(\d)\s+(ah|kwh|kw|wp|w|v|a|s|mah)\b/g, '$1$2')
+      .replace(/[^a-z0-9.]+/g, ' ').replace(/\s+/g, ' ').trim();
+  };
+
+  /* items: [{ name, sku, category, text }]; returns [{ item, score }] best first */
+  PR.searchProducts = function (items, query) {
+    var q = PR.searchNorm(query);
+    if (!q) return items.map(function (item) { return { item: item, score: 0 }; });
+    var tokens = q.split(' ').map(function (t) { return SEARCH_SYNONYMS[t] || t; });
+
+    var scored = items.map(function (item) {
+      var name = ' ' + PR.searchNorm(item.name) + ' ';
+      var sku = PR.searchNorm(item.sku);
+      var cat = PR.searchNorm(item.category);
+      var text = PR.searchNorm(item.text);
+      var words = name.trim().split(' ');
+      var matched = 0, score = 0;
+      tokens.forEach(function (t) {
+        var s = name.indexOf(' ' + t) !== -1 ? 10
+          : name.indexOf(t) !== -1 ? 6
+          : sku && sku.indexOf(t) !== -1 ? 8
+          : cat.indexOf(t) !== -1 ? 4
+          : text.indexOf(t) !== -1 ? 1
+          : t.length >= 5 && /^[a-z]+$/.test(t) && words.some(function (w) { return w.slice(0, 4) === t.slice(0, 4); }) ? 3
+          : 0;
+        if (s) { matched++; score += s; }
+      });
+      if (sku && sku === q.replace(/ /g, '')) score += 50;
+      if (name.indexOf(' ' + q) !== -1) score += 15;
+      return { item: item, score: score, matched: matched };
+    });
+
+    var all = scored.filter(function (r) { return r.matched === tokens.length; });
+    var list = all.length ? all : scored.filter(function (r) { return r.matched > 0; });
+    return list.sort(function (a, b) { return b.matched - a.matched || b.score - a.score; });
+  };
+
   PR.getSettings = async function () {
     if (settingsCache) return settingsCache;
     try {

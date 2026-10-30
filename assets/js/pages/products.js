@@ -38,14 +38,21 @@
   }
 
   function visibleProducts() {
-    var query = state.search.toLowerCase();
     var list = PR.catalog.products.filter(function (p) {
       if (state.category && p.categorySlug !== state.category) return false;
       if (state.subcategory && p.subcategorySlug !== state.subcategory) return false;
-      if (!query) return true;
-      return [p.name, p.sku, p.category, p.subcategory, p.shortDescription, p.description]
-        .join(' ').toLowerCase().indexOf(query) !== -1;
+      return true;
     });
+
+    // every search word in any order, best match first (PR.searchProducts in core.js)
+    if (state.search) {
+      var ranked = PR.searchProducts(list.map(function (p) {
+        return { product: p, name: p.name, sku: p.sku, category: [p.category, p.subcategory].join(' '),
+                 text: [p.shortDescription, p.description].join(' ') };
+      }), state.search);
+      list = ranked.map(function (r) { return r.item.product; });
+      if (state.sort === 'featured') return list;
+    }
 
     var sorted = list.slice();
     if (state.sort === 'price-asc') {

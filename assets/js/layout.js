@@ -95,7 +95,112 @@
     }
     PR.updateCartBadge();
     PR.loadPromoBanner();
+    bindHeaderSearch(host);
   };
+
+  /* ------------------------------------------------------- header search
+     The ⌕ icon opens a search box under the header. Suggestions appear while
+     typing (tap one to open that product); Enter opens the product when one
+     clearly matches, otherwise the Products page with the search. The product
+     list is fetched once and kept for 10 minutes in sessionStorage. */
+  var searchIndex = null;
+
+  async function loadSearchIndex() {
+    if (searchIndex) return searchIndex;
+    try {
+      var cached = JSON.parse(sessionStorage.getItem('pr_search_index') || 'null');
+      if (cached && Date.now() - cached.at < 600000) return (searchIndex = cached.items);
+    } catch (err) { /* private mode: just fetch */ }
+    var res = await Promise.all([
+      PR.sb.from('products').select('name,slug,sku,price,short_description,category_id,subcategory_id,' +
+        'product_images(image_url,storage_path,sort_order)').eq('is_active', true),
+      PR.sb.from('categories').select('id,name')
+    ]);
+    if (res[0].error) throw res[0].error;
+    var cats = {};
+    (res[1].data || []).forEach(function (c) { cats[c.id] = c.name; });
+    searchIndex = (res[0].data || []).map(function (p) {
+      var img = (p.product_images || []).slice().sort(function (a, b) { return (a.sort_order || 0) - (b.sort_order || 0); })[0];
+      return {
+        name: p.name, slug: p.slug, sku: p.sku, price: p.price,
+        category: [cats[p.category_id], cats[p.subcategory_id]].filter(Boolean).join(' '),
+        text: p.short_description || '',
+        img: img ? (img.storage_path
+          ? cfg.SUPABASE_URL + '/storage/v1/object/public/' + cfg.STORAGE_BUCKET + '/thumb/' +
+            String(img.storage_path).split('/').map(encodeURIComponent).join('/')
+          : img.image_url) : '',
+        full: img ? img.image_url : ''
+      };
+    });
+    try { sessionStorage.setItem('pr_search_index', JSON.stringify({ at: Date.now(), items: searchIndex })); } catch (err) { /* ignore */ }
+    return searchIndex;
+  }
+
+  function bindHeaderSearch(host) {
+    var icon = host.querySelector('a.icon[aria-label="Search products"]');
+    var header = host.querySelector('.header');
+    if (!icon || !header || !PR.sb) return;
+    header.insertAdjacentHTML('afterend',
+      '<div class="hsearch" id="prSearch" hidden>' +
+        '<form class="hsearch-bar" role="search" action="/products/">' +
+          '<input type="search" name="q" id="prSearchInput" autocomplete="off" ' +
+            'placeholder="Product ka naam likhein - battery, inverter, BMS 16S…" aria-label="Search products">' +
+          '<button type="button" class="hsearch-close" aria-label="Close search">✕</button>' +
+        '</form>' +
+        '<div class="hsearch-results" id="prSearchResults"></div>' +
+      '</div>');
+    var box = host.querySelector('#prSearch');
+    var input = host.querySelector('#prSearchInput');
+    var out = host.querySelector('#prSearchResults');
+    var results = [];
+    var timer = null;
+
+    var productHref = function (p) { return '/products/' + encodeURIComponent(p.slug) + '/'; };
+    var open = function () {
+      box.hidden = false;
+      input.focus();
+      loadSearchIndex().catch(function () { /* Enter still goes to the Products page */ });
+    };
+    var close = function () { box.hidden = true; };
+
+    async function suggest() {
+      var q = input.value.trim();
+      if (!q) { out.innerHTML = ''; results = []; return; }
+      var items;
+      try { items = await loadSearchIndex(); } catch (err) { out.innerHTML = ''; return; }
+      results = PR.searchProducts(items, q);
+      out.innerHTML = results.length
+        ? results.slice(0, 8).map(function (r) {
+            var p = r.item;
+            return '<a class="hsearch-item" href="' + productHref(p) + '">' +
+              (p.img ? '<img src="' + PR.esc(p.img) + '" alt="" loading="lazy" ' +
+                'onerror="this.onerror=null;this.src=\'' + PR.esc(p.full) + '\'">' : '<span class="hsearch-noimg"></span>') +
+              '<span><b>' + PR.esc(p.name) + '</b>' + (p.price ? '<small>' + PR.money(p.price) + '</small>' : '') + '</span></a>';
+          }).join('') +
+          (results.length > 8 ? '<a class="hsearch-all" href="/products/?q=' + encodeURIComponent(q) + '">Sabhi ' +
+            results.length + ' results dekhein →</a>' : '')
+        : '<p class="hsearch-empty">Koi product nahi mila. <a href="' +
+            PR.esc(PR.whatsapp('Mujhe ye product chahiye: ' + q)) + '" target="_blank" rel="noopener">WhatsApp par poochhein</a></p>';
+    }
+
+    icon.addEventListener('click', function (e) {
+      e.preventDefault();
+      if (box.hidden) open(); else close();
+    });
+    host.querySelector('.hsearch-close').addEventListener('click', close);
+    input.addEventListener('input', function () { clearTimeout(timer); timer = setTimeout(suggest, 150); });
+    input.addEventListener('keydown', function (e) { if (e.key === 'Escape') close(); });
+    host.querySelector('.hsearch-bar').addEventListener('submit', async function (e) {
+      var q = input.value.trim();
+      if (!q) { e.preventDefault(); return; }
+      e.preventDefault();
+      try { await loadSearchIndex(); await suggest(); } catch (err) { /* fall back below */ }
+      var top = results[0], next = results[1];
+      // one clear winner opens straight away; otherwise show every match
+      if (top && (!next || top.score >= next.score * 1.5)) window.location.href = productHref(top.item);
+      else window.location.href = '/products/?q=' + encodeURIComponent(q);
+    });
+  }
 
   PR.renderFooter = function () {
     var host = document.getElementById('pr-footer');
