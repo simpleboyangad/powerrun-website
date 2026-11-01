@@ -91,7 +91,7 @@ select 'Test CN Battery', 'test-cn-battery', 'TEST-CN', 11800, 11800, 50, 'in_st
        (select id from categories where slug = 'test-batteries')
 where not exists (select 1 from products where sku = 'TEST-CN');
 update products set stock = 50, availability = 'in_stock' where sku = 'TEST-CN';""")
-sql("""insert into site_settings (key, value) values ('company', '{"legal_name": "PowerRun Industries (staging)", "state": "Uttar Pradesh", "gstin": "09GTVPS7660P1ZZ"}')
+sql("""insert into site_settings (key, value) values ('company', '{"legal_name": "PowerRun Industries (staging)", "state": "Uttar Pradesh", "gstin": "09JTVPS7660P1ZZ"}')
        on conflict (key) do nothing""")
 check("P0 staging company state is set", sql("select value ->> 'state' s from site_settings where key = 'company'")[0]["s"], "")
 

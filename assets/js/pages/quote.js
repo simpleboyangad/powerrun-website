@@ -73,7 +73,7 @@
     fill(ORANGE); doc.rect(0, 0, 210, 36, 'F');
     text('PowerRun Industries', L, 15, 18, WHITE, 'bold');
     text('Plot-23, Gadi Road, Dholna, Nagla Bhood, Kasganj, Uttar Pradesh 207124', L, 22, 8, WHITE);
-    text('GSTIN 09GTVPS7660P1ZZ  |  +91 80575 73040  |  service@powerrun.in  |  powerrun.in', L, 28, 8, WHITE);
+    text('GSTIN 09JTVPS7660P1ZZ  |  +91 80575 73040  |  service@powerrun.in  |  powerrun.in', L, 28, 8, WHITE);
     text('QUOTATION', R, 15, 14, WHITE, 'bold', 'right');
     text(q.quote_number, R, 22, 10, WHITE, 'bold', 'right');
     text('Date: ' + PR.formatDate(q.created_at), R, 28, 8, WHITE, 'normal', 'right');

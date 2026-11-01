@@ -19,7 +19,7 @@ window.PR_CONFIG = {
   EMAIL: 'service@powerrun.in',
   COMPANY: 'PowerRun Industries',
   ADDRESS: 'Plot 23, Gadi Road, Nagla Bhood, Dholna, Kasganj, Uttar Pradesh 207124, India',
-  GSTIN: '09GTVPS7660P1ZZ',
+  GSTIN: '09JTVPS7660P1ZZ',
 
   // false: customers and Google see only the selling price - no struck-out
   // MRP, no "% OFF". MRP stays in the database for quotations and invoices.

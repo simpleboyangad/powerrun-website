@@ -22,7 +22,7 @@ Har directory mein **bilkul yahi details** daalein: naam, pata, phone aur websit
 | WhatsApp | +91 80575 73040 |
 | Email | service@powerrun.in |
 | Website | https://powerrun.in |
-| GSTIN | 09GTVPS7660P1ZZ |
+| GSTIN | 09JTVPS7660P1ZZ |
 | YouTube | https://www.youtube.com/@PowerRunIndustries |
 | Google Maps | https://maps.google.com/?cid=2490524210981875388 |
 | Business type | Supplier / Trader (agar aap khud assemble karte hain to "Manufacturer" bhi chun sakte hain) |

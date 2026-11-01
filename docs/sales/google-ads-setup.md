@@ -22,7 +22,7 @@
 2. Agar Google **"Smart campaign"** ya "simple setup" dikhaye, to neeche chhota link **"Switch to Expert Mode"** dabayein. Smart campaign mein control nahi milta.
 3. Agar woh campaign banwane ko kahe, to **"Create an account without a campaign"** chunein.
 4. Billing country: **India**, Time zone: **(GMT+05:30) India**, Currency: **INR**. **Currency baad mein nahi badalti, dhyaan se chunein.**
-5. **Billing:** apna card/UPI aap khud daalein. Payment type **Automatic** rakhein. **GSTIN: 09GTVPS7660P1ZZ** daalein, taaki 18% GST ka input credit mile.
+5. **Billing:** apna card/UPI aap khud daalein. Payment type **Automatic** rakhein. **GSTIN: 09JTVPS7660P1ZZ** daalein, taaki 18% GST ka input credit mile.
 6. Agar **"Spend ₹X, get ₹Y credit"** jaisa naya-advertiser offer dikhe, to use le lijiye (shart padh lein).
 
 ## Step 1: Merchant Center aur Google Analytics jodna (2 minute)
