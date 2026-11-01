@@ -34,6 +34,15 @@ def main():
         digest.update(io.open(path, "rb").read())
     stamp = digest.hexdigest()[:8]
 
+    # favicon / app icons get their own version, so browsers fetch a new icon
+    # as soon as it changes instead of keeping the cached one for weeks
+    icons = ["favicon.ico", "assets/icon-192.png", "assets/apple-touch-icon.png"]
+    icon_digest = hashlib.sha1()
+    for path in icons:
+        icon_digest.update(io.open(path, "rb").read())
+    icon_stamp = icon_digest.hexdigest()[:8]
+    icon_href = re.compile(r'href="(/favicon\.ico|/assets/icon-192\.png|/assets/apple-touch-icon\.png)(?:\?v=[0-9a-f]+)?"')
+
     pages = (
         glob.glob("*.html")
         + glob.glob("*/index.html")
@@ -47,6 +56,7 @@ def main():
         html = re.sub(r"(/assets/[^\"']+?\.(?:js|css))\?v=[0-9a-f]+", r"\1", original)
         html = re.sub(r'(src="/assets/[^"\']+?\.js)"', r"\1?v=" + stamp + '"', html)
         html = re.sub(r'(href="/assets/[^"\']+?\.css)"', r"\1?v=" + stamp + '"', html)
+        html = icon_href.sub(lambda m: 'href="%s?v=%s"' % (m.group(1), icon_stamp), html)
         # Customer pages: external scripts load with defer, so the hero and the
         # rest of the HTML paint before ~250 KB of JavaScript (supabase-js
         # included) is parsed. Defer keeps their order and still runs before
