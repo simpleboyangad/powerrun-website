@@ -69,6 +69,15 @@
     var session = sessionResult && sessionResult.data ? sessionResult.data.session : null;
     if (!session) { PRA.toLogin(); throw new Error('not signed in'); }
 
+    // 2-step login is required for the admin panel: a session that has not
+    // passed the authenticator code (or has never set one up) goes back to
+    // the login page, which handles both. The database enforces the same rule.
+    var aal = await PR.sb.auth.mfa.getAuthenticatorAssuranceLevel();
+    if (aal.error || !aal.data || aal.data.currentLevel !== 'aal2') {
+      PRA.toLogin('mfa');
+      throw new Error('2-step login required');
+    }
+
     // Authorisation is decided by the database, not by this page.
     var isAdmin;
     try {

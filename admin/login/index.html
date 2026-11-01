@@ -10,7 +10,7 @@
 <link rel="icon" href="/favicon.ico?v=45207176" sizes="48x48">
 <link rel="icon" type="image/png" sizes="192x192" href="/assets/icon-192.png?v=45207176">
 <link rel="apple-touch-icon" href="/assets/apple-touch-icon.png?v=45207176">
-<link rel="stylesheet" href="/assets/css/admin.css?v=00c9b9f1">
+<link rel="stylesheet" href="/assets/css/admin.css?v=bc21e927">
 </head>
 <body>
 <div class="login-wrap">
@@ -28,13 +28,41 @@
       </label>
       <button class="btn block" id="loginBtn" type="submit">SIGN IN</button>
     </form>
+
+    <!-- step 2a: first time - link an authenticator app -->
+    <form class="form mfa-step" id="mfaEnroll" novalidate hidden>
+      <h2>Set up 2-step login</h2>
+      <ol class="mfa-steps">
+        <li>Open <strong>Google Authenticator</strong> on your phone (free on Play Store / App Store).</li>
+        <li>Tap <strong>+</strong> &rarr; <strong>Scan a QR code</strong> and scan this code.</li>
+        <li>Type the 6-digit code the app shows.</li>
+      </ol>
+      <div class="mfa-qr" id="mfaQr"></div>
+      <p class="hint">Can't scan? Enter this key in the app instead:<br><code class="mfa-secret" id="mfaSecret"></code></p>
+      <p class="hint mfa-warn">Keep a backup: scan the code on a second trusted phone too, or write the key down and keep it safe.</p>
+      <label>6-digit code <span class="req">*</span>
+        <input id="mfa_enroll_code" class="mfa-code" type="text" inputmode="numeric" autocomplete="one-time-code" maxlength="6" pattern="[0-9]{6}" required>
+      </label>
+      <button class="btn block" id="mfaEnrollBtn" type="submit">TURN ON 2-STEP LOGIN</button>
+    </form>
+
+    <!-- step 2b: every sign-in - code from the authenticator app -->
+    <form class="form mfa-step" id="mfaVerify" novalidate hidden>
+      <h2>Enter your 6-digit code</h2>
+      <p class="hint">Open Google Authenticator on your phone and type the code shown for PowerRun.</p>
+      <label>6-digit code <span class="req">*</span>
+        <input id="mfa_verify_code" class="mfa-code" type="text" inputmode="numeric" autocomplete="one-time-code" maxlength="6" pattern="[0-9]{6}" required>
+      </label>
+      <button class="btn block" id="mfaVerifyBtn" type="submit">VERIFY</button>
+    </form>
+    <button class="btn ghost block mfa-cancel" id="mfaCancel" type="button" hidden>Use a different account</button>
     <a class="back" href="/">&larr; Back to powerrun.in</a>
   </div>
 </div>
 <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2.48.0/dist/umd/supabase.js"></script>
-<script src="/assets/js/config.js?v=00c9b9f1"></script>
-<script src="/assets/js/core.js?v=00c9b9f1"></script>
-<script src="/assets/js/admin/shell.js?v=00c9b9f1"></script>
-<script src="/assets/js/admin/login.js?v=00c9b9f1"></script>
+<script src="/assets/js/config.js?v=bc21e927"></script>
+<script src="/assets/js/core.js?v=bc21e927"></script>
+<script src="/assets/js/admin/shell.js?v=bc21e927"></script>
+<script src="/assets/js/admin/login.js?v=bc21e927"></script>
 </body>
 </html>

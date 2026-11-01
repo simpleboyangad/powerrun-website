@@ -44,6 +44,15 @@ img { max-width: 100%; }
 .login-card h1 { margin: 0 0 6px; font-size: 23px; }
 .login-card p.sub { margin: 0 0 22px; color: var(--muted); font-size: 13px; }
 .login-card .back { display: block; text-align: center; margin-top: 18px; font-size: 12px; color: var(--muted); }
+.mfa-step h2 { margin: 0 0 4px; font-size: 18px; }
+.mfa-steps { margin: 0; padding-left: 20px; font-size: 13px; line-height: 1.6; }
+.mfa-qr { display: grid; place-items: center; margin: 4px 0; }
+.mfa-qr img { width: 190px; height: 190px; border: 1px solid var(--line); border-radius: 10px; padding: 6px; background: #fff; }
+.mfa-secret { display: inline-block; margin-top: 4px; font-size: 12.5px; letter-spacing: .5px; word-break: break-all; user-select: all; }
+.mfa-warn { color: #b45309; }
+.mfa-code { font-size: 22px; letter-spacing: 8px; text-align: center; font-variant-numeric: tabular-nums; }
+.mfa-cancel { margin-top: 10px; }
+.login-card [hidden] { display: none !important; }
 
 /* ------------------------------------------------------------------ layout */
 .admin-shell { display: grid; grid-template-columns: 240px 1fr; min-height: 100vh; }
@@ -184,6 +193,7 @@ table.grid td small { color: var(--muted); display: block; margin-top: 3px; }
 .form-message { border-radius: 8px; padding: 11px 13px; font-size: 13px; font-weight: 700; }
 .form-message.error { background: #fdecea; color: #8c1d18; border: 1px solid #f5c6c2; }
 .form-message.success { background: #e7f6ed; color: #14663a; border: 1px solid #bfe4cd; }
+.form-message.info { background: #eef4fd; color: #1e3a8a; border: 1px solid #c7d7f5; }
 .hint { font-size: 11.5px; color: var(--muted); margin-top: 4px; line-height: 1.5; }
 
 .toolbar { display: flex; gap: 10px; flex-wrap: wrap; margin-bottom: 14px; align-items: center; }
