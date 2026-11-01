@@ -117,6 +117,25 @@ def load_posts():
     return sorted(posts, key=lambda p: (p["date"], p["slug"]), reverse=True)
 
 
+FAQ_HEADINGS = ("frequently asked questions", "अक्सर पूछे जाने वाले सवाल")
+
+
+def faq_schema(body):
+    """FAQPage data from the article's FAQ section: each <h3> question and the <p> after it."""
+    for match in re.finditer(r"<h2>([^<]+)</h2>(.*?)(?=<h2>|\Z)", body, re.S):
+        if match.group(1).strip().lower() in FAQ_HEADINGS:
+            break
+    else:
+        return None
+    strip = lambda html: re.sub(r"\s+", " ", re.sub(r"<[^>]+>", "", html)).strip()  # noqa: E731
+    pairs = re.findall(r"<h3>(.*?)</h3>\s*<p>(.*?)</p>", match.group(2), re.S)
+    if not pairs:
+        return None
+    return {"@context": "https://schema.org", "@type": "FAQPage", "mainEntity": [
+        {"@type": "Question", "name": strip(q), "acceptedAnswer": {"@type": "Answer", "text": strip(a)}}
+        for q, a in pairs]}
+
+
 def nice_date(iso):
     import datetime
     return datetime.date.fromisoformat(iso).strftime("%d %b %Y").lstrip("0")
@@ -177,6 +196,10 @@ def main():
         head = head.replace(b.END, '<meta property="article:published_time" content="%s">\n'
                                    '<script type="application/ld+json" id="ld-article">%s</script>\n%s'
                             % (post["date"], json.dumps(article, ensure_ascii=False, separators=(",", ":")), b.END))
+        faq = faq_schema(post["body"])
+        if faq:
+            head = head.replace(b.END, '<script type="application/ld+json" id="ld-faq">%s</script>\n%s'
+                                % (json.dumps(faq, ensure_ascii=False, separators=(",", ":")), b.END))
         related = [s for s in post.get("related", []) if s in CATEGORY_NAMES]
         others = [p for p in posts if p["slug"] != post["slug"]][:3]
         body = (
