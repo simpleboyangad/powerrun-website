@@ -108,15 +108,28 @@
       (Number(o.advance_amount) > 0 ? ' <small class="pill sent">ADV ' + PR.money(o.advance_amount) + '</small>' : '');
     if (Number(o.advance_amount) > 0) return ' <small class="pill sent">ADV ' + PR.money(o.advance_amount) + '</small>';
     if (o.payment_request === 'pi_sent') return ' <small class="pill sent">PI SENT</small>';
+    if (Number(o.advance_required) > 0 && Number(o.advance_required) < Number(o.total_amount))
+      return ' <small class="pill pending" title="Is order par itna advance chahiye">ADV CHAHIYE ' + PR.money(o.advance_required) + '</small>';
     return '';
   }
 
+  /* what the customer should pay now: the advance still owed (migration 48), else the balance */
+  function payNow(order) {
+    var adv = Number(order.advance_amount || 0), need = Number(order.advance_required || 0);
+    return need > adv ? need - adv : Number(order.total_amount) - adv;
+  }
+
   function piMessage(order) {
+    var total = Number(order.total_amount), now = payNow(order);
+    var advance = Number(order.advance_required || 0) > Number(order.advance_amount || 0) && now < total;
     return 'Namaste ' + (order.customer_name || '').split(' ')[0] + ' ji, PowerRun Industries se aapke order ' + order.order_number +
-      ' ka Proforma Invoice (PI) ' + PR.money(Number(order.total_amount) - Number(order.advance_amount || 0)) + ':\n' +
+      ' (kul ' + PR.money(total) + ') ka Proforma Invoice (PI):\n' +
       (order.pi_token ? piLink(order) + '\n\n' : '\n') +
-      'Link par UPI / bank se payment kar sakte hain. Payment karke screenshot is number par bhej dein, ' +
-      'order turant dispatch kar denge. Cash on Delivery bhi available hai. 🙏';
+      (advance
+        ? 'Order confirm karne ke liye ' + PR.money(now) + ' advance bhejein, baaki ' + PR.money(total - now) + ' saman milne par. '
+        : 'Order confirm karne ke liye ' + PR.money(now) + ' ka payment bhejein. ') +
+      'Link par UPI / bank se payment ho jayega. Payment karke screenshot is number par bhej dein, ' +
+      'hum order turant dispatch kar denge. 🙏';
   }
 
   function row(order) {
@@ -240,7 +253,10 @@
 
       '<div class="hint" style="margin-top:12px">' +
         'Placed ' + PR.formatDateTime(order.created_at) +
-        ' · Payment method: ' + PR.esc(order.payment_method || '-') +
+        ' · Payment method: ' + PR.esc(PR.paymentMethodLabel(order.payment_method)) +
+        (Number(order.advance_required) > 0
+          ? ' · Advance chahiye ' + PR.money(order.advance_required) + (Number(order.advance_amount) > 0 ? ', mila ' + PR.money(order.advance_amount) : ', abhi nahi mila')
+          : '') +
         (order.razorpay_payment_id ? ' · Razorpay payment ' + PR.esc(order.razorpay_payment_id) : '') +
       '</div>' +
 

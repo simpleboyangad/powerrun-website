@@ -127,7 +127,7 @@
         section('Category-wise', table(['Category', { t: 'Units', num: 1 }, { t: 'Value', num: 1 }],
           r.by_category.map(function (x) { return [PR.esc(x.name), x.units, money(x.value)]; }))) +
         section('Payment method', table(['Method', { t: 'Orders', num: 1 }, { t: 'Value', num: 1 }],
-          r.by_payment.map(function (x) { return [PR.esc(x.method === 'razorpay' ? 'Online (Razorpay)' : x.method.toUpperCase()), x.count, money(x.value)]; }))) +
+          r.by_payment.map(function (x) { return [PR.esc(x.method === '-' ? '-' : PR.paymentMethodLabel(x.method)), x.count, money(x.value)]; }))) +
         section('State-wise', table(['State', { t: 'Orders', num: 1 }, { t: 'Value', num: 1 }],
           r.by_state.map(function (x) { return [PR.esc(x.state), x.count, money(x.value)]; })));
     },

@@ -58,7 +58,17 @@
           '<div id="paymentsMessage"></div>' +
           '<label class="inline"><input id="st_cod" type="checkbox"' +
             (payments.cod_enabled !== false ? ' checked' : '') + '> ' +
-            'Allow "Pay on Confirmation" (order now, confirm payment by phone)</label>' +
+            'Allow "Pay on Confirmation" (order now with no advance, confirm payment by phone)</label>' +
+          '<label class="inline"><input id="st_advance" type="checkbox"' +
+            (payments.advance_enabled !== false ? ' checked' : '') + '> ' +
+            'Allow advance payment: part online now, the rest on delivery</label>' +
+          '<div class="form-grid">' +
+            '<label>Advance %<input id="st_adv_pct" type="number" min="1" max="100" step="1" value="' +
+              PR.esc(payments.advance_percent == null ? 50 : payments.advance_percent) + '"></label>' +
+            '<label>Full online payment below (₹)<input id="st_full_below" type="number" min="0" step="100" value="' +
+              PR.esc(payments.full_online_below || 0) + '">' +
+              '<span class="hint">Orders below this amount are paid fully online (no advance option). 0 = advance allowed on every order.</span></label>' +
+          '</div>' +
           '<label class="inline"><input id="st_razorpay" type="checkbox"' +
             (payments.razorpay_enabled ? ' checked' : '') +
             (razorpayConfigured ? '' : ' disabled') + '> ' +
@@ -249,7 +259,18 @@
           'otherwise customers cannot place an order.</div>';
         return;
       }
-      saveSetting('payments', { cod_enabled: cod, razorpay_enabled: razorpay },
+      var pct = Math.round(Number(document.getElementById('st_adv_pct').value));
+      if (!(pct >= 1 && pct <= 100)) {
+        document.getElementById('paymentsMessage').innerHTML =
+          '<div class="form-message error" role="alert">Advance % must be between 1 and 100.</div>';
+        return;
+      }
+      saveSetting('payments', {
+        cod_enabled: cod, razorpay_enabled: razorpay,
+        advance_enabled: document.getElementById('st_advance').checked,
+        advance_percent: pct,
+        full_online_below: Math.max(Number(document.getElementById('st_full_below').value) || 0, 0)
+      },
         document.getElementById('savePaymentsBtn'), 'paymentsMessage');
     });
 

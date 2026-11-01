@@ -6,6 +6,10 @@
  * API confirms the payment is captured for the expected amount. The browser
  * callback on its own is never treated as proof of payment.
  *
+ * An 'advance_cod' order (migration 48) is charged only its advance_required: a
+ * verified advance is stored as advance_amount and confirms the order, while
+ * payment_status stays pending (the rest is due on delivery) - status 'advance_paid'.
+ *
  * Required Edge Function secrets:
  *   RAZORPAY_KEY_ID, RAZORPAY_KEY_SECRET
  *
@@ -78,7 +82,7 @@ Deno.serve(async (req) => {
 
   const { data: order, error } = await supabase
     .from('orders')
-    .select('id, order_number, total_amount, payment_status, razorpay_order_id')
+    .select('id, order_number, total_amount, payment_status, order_status, razorpay_order_id, payment_method, advance_required, advance_amount')
     .eq('id', order_id)
     .single();
 
@@ -88,6 +92,10 @@ Deno.serve(async (req) => {
   }
   if (order.payment_status === 'paid') {
     return json({ status: 'paid', order_number: order.order_number });
+  }
+  const advanceOrder = order.payment_method === 'advance_cod' && Number(order.advance_required) > 0;
+  if (advanceOrder && Number(order.advance_amount) >= Number(order.advance_required)) {
+    return json({ status: 'advance_paid', order_number: order.order_number });
   }
 
   // The Razorpay order must be the one we created for THIS PowerRun order.
@@ -115,7 +123,7 @@ Deno.serve(async (req) => {
     return json({ error: 'Payment could not be confirmed with Razorpay.' }, 502);
   }
 
-  const expectedPaise = Math.round(Number(order.total_amount) * 100);
+  const expectedPaise = Math.round(Number(advanceOrder ? order.advance_required : order.total_amount) * 100);
   const captured = payment.status === 'captured' || payment.status === 'authorized';
 
   if (!captured || Number(payment.amount) !== expectedPaise || payment.order_id !== razorpay_order_id) {
@@ -128,13 +136,21 @@ Deno.serve(async (req) => {
 
   const { error: updateError } = await supabase
     .from('orders')
-    .update({
-      payment_status: 'paid',
-      order_status: 'confirmed',
-      razorpay_payment_id,
-      razorpay_signature,
-      payment_verified_at: new Date().toISOString(),
-    })
+    .update(advanceOrder
+      ? {
+        advance_amount: order.advance_required,
+        order_status: order.order_status === 'pending' ? 'confirmed' : order.order_status,
+        razorpay_payment_id,
+        razorpay_signature,
+        payment_verified_at: new Date().toISOString(),
+      }
+      : {
+        payment_status: 'paid',
+        order_status: 'confirmed',
+        razorpay_payment_id,
+        razorpay_signature,
+        payment_verified_at: new Date().toISOString(),
+      })
     .eq('id', order.id);
 
   if (updateError) {
@@ -142,5 +158,5 @@ Deno.serve(async (req) => {
     return json({ error: 'Payment received but the order could not be updated. Please contact us.' }, 500);
   }
 
-  return json({ status: 'paid', order_number: order.order_number });
+  return json({ status: advanceOrder ? 'advance_paid' : 'paid', order_number: order.order_number });
 });

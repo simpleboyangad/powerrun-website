@@ -62,6 +62,8 @@
     offerGoogleReviewSurvey(order);
     var host = document.getElementById('confirmContent');
     var paid = order.payment_status === 'paid';
+    var advanceIn = order.payment_method === 'advance_cod' && Number(order.advance_amount) > 0 &&
+      Number(order.advance_amount) >= Number(order.advance_required);
 
     var waText = ['Hello PowerRun Industries, I have placed an order.',
       'Order ID: ' + order.order_number,
@@ -88,7 +90,9 @@
       '<div class="summary-row"><span>Order Status</span>' +
         '<span class="pill ' + PR.esc(order.order_status) + '">' + PR.esc(order.order_status) + '</span></div>' +
       '<div class="summary-row"><span>Payment Status</span>' +
-        '<span class="pill ' + PR.esc(order.payment_status) + '">' + PR.esc(order.payment_status) + '</span></div>' +
+        (advanceIn
+          ? '<b>Advance ' + PR.money(order.advance_amount) + ' paid · ' + PR.money(Number(order.total_amount) - Number(order.advance_amount)) + ' on delivery</b></div>'
+          : '<span class="pill ' + PR.esc(order.payment_status) + '">' + PR.esc(order.payment_status) + '</span></div>') +
       '<div class="summary-row"><span>Placed On</span><b>' + PR.formatDateTime(order.created_at) + '</b></div>' +
 
       '<h2 style="margin:24px 0 8px;font-size:18px">Items</h2>' +
@@ -109,7 +113,10 @@
       '<p class="small-note" style="margin-top:18px"><b>What happens next?</b> ' +
         (paid
           ? 'Your payment is confirmed. We will pack and dispatch your order and share tracking details.'
-          : 'Our team will call you within 24 hours to confirm payment and delivery.') +
+          : advanceIn
+            ? 'Your advance of ' + PR.money(order.advance_amount) + ' is received and the order is confirmed. Please pay the remaining ' +
+              PR.money(Number(order.total_amount) - Number(order.advance_amount)) + ' when it is delivered. We will share tracking details.'
+            : 'Our team will contact you within 24 hours about payment and delivery.') +
         ' Please keep your Order ID for reference.</p>' +
 
       PR.referralBox() +

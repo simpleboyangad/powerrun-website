@@ -3,6 +3,8 @@
  *
  * The amount is ALWAYS read from the orders row in the database. The browser
  * only sends an order id, so a tampered client cannot change what is charged.
+ * An 'advance_cod' order (migration 48) is charged its advance_required only; the
+ * rest is collected on delivery.
  *
  * Required Edge Function secrets:
  *   RAZORPAY_KEY_ID       - Razorpay key id  (rzp_test_... / rzp_live_...)
@@ -58,7 +60,7 @@ Deno.serve(async (req) => {
 
   const { data: order, error } = await supabase
     .from('orders')
-    .select('id, order_number, total_amount, payment_status, razorpay_order_id')
+    .select('id, order_number, total_amount, payment_status, razorpay_order_id, payment_method, advance_required, advance_amount')
     .eq('id', orderId)
     .single();
 
@@ -70,8 +72,13 @@ Deno.serve(async (req) => {
     return json({ error: 'This order has already been paid.' }, 409);
   }
 
+  const advanceOrder = order.payment_method === 'advance_cod' && Number(order.advance_required) > 0;
+  if (advanceOrder && Number(order.advance_amount) >= Number(order.advance_required)) {
+    return json({ error: 'The advance for this order has already been received. The rest is paid on delivery.' }, 409);
+  }
+
   // Razorpay works in paise.
-  const amount = Math.round(Number(order.total_amount) * 100);
+  const amount = Math.round(Number(advanceOrder ? order.advance_required : order.total_amount) * 100);
   if (!Number.isFinite(amount) || amount < 100) {
     return json({ error: 'This order amount cannot be collected online.' }, 400);
   }
@@ -107,7 +114,7 @@ Deno.serve(async (req) => {
       amount,
       currency: 'INR',
       receipt: order.order_number,
-      notes: { powerrun_order_id: order.id, powerrun_order_number: order.order_number },
+      notes: { powerrun_order_id: order.id, powerrun_order_number: order.order_number, kind: advanceOrder ? 'advance' : 'full' },
     }),
   });
 

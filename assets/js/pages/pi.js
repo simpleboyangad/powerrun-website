@@ -17,7 +17,8 @@
 
   function payBox(data) {
     var o = data.order;
-    var due = Number(data.due) || 0;
+    var due = Number(data.pay_now != null ? data.pay_now : data.due) || 0;
+    var advanceAsk = Number(data.advance_required) > Number(data.advance) && Number(data.advance_required) < Number(o.total_amount);
     var bank = data.bank || {};
     var hasBank = bank.bank_account_number || bank.upi_id;
     var shot = PR.whatsapp('Namaste PowerRun, maine order ' + o.order_number + ' ka payment ' + PR.money(due) +
@@ -27,8 +28,10 @@
         ' ka poora payment mil chuka hai. Dhanyavaad! 🙏</p></div>';
     }
     return '<div class="pi-pay">' +
-      '<h2>Payment: ' + PR.money2(due) + '</h2>' +
-      (Number(data.advance) > 0 ? '<p class="pi-small">Advance ' + PR.money2(data.advance) + ' mil chuka hai - ye baaki rakam hai.</p>' : '') +
+      '<h2>' + (advanceAsk ? 'Advance' : 'Payment') + ': ' + PR.money2(due) + '</h2>' +
+      (advanceAsk ? '<p class="pi-small">Order confirm karne ke liye ye advance bhejein. Baaki ' +
+        PR.money2(Number(data.due) - due) + ' saman milne par dena hai.</p>' : '') +
+      (!advanceAsk && Number(data.advance) > 0 ? '<p class="pi-small">Advance ' + PR.money2(data.advance) + ' mil chuka hai - ye baaki rakam hai.</p>' : '') +
       (bank.upi_id
         ? '<a class="btn orange block pi-upi" href="' + PR.esc(upiLink(bank, due, o.order_number)) + '">UPI app se pay karein (GPay / PhonePe / Paytm)</a>' +
           '<div class="pi-qr-wrap"><div id="piQr" aria-label="UPI QR code"></div>' +
@@ -44,9 +47,7 @@
         : '') +
       (hasBank ? '' : '<p class="pi-small">Payment details ke liye hamein WhatsApp karein.</p>') +
       '<a class="btn block pi-wa" href="' + PR.esc(shot) + '" target="_blank" rel="noopener">Payment kar diya? Screenshot WhatsApp karein</a>' +
-      (o.payment_method !== 'razorpay'
-        ? '<p class="pi-small">Advance dene par order turant dispatch hota hai. Cash on Delivery bhi available hai.</p>'
-        : '') +
+      '<p class="pi-small">Payment milte hi order dispatch kar diya jata hai.</p>' +
     '</div>';
   }
 
@@ -71,13 +72,16 @@
         type: 'proforma', bank: true, proformaNo: 'PI-' + data.order.order_number, proformaDate: new Date(),
         paymentTerms: Number(data.advance) > 0
           ? 'Advance received: ' + PR.money2(data.advance) + '. Balance due: ' + PR.money2(data.due) + '.'
-          : 'Payment in advance by UPI / bank transfer, or Cash on Delivery.',
+          : Number(data.advance_required) > 0 && Number(data.advance_required) < Number(data.order.total_amount)
+            ? 'Advance ' + PR.money2(data.advance_required) + ' by UPI / bank transfer to confirm the order; balance ' +
+              PR.money2(Number(data.order.total_amount) - Number(data.advance_required)) + ' on delivery.'
+            : 'Full payment in advance by UPI / bank transfer.',
         notes: 'Order No. ' + data.order.order_number + ' · ' + PR.formatDate(data.order.created_at)
       });
       document.title = 'Proforma Invoice PI-' + data.order.order_number + ' | PowerRun Industries';
       var qr = document.getElementById('piQr');
       if (qr && window.QRCode && data.bank && data.bank.upi_id) {
-        new window.QRCode(qr, { text: upiLink(data.bank, data.due, data.order.order_number), width: 180, height: 180 });
+        new window.QRCode(qr, { text: upiLink(data.bank, data.pay_now != null ? data.pay_now : data.due, data.order.order_number), width: 180, height: 180 });
       }
     } catch (err) {
       host.innerHTML = '<div class="invoice-sheet"><h2>PI nahi khul paya</h2><p>' + PR.esc(err.message) +

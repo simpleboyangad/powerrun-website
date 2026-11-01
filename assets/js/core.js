@@ -84,6 +84,12 @@
      MRP total, discount, subtotal, shipping, total, and the GST that is
      INCLUDED in those prices (CGST + SGST within Uttar Pradesh, IGST outside).
      Older orders placed before GST was recorded simply skip those rows. */
+  /* 'razorpay' = paid fully online, 'advance_cod' = part online now + rest on
+     delivery (migration 48), 'cod' = older pay-on-confirmation orders. */
+  PR.paymentMethodLabel = function (method) {
+    return { razorpay: 'Online (full)', advance_cod: 'Advance + rest on delivery', cod: 'COD' }[method] || method || '-';
+  };
+
   PR.money2 = function (value) {
     var n = Number(value);
     if (!Number.isFinite(n)) return '-';

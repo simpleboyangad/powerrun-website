@@ -9,7 +9,7 @@
   'use strict';
   var PR = window.PR;
 
-  var current = { lines: [], subtotal: 0 };
+  var current = { lines: [], subtotal: 0, total: 0 };
   var settings = null;
   var placed = null;   // { order, customer } once an online order exists - "pay again" reuses it
 
@@ -60,6 +60,8 @@
     var state = placeOfSupply();
     var b = PR.cart.breakdown(current.lines, state, ((settings && settings.company) || {}).state);
     var total = Math.max(current.subtotal + b.gstAdded + shipping - discount, 0);
+    current.total = total;
+    if (document.getElementById('paymentMethods').childElementCount) renderPaymentMethods();
 
     host.innerHTML =
       '<div class="panel">' +
@@ -147,20 +149,54 @@
     return !!payments.razorpay_enabled || PR.param('rzp_test') === '1';
   }
 
+  /* Payment rules (Admin > Settings > Payments, enforced again by create_website_order):
+     any order can pay advance_percent (50%) online now and the rest on delivery, unless
+     full_online_below is set (orders below it are paid fully online). Plain COD
+     ("Pay on Confirmation") only while cod_enabled is on. */
+  function payRules() {
+    var p = settings.payments || {};
+    var pct = Math.min(Math.max(Number(p.advance_percent) || 50, 1), 100);
+    return {
+      cod: p.cod_enabled !== false,
+      advance: p.advance_enabled !== false,
+      pct: pct,
+      below: Number(p.full_online_below) || 0
+    };
+  }
+
+  function advanceFor(total) {
+    return Math.min(Math.ceil(total * payRules().pct / 100), total);
+  }
+
+  function canPayAdvance(total) {
+    var rules = payRules();
+    return rules.advance && razorpayAvailable() && total >= rules.below;
+  }
+
   function renderPaymentMethods() {
     var host = document.getElementById('paymentMethods');
-    var payments = settings.payments || {};
+    var rules = payRules();
     var razorpayReady = razorpayAvailable();
+    var total = current.total || 0;
     var options = [];
 
     if (razorpayReady) {
       options.push({
         value: 'razorpay',
-        title: 'Pay Online',
+        title: 'Pay Full Amount Online',
         note: 'UPI, cards, net banking and wallets via Razorpay. Secure payment.'
       });
     }
-    if (payments.cod_enabled !== false || !razorpayReady) {
+    if (canPayAdvance(total)) {
+      var adv = advanceFor(total);
+      options.push({
+        value: 'advance_cod',
+        title: 'Pay ' + rules.pct + '% Advance Now (' + PR.money(adv) + '), Rest on Delivery',
+        note: 'Pay ' + PR.money(adv) + ' online now to confirm the order. Pay the remaining ' +
+              PR.money(total - adv) + ' in cash when it is delivered.'
+      });
+    }
+    if (rules.cod || !razorpayReady) {
       options.push({
         value: 'cod',
         title: 'Pay on Confirmation',
@@ -168,28 +204,36 @@
       });
     }
 
-    paymentMethod = options[0].value;
-    host.innerHTML = options.map(function (option, index) {
-      return '<label class="radio-card' + (index === 0 ? ' selected' : '') + '">' +
-        '<input type="radio" name="payment_method" value="' + option.value + '"' +
-          (index === 0 ? ' checked' : '') + '>' +
+    if (!options.some(function (o) { return o.value === paymentMethod; })) paymentMethod = options[0].value;
+    host.innerHTML = options.map(function (option) {
+      var on = option.value === paymentMethod;
+      return '<label class="radio-card' + (on ? ' selected' : '') + '">' +
+        '<input type="radio" name="payment_method" value="' + option.value + '"' + (on ? ' checked' : '') + '>' +
         '<span><b>' + PR.esc(option.title) + '</b><small>' + PR.esc(option.note) + '</small></span>' +
       '</label>';
-    }).join('');
+    }).join('') +
+    (razorpayReady && rules.advance && !rules.cod && total > 0 && total < rules.below
+      ? '<p class="small-note" style="margin:4px 0 0">Orders below ' + PR.money(rules.below) +
+        ' are paid fully online. For ' + PR.money(rules.below) + ' and above you can pay ' + rules.pct +
+        '% advance and the rest on delivery.</p>'
+      : '');
 
-    if (razorpayReady && inAppBrowser()) {
-      host.insertAdjacentHTML('afterend', '<p class="form-message" style="margin-top:8px;background:#fff8e1;color:#7a5200;border:1px solid #f3d27a">' +
+    if (razorpayReady && inAppBrowser() && !document.getElementById('inAppHint')) {
+      host.insertAdjacentHTML('afterend', '<p class="form-message" id="inAppHint" style="margin-top:8px;background:#fff8e1;color:#7a5200;border:1px solid #f3d27a">' +
         'Aap Instagram / Facebook ke andar se khol rahe hain - yahan UPI app nahi khulte. Upar ⋮ menu se ' +
         '<b>"Open in Chrome / browser"</b> karke pay karein, ya Razorpay mein QR scan karein.</p>');
     }
 
-    host.addEventListener('change', function (event) {
-      if (event.target.name !== 'payment_method') return;
-      paymentMethod = event.target.value;
-      host.querySelectorAll('.radio-card').forEach(function (card) {
-        card.classList.toggle('selected', card.contains(event.target) && event.target.checked);
+    if (!host.dataset.bound) {
+      host.dataset.bound = '1';
+      host.addEventListener('change', function (event) {
+        if (event.target.name !== 'payment_method') return;
+        paymentMethod = event.target.value;
+        host.querySelectorAll('.radio-card').forEach(function (card) {
+          card.classList.toggle('selected', card.contains(event.target) && event.target.checked);
+        });
       });
-    });
+    }
   }
 
   function collect() {
@@ -260,7 +304,7 @@
   async function payWithRazorpay(order, customer, button) {
     loadRazorpay();
     if (!(await waitForRazorpay(15000))) {
-      throw new Error('Payment page load nahi hua (internet slow hai). Neeche "Dobara pay karein" dabayein ya COD chunein.');
+      throw new Error('Payment page load nahi hua (internet slow hai). Neeche "Dobara pay karein" dabayein.');
     }
     PR.setBusy(button, true, 'PAYMENT WINDOW KHUL RAHI HAI…');
 
@@ -284,7 +328,7 @@
         amount: created.amount,
         currency: created.currency || 'INR',
         name: PR.config.COMPANY,
-        description: 'Order ' + order.order_number,
+        description: (order.payment_method === 'advance_cod' ? 'Advance for order ' : 'Order ') + order.order_number,
         image: '/assets/powerrun-logo.png',
         prefill: { name: customer.name, contact: customer.mobile, email: customer.email || '' },
         theme: { color: '#ff5a00' },
@@ -309,7 +353,7 @@
                 }
               });
             });
-            if (!verified || verified.status !== 'paid') {
+            if (!verified || (verified.status !== 'paid' && verified.status !== 'advance_paid')) {
               throw new Error('Payment could not be verified. Please contact us with order ' +
                               order.order_number + '.');
             }
@@ -336,18 +380,26 @@
       document.getElementById('placeOrderBtn').insertAdjacentHTML('beforebegin', '<div id="payRetry"></div>');
       box = document.getElementById('payRetry');
     }
+    var total = Number(order.total_amount) || 0;
+    var offerAdvance = order.payment_method !== 'advance_cod' && canPayAdvance(total);
+    var offerCod = payRules().cod;
+    var due = order.payment_method === 'advance_cod' ? Number(order.advance_required) : total;
     document.getElementById('placeOrderBtn').hidden = true;
     box.innerHTML = '<div class="pay-retry">' +
       '<b>Aapka order ' + PR.esc(order.order_number) + ' save ho gaya hai ✓</b>' +
       '<p>' + PR.esc(why) + ' Naya order mat banaiye - neeche se isi order ka payment karein:</p>' +
-      '<button class="btn orange block" type="button" id="retryPayBtn">DOBARA PAY KAREIN (UPI / CARD)</button>' +
-      '<button class="btn block outline" type="button" id="switchCodBtn">CASH ON DELIVERY MEIN BADLEIN</button>' +
+      '<button class="btn orange block" type="button" id="retryPayBtn">DOBARA PAY KAREIN ' + PR.money(due) + ' (UPI / CARD)</button>' +
+      (offerAdvance
+        ? '<button class="btn block outline" type="button" id="switchAdvanceBtn">SIRF ' + payRules().pct + '% ADVANCE DEIN (' +
+          PR.money(advanceFor(total)) + '), BAAKI DELIVERY PAR</button>'
+        : '') +
+      (offerCod ? '<button class="btn block outline" type="button" id="switchCodBtn">CASH ON DELIVERY MEIN BADLEIN</button>' : '') +
       '<a class="small-note" href="' + PR.esc(PR.whatsapp('Order ' + order.order_number + ' ka online payment nahi ho raha')) +
         '" target="_blank" rel="noopener">Dikkat aa rahi hai? WhatsApp par madad lein</a>' +
     '</div>';
     box.scrollIntoView({ behavior: 'smooth', block: 'center' });
-    document.getElementById('retryPayBtn').addEventListener('click', async function (e) {
-      var btn = e.currentTarget;
+
+    async function pay(btn) {
       PR.setBusy(btn, true, 'PAYMENT WINDOW KHUL RAHI HAI…');
       try {
         var paid = await payWithRazorpay(order, customer, btn);
@@ -356,8 +408,27 @@
         PR.setBusy(btn, false);
         PR.showFormError(form, err.message);
       }
+    }
+    document.getElementById('retryPayBtn').addEventListener('click', function (e) { pay(e.currentTarget); });
+    var advBtn = document.getElementById('switchAdvanceBtn');
+    if (advBtn) advBtn.addEventListener('click', async function (e) {
+      var btn = e.currentTarget;
+      PR.setBusy(btn, true, 'BADAL RAHE HAIN…');
+      try {
+        var res = await PR.call('switch to advance', function (sb) {
+          return sb.rpc('switch_order_to_advance', { p_order_id: order.order_id, p_mobile: customer.mobile });
+        });
+        if (res && res.status === 'already_paid') return goToConfirmation(order.order_number, customer.mobile);
+        order.payment_method = 'advance_cod';
+        order.advance_required = res.advance_required;
+        await pay(btn);
+      } catch (err) {
+        PR.setBusy(btn, false);
+        PR.showFormError(form, err.message);
+      }
     });
-    document.getElementById('switchCodBtn').addEventListener('click', async function (e) {
+    var codBtn = document.getElementById('switchCodBtn');
+    if (codBtn) codBtn.addEventListener('click', async function (e) {
       var btn = e.currentTarget;
       PR.setBusy(btn, true, 'BADAL RAHE HAIN…');
       try {
@@ -382,7 +453,8 @@
     if (!customer) return;
     if (placed) { showRetry(placed.order, placed.customer, 'Payment abhi baaki hai.'); return; }
 
-    PR.setBusy(button, true, paymentMethod === 'razorpay' ? 'ORDER SAVE HO RAHA HAI… (10 SEC RUKIYE)' : 'PLACING ORDER…');
+    var online = paymentMethod === 'razorpay' || paymentMethod === 'advance_cod';
+    PR.setBusy(button, true, online ? 'ORDER SAVE HO RAHA HAI… (10 SEC RUKIYE)' : 'PLACING ORDER…');
 
     try {
       // Re-resolve the cart immediately before ordering so that a price or
@@ -410,7 +482,9 @@
         throw new Error('The order was not saved correctly. Please contact us before trying again.');
       }
 
-      if (paymentMethod === 'razorpay') {
+      if (online) {
+        order.total_amount = order.total_amount || current.total;
+        order.payment_method = order.payment_method || paymentMethod;
         placed = { order: order, customer: customer };
         var paid = await payWithRazorpay(order, customer, button);
         if (!paid) return;   // order exists, payment pending - message already shown
