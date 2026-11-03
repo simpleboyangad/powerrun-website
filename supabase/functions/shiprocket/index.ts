@@ -16,6 +16,10 @@
  *                                 Safe to press again: it carries on from the last step.
  *   cancel { order_id }           cancel the shipment before pickup
  *   label_pdf { order_id }        the saved label as base64, so Admin can save it as a file
+ *   sync   { order_id }           label made in the Shiprocket app: find that shipment (by our
+ *                                 order number, the AWB typed in Admin, or the customer's mobile
+ *                                 when it matches exactly one shipment) and copy the AWB, courier,
+ *                                 label and latest tracking status onto the order
  *                                 (the label link is on Shiprocket's storage, another site)
  *
  * A failed ship / cancel is also written to courier_events (status ERROR) so the
@@ -107,7 +111,7 @@ async function pickupAddress() {
 const ORDER_COLUMNS = 'id, order_number, created_at, customer_name, customer_mobile, customer_email, address, city, state, ' +
   'pincode, shipping_address, shipping_city, shipping_state, shipping_pincode, total_amount, shipping_cost, ' +
   'payment_status, payment_method, advance_amount, order_status, sr_order_id, sr_shipment_id, awb_code, label_url, ' +
-  'courier_partner, tracking_number, cod_to_collect, ' +
+  'courier_partner, tracking_number, cod_to_collect, ship_booked_at, ' +
   'order_items(id, product_id, product_name, product_sku, hsn_code, quantity, unit_price, total_price, taxable_amount, gst_amount, gst_rate, ' +
   'products(warranty, ship_surface_only))';
 
@@ -330,6 +334,106 @@ async function cancel(o: any) {
   return { cancelled: true };
 }
 
+/** first value that is present, for Shiprocket replies whose shape varies */
+function pick(...values: unknown[]) {
+  for (const v of values) if (v !== undefined && v !== null && String(v).trim() !== '') return v;
+  return null;
+}
+
+async function findSrOrderId(o: any): Promise<number> {
+  if (o.sr_order_id) return Number(o.sr_order_id);
+  const search = async (q: string) => {
+    const body = await sr('/orders?per_page=50&search=' + encodeURIComponent(q)).catch(() => null);
+    return (body?.data || []).filter((x: any) => !/cancel/i.test(String(x.status || '')));
+  };
+  // 1. our order number (Ship karo uses it; PR-...-2 after a rebooking)
+  const byNumber = (await search(o.order_number))
+    .filter((x: any) => String(x.channel_order_id || '').startsWith(o.order_number));
+  if (byNumber.length) return Number(byNumber[0].id);
+  // 2. the AWB typed into the order
+  const typed = String(o.tracking_number || '').trim();
+  if (typed) {
+    const byAwb = (await search(typed)).filter((x: any) =>
+      JSON.stringify(x.shipments || x.awb_code || '').includes(typed));
+    if (byAwb.length === 1) return Number(byAwb[0].id);
+  }
+  // 3. the customer's mobile - only when exactly one open shipment fits
+  const phone = String(o.customer_mobile || '').replace(/\D/g, '').slice(-10);
+  if (phone.length === 10) {
+    const since = new Date(o.created_at).getTime() - 86400e3;
+    const byPhone = (await search(phone)).filter((x: any) => {
+      const t = new Date(String(x.created_at || x.channel_created_at || '').replace(' ', 'T')).getTime();
+      return !t || t >= since;
+    });
+    if (byPhone.length === 1) return Number(byPhone[0].id);
+    if (byPhone.length > 1) {
+      throw new ShiprocketError('Is customer ke Shiprocket mein ' + byPhone.length + ' order hain - order mein Tracking Number (AWB) daal kar Save karein, phir dobara dabayein.');
+    }
+  }
+  return 0;
+}
+
+async function sync(o: any) {
+  if (o.order_status === 'cancelled') throw new ShiprocketError('Order cancel ho chuka hai.');
+  const srId = await findSrOrderId(o);
+  let awb = String(o.awb_code || o.tracking_number || '').trim();
+  let courier = String(o.courier_partner || '');
+  let shipmentId = Number(o.sr_shipment_id || 0);
+  let cod: number | null = null;
+
+  if (srId) {
+    const body = await sr('/orders/show/' + srId);
+    const d = body?.data || {};
+    const sh = Array.isArray(d.shipments) ? d.shipments[0] || {} : d.shipments || {};
+    awb = String(pick(sh.awb, sh.awb_code, d.awb_data?.awb, d.awb_code, awb) || '');
+    courier = String(pick(sh.courier, sh.courier_name, d.courier_name, courier) || '');
+    shipmentId = Number(pick(sh.id, d.shipment_id, shipmentId) || 0);
+    if (/cod/i.test(String(d.payment_method || ''))) cod = Number(pick(d.cod_amount, d.net_total, d.total) || 0) || null;
+    else if (d.payment_method) cod = 0;
+  }
+  if (!srId && !awb) {
+    throw new ShiprocketError('Shiprocket mein ye order nahi mila. Label ka AWB number order ke Tracking Number mein daal kar Save karein, phir dobara dabayein.');
+  }
+  if (!awb) throw new ShiprocketError('Shiprocket order mila, par abhi courier assign nahi hua (AWB nahi hai).');
+
+  const { data: taken } = await db.from('orders').select('order_number').eq('awb_code', awb).neq('id', o.id).limit(1);
+  if (taken && taken.length) throw new ShiprocketError('Ye AWB pehle se order ' + taken[0].order_number + ' par laga hai.');
+
+  const update: Record<string, unknown> = {
+    awb_code: awb, tracking_number: awb, courier_partner: courier || null,
+    ...(srId ? { sr_order_id: srId } : {}), ...(shipmentId ? { sr_shipment_id: shipmentId } : {}),
+    cod_to_collect: cod ?? codToCollect(o), ship_booked_at: o.ship_booked_at || new Date().toISOString(),
+    ...(['pending', 'confirmed', 'processing'].includes(o.order_status) ? { order_status: 'packed' } : {}),
+  };
+  const { error } = await db.from('orders').update(update).eq('id', o.id);
+  if (error) throw new ShiprocketError('Order update nahi hua: ' + error.message);
+
+  // latest tracking status, through the same rules as the webhook
+  let status = '';
+  try {
+    const t = await sr('/courier/track/awb/' + encodeURIComponent(awb));
+    const td = t?.tracking_data || t?.[awb]?.tracking_data || {};
+    const track = (td.shipment_track || [])[0] || {};
+    status = String(pick(track.current_status, td.shipment_track_activities?.[0]?.['sr-status-label'], '') || '');
+    if (status) {
+      await db.rpc('pr_record_courier_event', {
+        p_event_key: 'sync:' + awb + ':' + status, p_awb: awb, p_order_number: null,
+        p_status: status, p_status_at: new Date().toISOString(), p_payload: { source: 'sync', track },
+      });
+    }
+  } catch (_e) { /* tracking may not be live yet right after booking */ }
+
+  let labelUrl = String(o.label_url || '');
+  if (!labelUrl && shipmentId) {
+    try {
+      const l = await sr('/courier/generate/label', { method: 'POST', body: { shipment_id: [shipmentId] } });
+      labelUrl = String(l?.label_url || '');
+      if (labelUrl) await db.from('orders').update({ label_url: labelUrl }).eq('id', o.id);
+    } catch (_e) { /* label stays in Shiprocket */ }
+  }
+  return { awb, courier, status, cod: update.cod_to_collect, label_url: labelUrl, found_in_shiprocket: !!srId };
+}
+
 async function labelPdf(o: any) {
   let url = String(o.label_url || '');
   if (!url && o.sr_shipment_id) {
@@ -352,7 +456,7 @@ async function labelPdf(o: any) {
 
 /** keep the reason of a failed booking, readable later in courier_events */
 async function logError(input: any, message: string) {
-  if (!['ship', 'cancel'].includes(input?.action)) return;
+  if (!['ship', 'cancel', 'sync'].includes(input?.action)) return;
   const id = /^[0-9a-f-]{36}$/i.test(input?.order_id || '') ? input.order_id : null;
   await db.from('courier_events').insert({
     event_key: 'error:' + crypto.randomUUID(), order_id: id, status: 'ERROR', result: 'error',
@@ -397,6 +501,10 @@ Deno.serve(async (req) => {
       case 'cancel': {
         const o = await loadOrder(input.order_id);
         return reply({ ok: true, ...(await cancel(o)) });
+      }
+      case 'sync': {
+        const o = await loadOrder(input.order_id);
+        return reply({ ok: true, ...(await sync(o)) });
       }
       case 'label_pdf': {
         const o = await loadOrder(input.order_id);

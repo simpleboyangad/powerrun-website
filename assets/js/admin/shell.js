@@ -30,6 +30,7 @@
     { key: 'proforma',  href: '/admin/proforma/',  icon: '📃', label: 'Proforma Invoice (PI)' },
     { key: 'credit-notes', href: '/admin/credit-notes/', icon: '↩', label: 'Credit Notes' },
     { key: 'gst',       href: '/admin/gst/',       icon: '🧮', label: 'GST / CA Report' },
+    { key: 'cod',       href: '/admin/cod/',       icon: '💵', label: 'COD Hisaab' },
     { key: 'approvals', href: '/admin/approvals/', icon: '✅', label: 'Approval Center', badge: 'approvals_pending' },
 
     { key: 'crm-group', icon: '👥', label: 'CRM', children: [

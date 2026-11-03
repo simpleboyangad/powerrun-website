@@ -473,8 +473,14 @@
             '" target="_blank" rel="noopener">🧾 Invoice print</a>' : '') +
           '<a class="btn gray small" href="https://shiprocket.co/tracking/' + encodeURIComponent(order.awb_code) +
             '" target="_blank" rel="noopener">📍 Track</a>' +
+          (PR.whatsappTo(order.customer_mobile, '')
+            ? '<a class="btn small" href="' + PR.esc(PR.whatsappTo(order.customer_mobile, trackingMessage(order))) +
+              '" target="_blank" rel="noopener">📲 Customer ko tracking bhejo</a>'
+            : '') +
+          '<button class="btn gray small" type="button" id="shipSyncBtn" title="Shiprocket se courier ka latest status">🔄 Status update</button>' +
           (cancellable ? '<button class="btn gray small" type="button" id="shipCancelBtn">Shipment cancel karo</button>' : '') +
         '</div>');
+      bindSync(order);
       var cancelBtn = document.getElementById('shipCancelBtn');
       if (cancelBtn) cancelBtn.addEventListener('click', async function () {
         if (!confirm('Shiprocket shipment cancel karein? AWB aur label hat jayenge, order wapas "confirmed" ho jayega.')) return;
@@ -491,7 +497,16 @@
       return;
     }
 
-    if (['cancelled', 'shipped', 'delivered'].indexOf(order.order_status) >= 0) return;
+    if (order.order_status === 'cancelled') return;
+    // label made straight in the Shiprocket app: bring its AWB, courier and label here
+    var syncHtml = '<div class="page-actions" style="margin-top:8px"><button class="btn gray small" type="button" id="shipSyncBtn">' +
+      '🔄 Shiprocket se AWB lao</button><span class="hint">Shiprocket app se label banaya ho to dabayein ' +
+      '(na mile to Tracking Number mein AWB daal kar Save karein).</span></div>';
+    if (['shipped', 'delivered'].indexOf(order.order_status) >= 0) {
+      box.innerHTML = wrap((shipError[order.id] ? '<div class="form-message error" style="margin:8px 0">' + PR.esc(shipError[order.id]) + '</div>' : '') + syncHtml);
+      bindSync(order);
+      return;
+    }
     if (!shipReady(order)) {
       box.innerHTML = wrap('<p class="hint" style="margin:8px 0 0">Payment ya advance milte hi yahan <b>🚚 Ship karo</b> aayega ' +
         '(label + invoice ek click mein).</p>');
@@ -519,9 +534,10 @@
         : '') +
       '<div class="page-actions" style="margin-top:8px"><button class="btn small" type="button" id="shQuoteBtn">🚚 Ship karo - courier rate dekho</button>' +
         '<span class="hint" id="shWallet"></span></div>' +
-      '<div id="shQuotes"></div>');
+      '<div id="shQuotes"></div>' + syncHtml);
 
     prefillBox(order);
+    bindSync(order);
     document.getElementById('shQuoteBtn').addEventListener('click', function (e) { loadQuotes(order, e.currentTarget); });
     var paidBtn = document.getElementById('shPaidBtn');
     if (paidBtn) paidBtn.addEventListener('click', async function () {
@@ -538,6 +554,34 @@
         PR.setBusy(paidBtn, false);
         PR.toast(err.message, 'error');
       }
+    });
+  }
+
+  function trackingMessage(o) {
+    var first = (o.customer_name || '').split(' ')[0];
+    var cod = Number(o.cod_to_collect) > 0 && o.payment_status !== 'paid';
+    return 'Namaste ' + first + ' ji, PowerRun Industries se. Aapka order ' + o.order_number + ' bhej diya gaya hai 🚚\n\n' +
+      'Courier: ' + (o.courier_partner || '-') + '\nAWB / Tracking No: ' + o.awb_code + '\n' +
+      'Track karein: https://shiprocket.co/tracking/' + encodeURIComponent(o.awb_code) + '\n\n' +
+      (cod ? 'Delivery par sirf ' + PR.money(o.cod_to_collect) + ' dena hai (advance pehle mil chuka hai). Kripya amount tayyar rakhein.\n\n' : '') +
+      'Koi sawal ho to isi number par message karein. 🙏';
+  }
+
+  function bindSync(order) {
+    var btn = document.getElementById('shipSyncBtn');
+    if (!btn) return;
+    btn.addEventListener('click', async function () {
+      PR.setBusy(btn, true, 'SHIPROCKET SE LA RAHE…');
+      delete shipError[order.id];
+      try {
+        var res = await shiprocket('sync shipment', { action: 'sync', order_id: order.id });
+        PR.toast('AWB ' + res.awb + (res.courier ? ' · ' + res.courier : '') + (res.status ? ' · ' + res.status : '') +
+          (Number(res.cod) > 0 ? ' · COD ' + PR.money(res.cod) : ''), 'success');
+      } catch (err) {
+        shipError[order.id] = err.message;
+        PR.toast(err.message, 'error');
+      }
+      await reopen(order);
     });
   }
 
