@@ -102,7 +102,7 @@ async function pickupAddress() {
 const ORDER_COLUMNS = 'id, order_number, created_at, customer_name, customer_mobile, customer_email, address, city, state, ' +
   'pincode, shipping_address, shipping_city, shipping_state, shipping_pincode, total_amount, shipping_cost, ' +
   'payment_status, payment_method, advance_amount, order_status, sr_order_id, sr_shipment_id, awb_code, label_url, ' +
-  'courier_partner, tracking_number, ' +
+  'courier_partner, tracking_number, cod_to_collect, ' +
   'order_items(id, product_id, product_name, product_sku, hsn_code, quantity, unit_price, total_price, taxable_amount, gst_amount, gst_rate, ' +
   'products(warranty, ship_surface_only))';
 
@@ -222,7 +222,21 @@ async function createSrOrder(o: any, b: ReturnType<typeof box>, pickupName: stri
     shipping_pincode: String(o.shipping_pincode).replace(/\D/g, ''), shipping_state: o.shipping_state || o.state || '',
     shipping_country: 'India', shipping_email: o.customer_email || 'service@powerrun.in', shipping_phone: phone,
   });
-  const body = await sr('/orders/create/adhoc', { method: 'POST', body: payload });
+  // the same order number can already be in Shiprocket (added by hand, or an earlier
+  // booking that was cancelled): book it again as PR-...-2, -3
+  let body: any = null;
+  for (let n = 1; n <= 4; n++) {
+    payload.order_id = n === 1 ? o.order_number : o.order_number + '-' + n;
+    try {
+      body = await sr('/orders/create/adhoc', { method: 'POST', body: payload });
+    } catch (e) {
+      if (n < 4 && /already|exist|duplicate/i.test((e as Error).message)) continue;
+      throw new ShiprocketError('Shiprocket order nahi bana: ' + (e as Error).message);
+    }
+    if (body?.order_id && body?.shipment_id) break;
+    if (n < 4 && /already|exist|duplicate/i.test(srMessage(body, ''))) continue;
+    break;
+  }
   if (!body?.order_id || !body?.shipment_id) throw new ShiprocketError('Shiprocket order nahi bana: ' + srMessage(body, 'unknown reply'));
   return { srOrderId: Number(body.order_id), shipmentId: Number(body.shipment_id), cod };
 }
@@ -250,6 +264,13 @@ async function ship(o: any, input: any) {
 
   let srOrderId = Number(o.sr_order_id || 0), shipmentId = Number(o.sr_shipment_id || 0);
   const cod = codToCollect(o);
+  // payment changed since the Shiprocket order was made (e.g. the customer paid the rest
+  // directly): that order would collect the wrong COD, so cancel it and make a new one
+  if (shipmentId && Number(o.cod_to_collect ?? -1) !== cod) {
+    await sr('/orders/cancel', { method: 'POST', body: { ids: [srOrderId] } }).catch(() => null);
+    await db.from('orders').update({ sr_order_id: null, sr_shipment_id: null, cod_to_collect: null }).eq('id', o.id);
+    srOrderId = 0; shipmentId = 0;
+  }
   if (!shipmentId) {
     const pickup = await pickupAddress();
     const made = await createSrOrder(o, b, pickup.name);
@@ -346,7 +367,10 @@ Deno.serve(async (req) => {
         return fail('Unknown action');
     }
   } catch (e) {
-    if (e instanceof ShiprocketError) return fail(e.message);
+    if (e instanceof ShiprocketError) {
+      console.error('shiprocket', input?.action, input?.order_id, e.message);
+      return fail(e.message);
+    }
     console.error('shiprocket function error', e);
     return fail('Kuch gadbad hui: ' + ((e as Error)?.message || 'unknown'));
   }

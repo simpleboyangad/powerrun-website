@@ -431,6 +431,8 @@
   /* ---------------------------------------------------- Shiprocket shipping
      supabase/functions/shiprocket books the courier; the amount the courier
      collects is worked out there from the order (total - advance, 0 if paid). */
+  var shipError = {};   // last booking error per order, shown in the Ship box until the next try
+
   function shipReady(o) {
     return !o.awb_code && ['cancelled', 'shipped', 'delivered'].indexOf(o.order_status) < 0 &&
       (o.payment_status === 'paid' || Number(o.advance_amount) > 0);
@@ -498,9 +500,12 @@
 
     var cod = codAmount(order);
     box.innerHTML = wrap(
+      (shipError[order.id] ? '<div class="form-message error" style="margin:8px 0">' + PR.esc(shipError[order.id]) + '</div>' : '') +
       '<p style="margin:8px 0">' + (cod > 0
         ? 'Courier customer se lega: <b>' + PR.money(cod) + '</b>' +
-          (Number(order.advance_amount) > 0 ? ' (advance ' + PR.money(order.advance_amount) + ' mil chuka)' : '')
+          (Number(order.advance_amount) > 0 ? ' (advance ' + PR.money(order.advance_amount) + ' mil chuka)' : '') +
+          ' <button class="btn gray small" type="button" id="shPaidBtn" title="Customer ne baaki paisa seedha UPI / bank se de diya">' +
+            'Baaki paisa mil gaya? Paid karo</button>'
         : 'Prepaid - courier kuch nahi lega') + '</p>' +
       '<div style="display:grid;grid-template-columns:repeat(4,minmax(70px,1fr));gap:6px">' +
         '<label style="font-size:12px">Wazan (kg)<input id="sh_w" type="number" min="0.1" step="0.1" inputmode="decimal"></label>' +
@@ -518,6 +523,22 @@
 
     prefillBox(order);
     document.getElementById('shQuoteBtn').addEventListener('click', function (e) { loadQuotes(order, e.currentTarget); });
+    var paidBtn = document.getElementById('shPaidBtn');
+    if (paidBtn) paidBtn.addEventListener('click', async function () {
+      if (!confirm('Customer ne poora ' + PR.money(order.total_amount) + ' de diya hai?\n\nOrder "Paid" ho jayega aur courier ' +
+                   'customer se kuch nahi lega (prepaid). Paisa account mein aaya ho tabhi haan karein.')) return;
+      PR.setBusy(paidBtn, true, 'SAVING…');
+      try {
+        await PR.call('mark paid', function (sb) {
+          return sb.from('orders').update({ payment_status: 'paid' }).eq('id', order.id);
+        });
+        PR.toast('Order Paid ho gaya - ab courier kuch nahi lega.', 'success');
+        await reopen(order);
+      } catch (err) {
+        PR.setBusy(paidBtn, false);
+        PR.toast(err.message, 'error');
+      }
+    });
   }
 
   function boxInput() {
@@ -608,6 +629,8 @@
     var b = boxInput();
     // open the tab now (still inside the click) so pop-up blockers allow it
     var tab = window.open('', '_blank');
+    if (tab) { try { tab.document.write('<p style="font:16px sans-serif;padding:40px">Label aur invoice ban rahe hain… is tab ko band mat karein.</p>'); } catch (e) { /* ignore */ } }
+    delete shipError[order.id];
     PR.setBusy(button, true, 'LABEL BAN RAHA HAI…');
     try {
       var res = await shiprocket('book shipment', Object.assign({
@@ -636,6 +659,7 @@
     } catch (err) {
       if (tab) tab.close();
       PR.setBusy(button, false);
+      shipError[order.id] = 'Label nahi bana: ' + err.message;
       PR.toast(err.message, 'error');
       await reopen(order);
     }
