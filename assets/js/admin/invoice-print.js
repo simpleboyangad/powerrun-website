@@ -60,6 +60,13 @@
         copySelect.addEventListener('change', draw);
       }
       draw();
+      // booked through Admin > Orders > Ship karo: the courier label is one click away
+      var labelBtn = document.getElementById('labelBtn');
+      if (labelBtn && order.label_url && /^https:\/\//.test(order.label_url)) {
+        labelBtn.href = order.label_url;
+        labelBtn.textContent = 'SHIPPING LABEL' + (order.awb_code ? ' (' + order.awb_code + ')' : '');
+        labelBtn.style.display = '';
+      }
       document.title = (type === 'tax' ? 'Tax Invoice ' + order.invoice_number : 'Proforma PI-' + order.order_number) +
         ' | PowerRun Admin';
     } catch (err) {

@@ -35,6 +35,8 @@
   function render(host) {
     var visible = filterStatus === 'pi_waiting'
       ? orders.filter(piWaiting)
+      : filterStatus === 'ship_todo'
+        ? orders.filter(function (o) { return 'awb_code' in o && shipReady(o); })
       : filterStatus === 'pi_todo'
         ? orders.filter(piTodo)
       : filterStatus
@@ -54,6 +56,7 @@
             }).join('') +
             '<option value="pi_todo"' + (filterStatus === 'pi_todo' ? ' selected' : '') + '>PI bhejna baaki</option>' +
             '<option value="pi_waiting"' + (filterStatus === 'pi_waiting' ? ' selected' : '') + '>PI bheja, paisa baaki</option>' +
+            '<option value="ship_todo"' + (filterStatus === 'ship_todo' ? ' selected' : '') + '>🚚 Ship karna baaki</option>' +
           '</select>' +
           '<span class="count" id="orderCount">' + visible.length + ' shown</span>' +
         '</div>' +
@@ -143,7 +146,9 @@
       '<td>' + itemCount(order) + '</td>' +
       '<td class="nowrap"><b>' + PR.money(order.total_amount) + '</b></td>' +
       '<td class="nowrap">' + PRA.pill(order.payment_status) + payBadge(order) + '</td>' +
-      '<td>' + PRA.pill(order.order_status) + '</td>' +
+      '<td>' + PRA.pill(order.order_status) +
+        ('awb_code' in order && shipReady(order) ? ' <small class="pill sent" title="Payment / advance mil gaya - ship karein">SHIP KARO</small>' : '') +
+        (order.rto ? ' <small class="pill cancelled">RTO</small>' : '') + '</td>' +
       '<td class="nowrap">' +
         (filterStatus === 'pi_todo' && PR.whatsappTo(order.customer_mobile, '')
           ? '<a class="btn small" data-pi-send="' + PR.esc(order.id) + '" href="' +
@@ -233,6 +238,8 @@
               : '');
         })() +
       '</div>' +
+
+      '<div id="shipBox"></div>' +
 
       '<div class="page-actions" style="margin-top:16px;padding:12px;border:1px solid #eef0f3;border-radius:10px;align-items:center">' +
         '<b style="font-size:12px;color:#6d6d6d;margin-right:auto">INVOICE' +
@@ -335,6 +342,7 @@
       '<div id="timelineBox"></div>');
 
     loadSerials(order);
+    shipBox(order);
     loadTimeline(order);
     var piWa = document.getElementById('piWaBtn');
     if (piWa) piWa.addEventListener('click', function () { markPiSent(order); });
@@ -418,6 +426,223 @@
         PR.toast(err.message, 'error');
       }
     });
+  }
+
+  /* ---------------------------------------------------- Shiprocket shipping
+     supabase/functions/shiprocket books the courier; the amount the courier
+     collects is worked out there from the order (total - advance, 0 if paid). */
+  function shipReady(o) {
+    return !o.awb_code && ['cancelled', 'shipped', 'delivered'].indexOf(o.order_status) < 0 &&
+      (o.payment_status === 'paid' || Number(o.advance_amount) > 0);
+  }
+
+  function codAmount(o) {
+    return o.payment_status === 'paid' ? 0 : Math.max(0, Number(o.total_amount) - Number(o.advance_amount || 0));
+  }
+
+  async function shiprocket(label, body) {
+    var res = await PR.call(label, function (sb) { return sb.functions.invoke('shiprocket', { body: body }); });
+    if (!res || !res.ok) throw new Error((res && res.error) || 'Shiprocket se jawab nahi aaya.');
+    return res;
+  }
+
+  function shipBox(order) {
+    var box = document.getElementById('shipBox');
+    if (!box || !('awb_code' in order)) return;   // migration 50 not applied yet
+    var wrap = function (html) {
+      return '<div style="margin-top:16px;padding:12px;border:1px solid #eef0f3;border-radius:10px">' +
+        '<b style="font-size:12px;color:#6d6d6d">SHIPPING (SHIPROCKET)</b>' + html + '</div>';
+    };
+
+    if (order.awb_code) {
+      var cancellable = ['packed', 'confirmed', 'processing', 'pending'].indexOf(order.order_status) >= 0;
+      box.innerHTML = wrap(
+        '<p style="margin:8px 0;line-height:1.7"><b>' + PR.esc(order.courier_partner || 'Courier') + '</b> · AWB <b>' +
+          PR.esc(order.awb_code) + '</b>' + (order.rto ? ' <span class="pill cancelled">RTO</span>' : '') +
+          (order.ship_status ? '<br>Status: ' + PR.esc(order.ship_status) +
+            (order.ship_status_at ? ' · ' + PR.formatDateTime(order.ship_status_at) : '') : '') +
+          '<br>' + (Number(order.cod_to_collect) > 0
+            ? 'Courier customer se lega: <b>' + PR.money(order.cod_to_collect) + '</b>'
+            : 'Prepaid - courier kuch nahi lega') +
+          (Number(order.ship_charge) > 0 ? ' · Bhada ' + PR.money(order.ship_charge) : '') + '</p>' +
+        '<div class="page-actions">' +
+          (order.label_url ? '<a class="btn small" href="' + PR.esc(order.label_url) + '" target="_blank" rel="noopener">🏷 Label print</a>' : '') +
+          (order.invoice_number ? '<a class="btn small" href="/admin/invoice/?type=tax&amp;id=' + encodeURIComponent(order.id) +
+            '" target="_blank" rel="noopener">🧾 Invoice print</a>' : '') +
+          '<a class="btn gray small" href="https://shiprocket.co/tracking/' + encodeURIComponent(order.awb_code) +
+            '" target="_blank" rel="noopener">📍 Track</a>' +
+          (cancellable ? '<button class="btn gray small" type="button" id="shipCancelBtn">Shipment cancel karo</button>' : '') +
+        '</div>');
+      var cancelBtn = document.getElementById('shipCancelBtn');
+      if (cancelBtn) cancelBtn.addEventListener('click', async function () {
+        if (!confirm('Shiprocket shipment cancel karein? AWB aur label hat jayenge, order wapas "confirmed" ho jayega.')) return;
+        PR.setBusy(cancelBtn, true, 'CANCEL HO RAHA…');
+        try {
+          await shiprocket('cancel shipment', { action: 'cancel', order_id: order.id });
+          PR.toast('Shipment cancel ho gaya.', 'success');
+          await reopen(order);
+        } catch (err) {
+          PR.setBusy(cancelBtn, false);
+          PR.toast(err.message, 'error');
+        }
+      });
+      return;
+    }
+
+    if (['cancelled', 'shipped', 'delivered'].indexOf(order.order_status) >= 0) return;
+    if (!shipReady(order)) {
+      box.innerHTML = wrap('<p class="hint" style="margin:8px 0 0">Payment ya advance milte hi yahan <b>🚚 Ship karo</b> aayega ' +
+        '(label + invoice ek click mein).</p>');
+      return;
+    }
+
+    var cod = codAmount(order);
+    box.innerHTML = wrap(
+      '<p style="margin:8px 0">' + (cod > 0
+        ? 'Courier customer se lega: <b>' + PR.money(cod) + '</b>' +
+          (Number(order.advance_amount) > 0 ? ' (advance ' + PR.money(order.advance_amount) + ' mil chuka)' : '')
+        : 'Prepaid - courier kuch nahi lega') + '</p>' +
+      '<div style="display:grid;grid-template-columns:repeat(4,minmax(70px,1fr));gap:6px">' +
+        '<label style="font-size:12px">Wazan (kg)<input id="sh_w" type="number" min="0.1" step="0.1" inputmode="decimal"></label>' +
+        '<label style="font-size:12px">Lambai (cm)<input id="sh_l" type="number" min="1" step="1" inputmode="numeric"></label>' +
+        '<label style="font-size:12px">Chaudai (cm)<input id="sh_b" type="number" min="1" step="1" inputmode="numeric"></label>' +
+        '<label style="font-size:12px">Unchai (cm)<input id="sh_h" type="number" min="1" step="1" inputmode="numeric"></label>' +
+      '</div>' +
+      ((order.order_items || []).length === 1
+        ? '<label style="display:flex;gap:8px;align-items:center;flex-direction:row;font-weight:400;font-size:13px;margin-top:6px">' +
+            '<input type="checkbox" id="sh_save" style="width:auto" checked> Ye box size is product ke liye yaad rakho</label>'
+        : '') +
+      '<div class="page-actions" style="margin-top:8px"><button class="btn small" type="button" id="shQuoteBtn">🚚 Ship karo - courier rate dekho</button>' +
+        '<span class="hint" id="shWallet"></span></div>' +
+      '<div id="shQuotes"></div>');
+
+    prefillBox(order);
+    document.getElementById('shQuoteBtn').addEventListener('click', function (e) { loadQuotes(order, e.currentTarget); });
+  }
+
+  function boxInput() {
+    var v = function (id) { return Number(document.getElementById(id).value); };
+    return { weight: v('sh_w'), length: v('sh_l'), breadth: v('sh_b'), height: v('sh_h') };
+  }
+
+  /* the box size saved on the product (Ship karo remembers it); weight x quantity */
+  async function prefillBox(order) {
+    var items = order.order_items || [];
+    var ids = items.map(function (i) { return i.product_id; }).filter(Boolean);
+    if (!ids.length) return;
+    try {
+      var rows = await PR.call('load box sizes', function (sb) {
+        return sb.from('products').select('id,ship_weight_kg,ship_length_cm,ship_breadth_cm,ship_height_cm').in('id', ids);
+      }) || [];
+      var byId = {};
+      rows.forEach(function (r) { byId[r.id] = r; });
+      var weight = 0, all = true;
+      items.forEach(function (i) {
+        var p = byId[i.product_id];
+        if (p && Number(p.ship_weight_kg) > 0) weight += Number(p.ship_weight_kg) * Number(i.quantity);
+        else all = false;
+      });
+      if (all && weight > 0) document.getElementById('sh_w').value = Math.round(weight * 100) / 100;
+      var first = byId[items[0].product_id];
+      if (items.length === 1 && Number(items[0].quantity) === 1 && first) {
+        if (first.ship_length_cm) document.getElementById('sh_l').value = first.ship_length_cm;
+        if (first.ship_breadth_cm) document.getElementById('sh_b').value = first.ship_breadth_cm;
+        if (first.ship_height_cm) document.getElementById('sh_h').value = first.ship_height_cm;
+      }
+    } catch (err) { /* empty boxes: the admin types the size */ }
+  }
+
+  async function loadQuotes(order, button) {
+    var b = boxInput();
+    if (!(b.weight > 0 && b.length > 0 && b.breadth > 0 && b.height > 0)) {
+      PR.toast('Pehle parcel ka wazan aur size bhariye (pack karke naapein).', 'error');
+      return;
+    }
+    var host = document.getElementById('shQuotes');
+    PR.setBusy(button, true, 'RATE AA RAHE HAIN…');
+    try {
+      var both = await Promise.all([
+        shiprocket('courier rates', Object.assign({ action: 'quote', order_id: order.id }, b)),
+        shiprocket('wallet', { action: 'status' }).catch(function () { return null; })
+      ]);
+      var q = both[0], st = both[1];
+      PR.setBusy(button, false);
+      if (st && st.wallet != null) {
+        document.getElementById('shWallet').innerHTML = 'Wallet: <b>' + PR.money(st.wallet) + '</b> · Pickup: ' + PR.esc(q.pickup.name) + ' (' + PR.esc(q.pickup.pincode) + ')';
+      }
+      if (!q.couriers.length) {
+        host.innerHTML = '<div class="form-message error" style="margin-top:8px">Is pincode par koi courier nahi mila' +
+          (q.surface_only ? ' (battery - sirf road wale courier)' : '') + '.</div>';
+        return;
+      }
+      var cheapest = q.couriers[0].id;
+      var pick = q.couriers.some(function (c) { return c.id === q.recommended; }) ? q.recommended : cheapest;
+      host.innerHTML =
+        (q.surface_only ? '<p class="hint" style="margin:8px 0 0">🔋 Lithium battery: sirf Surface (road) courier dikhaye hain' +
+          (q.hidden_air ? ' - ' + q.hidden_air + ' air courier chhupaye' : '') + '.</p>' : '') +
+        '<div style="display:grid;gap:6px;margin-top:8px">' + q.couriers.slice(0, 8).map(function (c) {
+          var tags = (c.id === cheapest ? ' <span class="pill delivered">SABSE SASTA</span>' : '') +
+            (c.id === q.recommended ? ' <span class="pill sent">SUGGESTED</span>' : '');
+          return '<label style="display:flex;gap:10px;align-items:center;flex-direction:row;font-weight:400;padding:8px 10px;border:1px solid #eef0f3;border-radius:8px">' +
+            '<input type="radio" name="sh_courier" value="' + c.id + '" data-rate="' + c.rate + '" style="width:auto"' + (c.id === pick ? ' checked' : '') + '>' +
+            '<span style="flex:1"><b>' + PR.esc(c.name) + '</b>' + tags + '<br><small>' +
+              (c.days ? c.days + ' din' : (c.etd ? 'ETD ' + PR.esc(c.etd) : '')) +
+              (c.rating ? ' · ⭐ ' + c.rating : '') + (c.surface ? ' · Surface' : ' · Air') + '</small></span>' +
+            '<b class="nowrap">' + PR.money(c.rate) + '</b></label>';
+        }).join('') + '</div>' +
+        '<div class="page-actions" style="justify-content:flex-end;margin-top:10px">' +
+          '<button class="btn" type="button" id="shShipBtn">✅ CONFIRM: LABEL + INVOICE BANAO</button></div>' +
+        '<p class="hint">Courier customer se ' + (q.cod > 0 ? '<b>' + PR.money(q.cod) + '</b> lega' : 'kuch nahi lega (prepaid)') +
+          '. Bhada Shiprocket wallet se katega.</p>';
+      document.getElementById('shShipBtn').addEventListener('click', function (e) { bookShipment(order, e.currentTarget); });
+    } catch (err) {
+      PR.setBusy(button, false);
+      host.innerHTML = '<div class="form-message error" style="margin-top:8px">' + PR.esc(err.message) + '</div>';
+    }
+  }
+
+  async function bookShipment(order, button) {
+    var chosen = document.querySelector('input[name="sh_courier"]:checked');
+    if (!chosen) { PR.toast('Courier chuniye.', 'error'); return; }
+    var b = boxInput();
+    // open the tab now (still inside the click) so pop-up blockers allow it
+    var tab = window.open('', '_blank');
+    PR.setBusy(button, true, 'LABEL BAN RAHA HAI…');
+    try {
+      var res = await shiprocket('book shipment', Object.assign({
+        action: 'ship', order_id: order.id, courier_id: Number(chosen.value), rate: Number(chosen.getAttribute('data-rate'))
+      }, b));
+      var save = document.getElementById('sh_save');
+      if (save && save.checked && order.order_items[0].product_id && Number(order.order_items[0].quantity) === 1) {
+        PR.call('remember box size', function (sb) {
+          return sb.from('products').update({ ship_weight_kg: b.weight, ship_length_cm: b.length,
+            ship_breadth_cm: b.breadth, ship_height_cm: b.height }).eq('id', order.order_items[0].product_id);
+        }).catch(function () {});
+      }
+      var invoiceNo = order.invoice_number;
+      if (!invoiceNo) {
+        try {
+          var inv = await PR.call('issue tax invoice', function (sb) { return sb.rpc('issue_tax_invoice', { p_order_id: order.id }); });
+          invoiceNo = inv.invoice_number;
+        } catch (err) {
+          PR.toast('Label ban gaya, par invoice nahi bana: ' + err.message, 'error');
+        }
+      }
+      var url = '/admin/invoice/?type=tax&id=' + encodeURIComponent(order.id);
+      if (tab) tab.location.href = invoiceNo ? url : (res.label_url || url);
+      PR.toast('Ship ho gaya: ' + (res.courier || '') + ' · AWB ' + res.awb + (res.pickup ? ' · ' + res.pickup : ''), 'success');
+      await reopen(order);
+    } catch (err) {
+      if (tab) tab.close();
+      PR.setBusy(button, false);
+      PR.toast(err.message, 'error');
+      await reopen(order);
+    }
+  }
+
+  async function reopen(order) {
+    await refresh();
+    detail(orders.find(function (o) { return o.id === order.id; }) || order);
   }
 
   async function loadTimeline(order) {

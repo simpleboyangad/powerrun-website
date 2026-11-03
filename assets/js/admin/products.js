@@ -339,6 +339,23 @@
           '</div>' +
         '</details>' +
 
+        (products.length && 'ship_surface_only' in products[0]
+          ? '<details><summary style="cursor:pointer;font-weight:800;font-size:12px">Shipping box (Shiprocket)</summary>' +
+              '<div style="margin-top:12px;display:grid;gap:10px">' +
+                '<p class="hint" style="margin-top:0">Packed box ka wazan aur size - Orders &gt; Ship karo mein apne aap bhar jata hai.</p>' +
+                '<div class="form-grid" style="grid-template-columns:repeat(4,minmax(80px,1fr))">' +
+                  [['pf_ship_w', 'Wazan (kg)', 'ship_weight_kg', '0.01'], ['pf_ship_l', 'Lambai (cm)', 'ship_length_cm', '1'],
+                   ['pf_ship_b', 'Chaudai (cm)', 'ship_breadth_cm', '1'], ['pf_ship_h', 'Unchai (cm)', 'ship_height_cm', '1']].map(function (f) {
+                    return '<label>' + f[1] + '<input id="' + f[0] + '" type="number" min="0" step="' + f[3] + '" value="' +
+                      PR.esc(p[f[2]] === null || p[f[2]] === undefined ? '' : p[f[2]]) + '"></label>';
+                  }).join('') +
+                '</div>' +
+                '<label class="inline"><input id="pf_ship_surface" type="checkbox"' + (p.ship_surface_only ? ' checked' : '') +
+                  '> Sirf Surface (road) courier - lithium battery pack ke liye</label>' +
+              '</div>' +
+            '</details>'
+          : '') +
+
         '<div class="form-grid">' +
           '<label>Availability<select id="pf_availability">' +
             ['in_stock', 'out_of_stock', 'preorder', 'discontinued'].map(function (value) {
@@ -809,6 +826,14 @@
       var v = document.getElementById(id).value.trim();
       return v === '' ? null : Number(v);
     };
+    if (document.getElementById('pf_ship_surface')) {
+      var posOrNull = function (id) { var n = numOrNull(id); return n > 0 ? n : null; };
+      payload.ship_weight_kg = posOrNull('pf_ship_w');
+      payload.ship_length_cm = posOrNull('pf_ship_l');
+      payload.ship_breadth_cm = posOrNull('pf_ship_b');
+      payload.ship_height_cm = posOrNull('pf_ship_h');
+      payload.ship_surface_only = document.getElementById('pf_ship_surface').checked;
+    }
     var costs = {
       purchase_cost: numOrNull('pf_purchase_cost'),
       purchase_gst_rate: numOrNull('pf_purchase_gst'),
