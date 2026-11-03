@@ -580,7 +580,8 @@
       host.innerHTML =
         (q.surface_only ? '<p class="hint" style="margin:8px 0 0">🔋 Lithium battery: sirf Surface (road) courier dikhaye hain' +
           (q.hidden_air ? ' - ' + q.hidden_air + ' air courier chhupaye' : '') + '.</p>' : '') +
-        '<div style="display:grid;gap:6px;margin-top:8px">' + q.couriers.slice(0, 8).map(function (c) {
+        '<p class="hint" style="margin:8px 0 0">' + q.couriers.length + ' courier mile (sabse saste pehle):</p>' +
+        '<div style="display:grid;gap:6px;margin-top:6px;max-height:380px;overflow:auto">' + q.couriers.map(function (c) {
           var tags = (c.id === cheapest ? ' <span class="pill delivered">SABSE SASTA</span>' : '') +
             (c.id === q.recommended ? ' <span class="pill sent">SUGGESTED</span>' : '');
           return '<label style="display:flex;gap:10px;align-items:center;flex-direction:row;font-weight:400;padding:8px 10px;border:1px solid #eef0f3;border-radius:8px">' +
