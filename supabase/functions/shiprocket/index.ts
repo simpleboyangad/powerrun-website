@@ -15,6 +15,11 @@
  *                                 ask for pickup, make the label; saved on the order.
  *                                 Safe to press again: it carries on from the last step.
  *   cancel { order_id }           cancel the shipment before pickup
+ *   label_pdf { order_id }        the saved label as base64, so Admin can save it as a file
+ *                                 (the label link is on Shiprocket's storage, another site)
+ *
+ * A failed ship / cancel is also written to courier_events (status ERROR) so the
+ * reason can be looked up later.
  *
  * Money: the amount the courier collects is worked out here from the orders row,
  * never taken from the browser: 0 when the order is paid, else total - advance.
@@ -325,6 +330,36 @@ async function cancel(o: any) {
   return { cancelled: true };
 }
 
+async function labelPdf(o: any) {
+  let url = String(o.label_url || '');
+  if (!url && o.sr_shipment_id) {
+    const l = await sr('/courier/generate/label', { method: 'POST', body: { shipment_id: [Number(o.sr_shipment_id)] } });
+    url = String(l?.label_url || '');
+    if (url) await db.from('orders').update({ label_url: url }).eq('id', o.id);
+  }
+  if (!/^https:\/\//.test(url)) throw new ShiprocketError('Is order ka label nahi mila.');
+  // only Shiprocket's own label storage
+  const host = new URL(url).hostname;
+  if (!/(^|\.)(amazonaws\.com|shiprocket\.in|shiprocket\.co)$/i.test(host)) throw new ShiprocketError('Label link Shiprocket ka nahi hai.');
+  const res = await fetch(url);
+  if (!res.ok) throw new ShiprocketError('Label download nahi hua (HTTP ' + res.status + ').');
+  const bytes = new Uint8Array(await res.arrayBuffer());
+  if (bytes.length > 5_000_000) throw new ShiprocketError('Label file bahut badi hai.');
+  let bin = '';
+  for (let i = 0; i < bytes.length; i += 0x8000) bin += String.fromCharCode(...bytes.subarray(i, i + 0x8000));
+  return { pdf_base64: btoa(bin), file: o.order_number + '_Label.pdf' };
+}
+
+/** keep the reason of a failed booking, readable later in courier_events */
+async function logError(input: any, message: string) {
+  if (!['ship', 'cancel'].includes(input?.action)) return;
+  const id = /^[0-9a-f-]{36}$/i.test(input?.order_id || '') ? input.order_id : null;
+  await db.from('courier_events').insert({
+    event_key: 'error:' + crypto.randomUUID(), order_id: id, status: 'ERROR', result: 'error',
+    payload: { action: input.action, courier_id: input.courier_id ?? null, message },
+  }).then(() => null, () => null);
+}
+
 Deno.serve(async (req) => {
   if (req.method === 'OPTIONS') return new Response('ok', { headers: CORS });
   if (req.method !== 'POST') return fail('Method not allowed');
@@ -363,12 +398,17 @@ Deno.serve(async (req) => {
         const o = await loadOrder(input.order_id);
         return reply({ ok: true, ...(await cancel(o)) });
       }
+      case 'label_pdf': {
+        const o = await loadOrder(input.order_id);
+        return reply({ ok: true, ...(await labelPdf(o)) });
+      }
       default:
         return fail('Unknown action');
     }
   } catch (e) {
     if (e instanceof ShiprocketError) {
       console.error('shiprocket', input?.action, input?.order_id, e.message);
+      await logError(input, e.message);
       return fail(e.message);
     }
     console.error('shiprocket function error', e);

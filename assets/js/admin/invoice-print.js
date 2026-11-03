@@ -4,6 +4,8 @@
  *   /admin/invoice/?id=<order uuid>&type=tax        tax invoice - the order must
  *                                                   already have a number from
  *                                                   issue_tax_invoice()
+ *   ...&save=1                                      (Ship karo) also download the
+ *                                                   invoice PDF and the courier label
  *
  * The document itself comes from assets/js/invoice-doc.js, the same renderer
  * the customer sees in My Account.
@@ -12,6 +14,33 @@
   'use strict';
   var PR = window.PR;
   var PRA = window.PRA;
+
+  /* invoice + label as files: PR-2026-00064_Invoice_PR-26-27-0001.pdf, PR-2026-00064_Label.pdf */
+  async function saveFiles(order, withLabel) {
+    var status = document.getElementById('saveStatus');
+    var say = function (html, cls) {
+      status.innerHTML = '<div class="form-message ' + (cls || 'info') + '">' + html + '</div>';
+    };
+    var sheet = document.querySelector('#invoiceContent .invoice-sheet') || document.getElementById('invoiceContent');
+    try {
+      say('Invoice PDF ban raha hai…');
+      var name = PR.esc(order.order_number) + '_Invoice_' + PRA.fileSafe(order.invoice_number) + '.pdf';
+      PRA.saveBlob(await PRA.pdfBlob(sheet), order.order_number + '_Invoice_' + PRA.fileSafe(order.invoice_number) + '.pdf');
+      var done = '✓ ' + name;
+      if (withLabel) {
+        say(done + '<br>Label download ho raha hai…');
+        var res = await PR.call('label pdf', function (sb) {
+          return sb.functions.invoke('shiprocket', { body: { action: 'label_pdf', order_id: order.id } });
+        });
+        if (!res || !res.ok) throw new Error((res && res.error) || 'Label nahi mila');
+        PRA.saveBlob(PRA.base64Blob(res.pdf_base64), res.file);
+        done += '<br>✓ ' + PR.esc(res.file);
+      }
+      say(done + '<br>Files aapke <b>Downloads</b> folder mein save ho gayi.', 'success');
+    } catch (err) {
+      say('PDF save nahi hua: ' + PR.esc(err.message) + ' - "PRINT / SAVE AS PDF" se save kar lein.', 'error');
+    }
+  }
 
   document.addEventListener('DOMContentLoaded', async function () {
     var host = document.getElementById('invoiceContent');
@@ -66,6 +95,12 @@
         labelBtn.href = order.label_url;
         labelBtn.textContent = 'SHIPPING LABEL' + (order.awb_code ? ' (' + order.awb_code + ')' : '');
         labelBtn.style.display = '';
+      }
+      if (type === 'tax') {
+        var pdfBtn = document.getElementById('pdfBtn');
+        pdfBtn.style.display = '';
+        pdfBtn.addEventListener('click', function () { saveFiles(order, false); });
+        if (PR.param('save') === '1') saveFiles(order, !!order.label_url || !!order.sr_shipment_id);
       }
       document.title = (type === 'tax' ? 'Tax Invoice ' + order.invoice_number : 'Proforma PI-' + order.order_number) +
         ' | PowerRun Admin';

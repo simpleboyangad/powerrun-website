@@ -20,14 +20,17 @@
     <option>Triplicate for Supplier</option>
   </select>
   <a class="btn" id="labelBtn" href="#" target="_blank" rel="noopener" style="display:none">SHIPPING LABEL</a>
+  <button class="btn" type="button" id="pdfBtn" style="display:none">PDF DOWNLOAD</button>
   <button class="btn orange" type="button" id="printBtn">PRINT / SAVE AS PDF</button>
 </div>
+<div id="saveStatus" class="no-print" style="max-width:210mm;margin:10px auto 0;font:14px sans-serif"></div>
 <div id="invoiceContent"><p class="small-note" style="padding:40px">Loading the invoice…</p></div>
 <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2.48.0/dist/umd/supabase.js"></script>
 <script src="/assets/js/config.js?v=cb554c13"></script>
 <script src="/assets/js/core.js?v=cb554c13"></script>
 <script src="/assets/js/admin/shell.js?v=cb554c13"></script>
 <script src="/assets/js/invoice-doc.js?v=cb554c13"></script>
+<script src="/assets/js/admin/pdf-tools.js?v=cb554c13"></script>
 <script src="/assets/js/admin/invoice-print.js?v=cb554c13"></script>
 </body>
 </html>

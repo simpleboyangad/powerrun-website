@@ -191,6 +191,8 @@
     var esc = PR.esc;
     var paid = order.payment_status === 'paid';
     var b2b = !!order.customer_gstin;
+    // 50% advance orders: the invoice is for the full sale (GST), the rest is cash on delivery
+    var advance = paid || (opts.type !== 'tax' && opts.type !== 'proforma') ? 0 : Number(order.advance_amount || 0);
 
     var companyAddress = [company.address_line1, company.address_line2, company.city,
                           company.state, company.pincode].filter(Boolean).join(', ');
@@ -240,7 +242,7 @@
             '<tr><td>Reverse Charge</td><td>No</td></tr>' +
           '</table>' +
           '<span class="invoice-stamp ' + (paid ? 'paid' : 'pending') + '">' +
-            (paid ? 'Paid' : 'Payment pending') + '</span>' +
+            (paid ? 'Paid' : advance > 0 ? 'Advance paid · COD ' + PR.money(f.grand - advance) : 'Payment pending') + '</span>' +
         '</div>' +
       '</div>' +
 
@@ -310,6 +312,10 @@
             : '<tr><td>IGST</td><td>' + amt(f.totals.igst) + '</td></tr>') +
           (f.roundOff ? '<tr><td>Round Off</td><td>' + (f.roundOff > 0 ? '+' : '') + amt(f.roundOff) + '</td></tr>' : '') +
           '<tr class="grand"><td>Grand Total</td><td>' + PR.money2(f.grand) + '</td></tr>' +
+          (advance > 0
+            ? '<tr><td>Advance received (online)</td><td>- ' + PR.money2(advance) + '</td></tr>' +
+              '<tr class="grand"><td>Balance - Cash on Delivery</td><td>' + PR.money2(Math.max(0, f.grand - advance)) + '</td></tr>'
+            : '') +
           (order.coupon_code
             ? '<tr><td colspan="2" class="inv-small">Coupon ' + esc(order.coupon_code) + ' applied: ' +
               PR.money2(order.coupon_discount) + ' (included in Discount)</td></tr>'

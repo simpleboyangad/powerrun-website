@@ -27,7 +27,7 @@ declare
   cust jsonb := '{"name":"Test Ship","mobile":"9999900003","address":"Test street","city":"Kasganj","state":"Uttar Pradesh","pincode":"207124"}';
   r jsonb := '{}';
   o jsonb;
-  a uuid; b uuid; c uuid;
+  a uuid; b uuid; c uuid; d uuid;
   ord orders%rowtype;
   res text;
 begin
@@ -73,6 +73,14 @@ begin
 
   r := r || jsonb_build_object('unknown', public.pr_record_courier_event('k6', 'NOPE', null, 'DELIVERED', now(), '{}'));
 
+  -- migration 51: booked in the Shiprocket app, only the tracking number typed in Admin
+  o := public.create_website_order(cust, jsonb_build_array(jsonb_build_object('product_id', big, 'quantity', 1)), 'advance_cod', null);
+  d := (o ->> 'order_id')::uuid;
+  update orders set advance_amount = advance_required, order_status = 'shipped', courier_partner = 'Y', tracking_number = 'testawb4 ' where id = d;
+  res := public.pr_record_courier_event('k7', 'TESTAWB4', null, 'DELIVERED', now(), '{}');
+  select * into ord from orders where id = d;
+  r := r || jsonb_build_object('by_tracking', res, 'by_tracking_status', ord.order_status, 'by_tracking_awb', ord.awb_code);
+
   r := r || jsonb_build_object(
     'anon_exec', has_function_privilege('anon', 'public.pr_record_courier_event(text, text, text, text, timestamptz, jsonb)', 'execute'),
     'auth_exec', has_function_privilege('authenticated', 'public.pr_record_courier_event(text, text, text, text, timestamptz, jsonb)', 'execute'),
@@ -112,6 +120,8 @@ checks = [
     ("RTO flagged, status kept", r["rto"] == "rto" and r["rto_flag"] is True and r["rto_status"] == "shipped"),
     ("cancel clears the shipment", r["cancel"] == "cancelled" and r["cancel_cleared"] is True and r["cancel_status"] == "confirmed"),
     ("unknown AWB logged only", r["unknown"] == "no_order"),
+    ("matched by the typed tracking number", r["by_tracking"] == "delivered" and r["by_tracking_status"] == "delivered"
+     and r["by_tracking_awb"] == "testawb4"),
     ("webhook RPC not callable by anon / users", r["anon_exec"] is False and r["auth_exec"] is False),
     ("token cache locked", r["tokens_auth_read"] is False and r["tokens_anon_read"] is False),
     ("courier events not public", r["events_anon_read"] is False),

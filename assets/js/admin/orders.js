@@ -653,7 +653,8 @@
         }
       }
       var url = '/admin/invoice/?type=tax&id=' + encodeURIComponent(order.id);
-      if (tab) tab.location.href = invoiceNo ? url : (res.label_url || url);
+      // the invoice page saves the invoice PDF and the label PDF to Downloads (save=1)
+      if (tab) tab.location.href = invoiceNo ? url + '&save=1' : (res.label_url || url);
       PR.toast('Ship ho gaya: ' + (res.courier || '') + ' · AWB ' + res.awb + (res.pickup ? ' · ' + res.pickup : ''), 'success');
       await reopen(order);
     } catch (err) {
