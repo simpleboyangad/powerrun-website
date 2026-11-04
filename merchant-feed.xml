@@ -2087,7 +2087,7 @@ Sold and shipped by PowerRun Industries with free pan-India delivery. PowerRun d
     <g:brand>PowerRun Industries</g:brand>
     <g:identifier_exists>no</g:identifier_exists>
     <g:product_type>EV Batteries</g:product_type>
-    <g:price>21999.00 INR</g:price>
+    <g:price>26650.00 INR</g:price>
   </item>
   <item>
     <g:id>PR-027</g:id>
@@ -2104,7 +2104,7 @@ Sold and shipped by PowerRun Industries with free pan-India delivery. PowerRun d
     <g:brand>PowerRun Industries</g:brand>
     <g:identifier_exists>no</g:identifier_exists>
     <g:product_type>EV Batteries</g:product_type>
-    <g:price>32999.00 INR</g:price>
+    <g:price>41650.00 INR</g:price>
   </item>
 </channel>
 </rss>
