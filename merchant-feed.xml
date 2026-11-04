@@ -33,6 +33,51 @@ Check that the charger matches your battery's voltage and chemistry before use -
     <g:price>979.00 INR</g:price>
   </item>
   <item>
+    <g:id>CHG-LI-54_6V-6A-LEAF</g:id>
+    <title>LEAF Lithium Battery Charger 54.6V 6A</title>
+    <description>The LEAF Lithium Battery Charger 54.6V 6A is for charging 48 V Li-ion e-bike and e-scooter batteries (13S Li-ion, 48.1 V nominal). Charges 13S Li-ion packs (48.1 V nominal) to 54.6 V. 6 A charging current.
+
+Check that the charger matches your battery's voltage and chemistry before use - a charger for the wrong chemistry or cell count can damage the battery. Sold and shipped by PowerRun Industries with free pan-India delivery. PowerRun does not offer a separate warranty on chargers; damaged, defective or wrong items are replaced within 7 days of delivery as per our refund policy. Not sure which one fits? Send us your battery details on WhatsApp.</description>
+    <link>https://powerrun.in/products/leaf-lithium-battery-charger-54-6v-6a/</link>
+    <g:image_link>https://nnkopxkyxcmtiunftlgr.supabase.co/storage/v1/object/public/product-images/chargers/leaf-lithium-battery-charger-54-6v-6a/0-photo.jpg</g:image_link>
+    <g:availability>in_stock</g:availability>
+    <g:condition>new</g:condition>
+    <g:brand>LEAF</g:brand>
+    <g:identifier_exists>no</g:identifier_exists>
+    <g:product_type>Battery Chargers</g:product_type>
+    <g:price>1299.00 INR</g:price>
+  </item>
+  <item>
+    <g:id>CHG-LI-67_2V-6A-LEAF</g:id>
+    <title>LEAF Lithium Battery Charger 67.2V 6A</title>
+    <description>The LEAF Lithium Battery Charger 67.2V 6A is for charging 60 V Li-ion e-scooter batteries (16S Li-ion, 59.2 V nominal). Charges 16S Li-ion packs (59.2 V nominal) to 67.2 V. 6 A charging current.
+
+Check that the charger matches your battery's voltage and chemistry before use - a charger for the wrong chemistry or cell count can damage the battery. Sold and shipped by PowerRun Industries with free pan-India delivery. PowerRun does not offer a separate warranty on chargers; damaged, defective or wrong items are replaced within 7 days of delivery as per our refund policy. Not sure which one fits? Send us your battery details on WhatsApp.</description>
+    <link>https://powerrun.in/products/leaf-lithium-battery-charger-67-2v-6a/</link>
+    <g:image_link>https://nnkopxkyxcmtiunftlgr.supabase.co/storage/v1/object/public/product-images/chargers/leaf-lithium-battery-charger-67-2v-6a/0-photo.jpg</g:image_link>
+    <g:availability>in_stock</g:availability>
+    <g:condition>new</g:condition>
+    <g:brand>LEAF</g:brand>
+    <g:identifier_exists>no</g:identifier_exists>
+    <g:product_type>Battery Chargers</g:product_type>
+    <g:price>1299.00 INR</g:price>
+  </item>
+  <item>
+    <g:id>CHG-LI-73V-6A-LEAF</g:id>
+    <title>LEAF Lithium Battery Charger 73V 6A</title>
+    <description>The LEAF Lithium Battery Charger 73V 6A is for charging 64 V LiFePO4 e-scooter batteries (20S LiFePO4, 64.0 V nominal). Charges 20S LiFePO4 packs (64.0 V nominal) to 73 V. 6 A charging current.
+
+Check that the charger matches your battery's voltage and chemistry before use - a charger for the wrong chemistry or cell count can damage the battery. Sold and shipped by PowerRun Industries with free pan-India delivery. PowerRun does not offer a separate warranty on chargers; damaged, defective or wrong items are replaced within 7 days of delivery as per our refund policy. Not sure which one fits? Send us your battery details on WhatsApp.</description>
+    <link>https://powerrun.in/products/leaf-lithium-battery-charger-73v-6a/</link>
+    <g:image_link>https://nnkopxkyxcmtiunftlgr.supabase.co/storage/v1/object/public/product-images/chargers/leaf-lithium-battery-charger-73v-6a/0-photo.jpg</g:image_link>
+    <g:availability>in_stock</g:availability>
+    <g:condition>new</g:condition>
+    <g:brand>LEAF</g:brand>
+    <g:identifier_exists>no</g:identifier_exists>
+    <g:product_type>Battery Chargers</g:product_type>
+    <g:price>1639.00 INR</g:price>
+  </item>
+  <item>
     <g:id>CHG-PB-60V-3A-ELOW9</g:id>
     <title>ELOW9 Lead-Acid Battery Charger 60V 3A</title>
     <description>The ELOW9 Lead-Acid Battery Charger 60V 3A is for charging 60 V lead-acid e-rickshaw and e-scooter batteries (5 x 12 V). For 60 V lead-acid batteries (5 x 12 V). 3 A charging current.
@@ -1918,91 +1963,6 @@ Sold and shipped by PowerRun Industries with free pan-India delivery. PowerRun d
     <g:identifier_exists>no</g:identifier_exists>
     <g:product_type>Lithium Batteries</g:product_type>
     <g:price>481499.00 INR</g:price>
-  </item>
-  <item>
-    <g:id>PR-017</g:id>
-    <title>PowerRun 450 Watt Solar Panel - Mono PERC (PR Solar Panel 450W)</title>
-    <description>The PowerRun 450W Mono PERC Solar Panel uses high-efficiency monocrystalline PERC cells (up to 21.3% module efficiency) housed in an anodised aluminium frame with 3.2mm tempered anti-reflective glass. Rated to operate from -40C to 85C and built to handle real-world rooftop and ground-mount conditions, it is a dependable choice for residential and small commercial solar installations.</description>
-    <link>https://powerrun.in/products/pr-solar-panel-450w/</link>
-    <g:image_link>https://nnkopxkyxcmtiunftlgr.supabase.co/storage/v1/object/public/product-images/0614eb97-478f-43eb-86e7-84e6706e8cff/1790960805666-0-1-main.jpg</g:image_link>
-    <g:additional_image_link>https://nnkopxkyxcmtiunftlgr.supabase.co/storage/v1/object/public/product-images/0614eb97-478f-43eb-86e7-84e6706e8cff/1790960805666-1-2-why-powerrun.jpg</g:additional_image_link>
-    <g:additional_image_link>https://nnkopxkyxcmtiunftlgr.supabase.co/storage/v1/object/public/product-images/0614eb97-478f-43eb-86e7-84e6706e8cff/1790960805666-2-3-specifications.jpg</g:additional_image_link>
-    <g:additional_image_link>https://nnkopxkyxcmtiunftlgr.supabase.co/storage/v1/object/public/product-images/0614eb97-478f-43eb-86e7-84e6706e8cff/1790960805666-3-4-mono-vs-poly.jpg</g:additional_image_link>
-    <g:additional_image_link>https://nnkopxkyxcmtiunftlgr.supabase.co/storage/v1/object/public/product-images/0614eb97-478f-43eb-86e7-84e6706e8cff/1790960805666-4-5-build.jpg</g:additional_image_link>
-    <g:availability>in_stock</g:availability>
-    <g:condition>new</g:condition>
-    <g:brand>PowerRun Industries</g:brand>
-    <g:identifier_exists>no</g:identifier_exists>
-    <g:product_type>Solar Panels</g:product_type>
-    <g:price>7200.00 INR</g:price>
-  </item>
-  <item>
-    <g:id>PR-018</g:id>
-    <title>PowerRun 535 Watt Solar Panel - Mono PERC (PR Solar Panel 535W)</title>
-    <description>The PowerRun 535W Mono PERC Solar Panel delivers up to 21.3% module efficiency from monocrystalline PERC cells, with a durable anodised aluminium frame and 3.2mm tempered anti-reflective glass for long-term outdoor performance. Rated for -40C to 85C operation, it suits residential and commercial rooftop or ground-mount solar systems that need more output per panel.</description>
-    <link>https://powerrun.in/products/pr-solar-panel-535w/</link>
-    <g:image_link>https://nnkopxkyxcmtiunftlgr.supabase.co/storage/v1/object/public/product-images/198d924f-f013-49b1-b974-f160071916c9/1790960821564-0-1-main.jpg</g:image_link>
-    <g:additional_image_link>https://nnkopxkyxcmtiunftlgr.supabase.co/storage/v1/object/public/product-images/198d924f-f013-49b1-b974-f160071916c9/1790960821564-1-2-why-powerrun.jpg</g:additional_image_link>
-    <g:additional_image_link>https://nnkopxkyxcmtiunftlgr.supabase.co/storage/v1/object/public/product-images/198d924f-f013-49b1-b974-f160071916c9/1790960821564-2-3-specifications.jpg</g:additional_image_link>
-    <g:additional_image_link>https://nnkopxkyxcmtiunftlgr.supabase.co/storage/v1/object/public/product-images/198d924f-f013-49b1-b974-f160071916c9/1790960821564-3-4-mono-vs-poly.jpg</g:additional_image_link>
-    <g:additional_image_link>https://nnkopxkyxcmtiunftlgr.supabase.co/storage/v1/object/public/product-images/198d924f-f013-49b1-b974-f160071916c9/1790960821564-4-5-build.jpg</g:additional_image_link>
-    <g:availability>in_stock</g:availability>
-    <g:condition>new</g:condition>
-    <g:brand>PowerRun Industries</g:brand>
-    <g:identifier_exists>no</g:identifier_exists>
-    <g:product_type>Solar Panels</g:product_type>
-    <g:price>8560.00 INR</g:price>
-  </item>
-  <item>
-    <g:id>PR-019</g:id>
-    <title>PowerRun 550 Watt Solar Panel - Mono PERC (PR Solar Panel 550W)</title>
-    <description>The PowerRun 550W Mono PERC Solar Panel combines high-efficiency monocrystalline PERC cells (up to 21.3% efficiency) with a rugged anodised aluminium frame and 3.2mm tempered anti-reflective glass, built to withstand demanding outdoor conditions from -40C to 85C. A strong choice for residential and commercial installations looking to maximise output per square foot of roof space.</description>
-    <link>https://powerrun.in/products/pr-solar-panel-550w/</link>
-    <g:image_link>https://nnkopxkyxcmtiunftlgr.supabase.co/storage/v1/object/public/product-images/dc0bb4be-2e3c-4f63-b8c0-d738a51520fd/1790960835925-0-1-main.jpg</g:image_link>
-    <g:additional_image_link>https://nnkopxkyxcmtiunftlgr.supabase.co/storage/v1/object/public/product-images/dc0bb4be-2e3c-4f63-b8c0-d738a51520fd/1790960835925-1-2-why-powerrun.jpg</g:additional_image_link>
-    <g:additional_image_link>https://nnkopxkyxcmtiunftlgr.supabase.co/storage/v1/object/public/product-images/dc0bb4be-2e3c-4f63-b8c0-d738a51520fd/1790960835925-2-3-specifications.jpg</g:additional_image_link>
-    <g:additional_image_link>https://nnkopxkyxcmtiunftlgr.supabase.co/storage/v1/object/public/product-images/dc0bb4be-2e3c-4f63-b8c0-d738a51520fd/1790960835925-3-4-mono-vs-poly.jpg</g:additional_image_link>
-    <g:additional_image_link>https://nnkopxkyxcmtiunftlgr.supabase.co/storage/v1/object/public/product-images/dc0bb4be-2e3c-4f63-b8c0-d738a51520fd/1790960835925-4-5-build.jpg</g:additional_image_link>
-    <g:availability>in_stock</g:availability>
-    <g:condition>new</g:condition>
-    <g:brand>PowerRun Industries</g:brand>
-    <g:identifier_exists>no</g:identifier_exists>
-    <g:product_type>Solar Panels</g:product_type>
-    <g:price>8800.00 INR</g:price>
-  </item>
-  <item>
-    <g:id>PR-020</g:id>
-    <title>PowerRun 580 Watt Solar Panel - Mono PERC (PR Solar Panel 580W)</title>
-    <description>The PowerRun 580W Mono PERC Solar Panel offers up to 21.3% module efficiency from monocrystalline PERC cells, wrapped in an anodised aluminium frame with 3.2mm tempered anti-reflective glass. Built to perform from -40C to 85C, it is suited to larger residential and commercial solar arrays where higher per-panel wattage reduces the number of panels needed.</description>
-    <link>https://powerrun.in/products/pr-solar-panel-580w/</link>
-    <g:image_link>https://nnkopxkyxcmtiunftlgr.supabase.co/storage/v1/object/public/product-images/0a1bc376-068f-48ab-89c0-a0e1cac54943/1790960851881-0-1-main.jpg</g:image_link>
-    <g:additional_image_link>https://nnkopxkyxcmtiunftlgr.supabase.co/storage/v1/object/public/product-images/0a1bc376-068f-48ab-89c0-a0e1cac54943/1790960851881-1-2-why-powerrun.jpg</g:additional_image_link>
-    <g:additional_image_link>https://nnkopxkyxcmtiunftlgr.supabase.co/storage/v1/object/public/product-images/0a1bc376-068f-48ab-89c0-a0e1cac54943/1790960851881-2-3-specifications.jpg</g:additional_image_link>
-    <g:additional_image_link>https://nnkopxkyxcmtiunftlgr.supabase.co/storage/v1/object/public/product-images/0a1bc376-068f-48ab-89c0-a0e1cac54943/1790960851881-3-4-mono-vs-poly.jpg</g:additional_image_link>
-    <g:additional_image_link>https://nnkopxkyxcmtiunftlgr.supabase.co/storage/v1/object/public/product-images/0a1bc376-068f-48ab-89c0-a0e1cac54943/1790960851881-4-5-build.jpg</g:additional_image_link>
-    <g:availability>in_stock</g:availability>
-    <g:condition>new</g:condition>
-    <g:brand>PowerRun Industries</g:brand>
-    <g:identifier_exists>no</g:identifier_exists>
-    <g:product_type>Solar Panels</g:product_type>
-    <g:price>9280.00 INR</g:price>
-  </item>
-  <item>
-    <g:id>PR-021</g:id>
-    <title>PowerRun 600 Watt Solar Panel - Mono PERC (PR Solar Panel 600W)</title>
-    <description>The PowerRun 600W Mono PERC Solar Panel is our highest-output panel, delivering up to 21.3% module efficiency from monocrystalline PERC cells in a durable anodised aluminium frame with 3.2mm tempered anti-reflective glass. Rated for -40C to 85C operation, it is built for large residential, commercial and industrial solar installations that need maximum power density per panel.</description>
-    <link>https://powerrun.in/products/pr-solar-panel-600w/</link>
-    <g:image_link>https://nnkopxkyxcmtiunftlgr.supabase.co/storage/v1/object/public/product-images/5dabf802-9847-45d1-ace9-523c27e616db/1790960867711-0-1-main.jpg</g:image_link>
-    <g:additional_image_link>https://nnkopxkyxcmtiunftlgr.supabase.co/storage/v1/object/public/product-images/5dabf802-9847-45d1-ace9-523c27e616db/1790960867711-1-2-why-powerrun.jpg</g:additional_image_link>
-    <g:additional_image_link>https://nnkopxkyxcmtiunftlgr.supabase.co/storage/v1/object/public/product-images/5dabf802-9847-45d1-ace9-523c27e616db/1790960867711-2-3-specifications.jpg</g:additional_image_link>
-    <g:additional_image_link>https://nnkopxkyxcmtiunftlgr.supabase.co/storage/v1/object/public/product-images/5dabf802-9847-45d1-ace9-523c27e616db/1790960867711-3-4-mono-vs-poly.jpg</g:additional_image_link>
-    <g:additional_image_link>https://nnkopxkyxcmtiunftlgr.supabase.co/storage/v1/object/public/product-images/5dabf802-9847-45d1-ace9-523c27e616db/1790960867711-4-5-build.jpg</g:additional_image_link>
-    <g:availability>in_stock</g:availability>
-    <g:condition>new</g:condition>
-    <g:brand>PowerRun Industries</g:brand>
-    <g:identifier_exists>no</g:identifier_exists>
-    <g:product_type>Solar Panels</g:product_type>
-    <g:price>9600.00 INR</g:price>
   </item>
   <item>
     <g:id>PR-022</g:id>

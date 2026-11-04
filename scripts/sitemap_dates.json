@@ -1,7 +1,7 @@
 {
  "https://powerrun.in/": [
-  "1ad43b7308ab518e",
-  "2026-10-22"
+  "9c2f2d36e0b1017f",
+  "2026-11-04"
  ],
  "https://powerrun.in/about/": [
   "ce01d7acfd6c2761",
@@ -12,8 +12,8 @@
   "2026-10-14"
  ],
  "https://powerrun.in/battery-chargers/": [
-  "1afbd252c19544cb",
-  "2026-10-20"
+  "bc6521823a41eea2",
+  "2026-11-04"
  ],
  "https://powerrun.in/battery-connectors/": [
   "a49ca0ccae35fceb",
@@ -64,7 +64,7 @@
   "2026-11-01"
  ],
  "https://powerrun.in/products/": [
-  "0aca8c2549701554",
+  "f258cc0b4e09e06e",
   "2026-11-04"
  ],
  "https://powerrun.in/products/battery-interconnect-cable-4-awg-200-mm-sc35-6-lugs-red-pack-of-2/": [
@@ -474,6 +474,18 @@
  "https://powerrun.in/products/jk-smart-ess-bms-8s-16s-200a/": [
   "8294d4c09aa0f8db",
   "2026-10-24"
+ ],
+ "https://powerrun.in/products/leaf-lithium-battery-charger-54-6v-6a/": [
+  "d194f0c2f31b444e",
+  "2026-10-11"
+ ],
+ "https://powerrun.in/products/leaf-lithium-battery-charger-67-2v-6a/": [
+  "d5506ef16097ae7a",
+  "2026-10-11"
+ ],
+ "https://powerrun.in/products/leaf-lithium-battery-charger-73v-6a/": [
+  "b4b931fec2d80935",
+  "2026-10-11"
  ],
  "https://powerrun.in/products/lithium-battery-charger-29-2v-3a/": [
   "86dede20b73a2ccf",
