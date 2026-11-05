@@ -207,9 +207,20 @@ async function createSrOrder(o: any, b: ReturnType<typeof box>, pickupName: stri
   }));
   const itemsTotal = items.reduce((s: number, i: any) => s + i.selling_price * i.units, 0);
   const shipping = Number(o.shipping_cost || 0);
-  // the order value Shiprocket shows / collects = items + shipping - discount
+  // Shiprocket collects sub_total + shipping, and an order-level total_discount is NOT taken
+  // off it (a 50% advance order showed the full value). So the advance (and any coupon) is put
+  // on the items as their discount and sub_total is already net of it.
   const target = cod > 0 ? cod : Number(o.total_amount);
-  const discount = Math.max(0, Math.round((itemsTotal + shipping - target) * 100) / 100);
+  let discount = Math.max(0, Math.round((itemsTotal + shipping - target) * 100) / 100);
+  let left = Math.min(discount, itemsTotal);
+  items.forEach((i: any, n: number) => {
+    const line = Math.round(i.selling_price * i.units * 100) / 100;
+    const share = n === items.length - 1 ? left : Math.min(left, Math.round(discount * line / (itemsTotal || 1) * 100) / 100);
+    i.discount = Math.round(share / i.units * 100) / 100;   // per unit
+    left = Math.round((left - i.discount * i.units) * 100) / 100;
+  });
+  const netItems = Math.round(items.reduce((s: number, i: any) => s + (i.selling_price - i.discount) * i.units, 0) * 100) / 100;
+  discount = 0;
   const [first, ...rest] = String(o.customer_name || 'Customer').trim().split(/\s+/);
   const phone = String(o.customer_mobile || '').replace(/\D/g, '').slice(-10);
   const shipDifferent = !!(o.shipping_address && o.shipping_pincode &&
@@ -223,7 +234,7 @@ async function createSrOrder(o: any, b: ReturnType<typeof box>, pickupName: stri
     shipping_is_billing: !shipDifferent,
     order_items: items, payment_method: cod > 0 ? 'COD' : 'Prepaid',
     shipping_charges: shipping, giftwrap_charges: 0, transaction_charges: 0, total_discount: discount,
-    sub_total: itemsTotal, length: b.length, breadth: b.breadth, height: b.height, weight: b.weight,
+    sub_total: netItems, length: b.length, breadth: b.breadth, height: b.height, weight: b.weight,
   };
   if (shipDifferent) Object.assign(payload, {
     shipping_customer_name: first, shipping_last_name: rest.join(' '),
@@ -257,6 +268,14 @@ async function checkCodAmount(srOrderId: number, cod: number) {
   const d = body?.data || {};
   const shown = Number(d.net_total ?? d.total ?? NaN);
   if (Number.isFinite(shown) && Math.abs(shown - cod) > 1) {
+    // keep Shiprocket's own figures, to see which field it collects
+    await db.from('courier_events').insert({
+      event_key: 'codcheck:' + crypto.randomUUID(), status: 'ERROR', result: 'cod_mismatch',
+      payload: { sr_order_id: srOrderId, expected: cod, net_total: d.net_total ?? null, total: d.total ?? null,
+        sub_total: d.sub_total ?? null, discount: d.discount ?? d.total_discount ?? null, cod: d.cod ?? null,
+        payment_method: d.payment_method ?? null, products: (d.products || []).map((x: any) => ({
+          price: x.price ?? x.selling_price ?? null, discount: x.discount ?? null, quantity: x.quantity ?? null })) },
+    }).then(() => null, () => null);
     await sr('/orders/cancel', { method: 'POST', body: { ids: [srOrderId] } }).catch(() => null);
     throw new ShiprocketError(`Shiprocket COD ₹${shown} dikha raha tha, hona chahiye ₹${cod} - order wahan cancel kar diya, kuch charge nahi hua. Admin ko batayein.`);
   }
