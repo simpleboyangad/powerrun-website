@@ -253,6 +253,9 @@ async function createSrOrder(o: any, b: ReturnType<typeof box>, pickupName: stri
       if (n < 4 && /already|exist|duplicate/i.test((e as Error).message)) continue;
       throw new ShiprocketError('Shiprocket order nahi bana: ' + (e as Error).message);
     }
+    // Shiprocket hands back the earlier order when the number was used before - if that
+    // one is cancelled it can't be shipped, so take the next number
+    if (body?.order_id && body?.shipment_id && n < 4 && /cancel/i.test(String(body.status || ''))) continue;
     if (body?.order_id && body?.shipment_id) break;
     if (n < 4 && /already|exist|duplicate/i.test(srMessage(body, ''))) continue;
     break;
@@ -301,15 +304,26 @@ async function ship(o: any, input: any) {
     await db.from('orders').update({ sr_order_id: null, sr_shipment_id: null, cod_to_collect: null }).eq('id', o.id);
     srOrderId = 0; shipmentId = 0;
   }
-  if (!shipmentId) {
+  const makeSrOrder = async () => {
     const pickup = await pickupAddress();
     const made = await createSrOrder(o, b, pickup.name);
     srOrderId = made.srOrderId; shipmentId = made.shipmentId;
     await checkCodAmount(srOrderId, cod);
     await db.from('orders').update({ sr_order_id: srOrderId, sr_shipment_id: shipmentId, cod_to_collect: cod }).eq('id', o.id);
-  }
+  };
+  if (!shipmentId) await makeSrOrder();
 
-  const assigned = await sr('/courier/assign/awb', { method: 'POST', body: { shipment_id: shipmentId, courier_id: courierId } });
+  let assigned: any;
+  try {
+    assigned = await sr('/courier/assign/awb', { method: 'POST', body: { shipment_id: shipmentId, courier_id: courierId } });
+  } catch (e) {
+    // the saved Shiprocket order was cancelled meanwhile: make a fresh one and try once more
+    if (!/cancel/i.test((e as Error).message)) throw e;
+    await db.from('orders').update({ sr_order_id: null, sr_shipment_id: null, cod_to_collect: null }).eq('id', o.id);
+    srOrderId = 0; shipmentId = 0;
+    await makeSrOrder();
+    assigned = await sr('/courier/assign/awb', { method: 'POST', body: { shipment_id: shipmentId, courier_id: courierId } });
+  }
   const data = assigned?.response?.data || {};
   if (Number(assigned?.awb_assign_status) !== 1 || !data.awb_code) {
     const why = data.awb_assign_error || srMessage(assigned, 'wallet balance check karein');
