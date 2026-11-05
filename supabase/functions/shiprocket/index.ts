@@ -266,7 +266,9 @@ async function checkCodAmount(srOrderId: number, cod: number) {
   if (cod <= 0) return;
   const body = await sr('/orders/show/' + srOrderId).catch(() => null);
   const d = body?.data || {};
-  const shown = Number(d.net_total ?? d.total ?? NaN);
+  // "total" is what the customer pays after the discount (= COD collected);
+  // "net_total" is the value before it
+  const shown = Number(d.total ?? NaN);
   if (Number.isFinite(shown) && Math.abs(shown - cod) > 1) {
     // keep Shiprocket's own figures, to see which field it collects
     await db.from('courier_events').insert({
