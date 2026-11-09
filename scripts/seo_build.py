@@ -843,8 +843,14 @@ def main():
         html = replace_head(html, block)
         if members:
             cards = "\n".join(static_card(p, cat, images_of(p)) for p in members)
-            html = re.sub(r"<!-- GRID:START -->.*?<!-- GRID:END -->",
-                          lambda m: "<!-- GRID:START -->\n" + cards + "\n<!-- GRID:END -->", html, flags=re.S)
+        else:
+            # every product in the category was switched off: drop the old
+            # cards, which now point at deleted (404) product pages
+            cards = ('<p style="grid-column:1/-1">No %s are listed online right now. '
+                     'Call or WhatsApp <a href="tel:+918057573040">+91 80575 73040</a> for current models '
+                     'and prices.</p>' % esc(cat["name"].lower()))
+        html = re.sub(r"<!-- GRID:START -->.*?<!-- GRID:END -->",
+                      lambda m: "<!-- GRID:START -->\n" + cards + "\n<!-- GRID:END -->", html, flags=re.S)
         html = versioned(re.sub(r'(/assets/[^"\']+?\.(?:js|css))\?v=[0-9a-f]+"', r'\1"', html), stamp)
         io.open(target, "w", encoding="utf-8", newline="\n").write(html)
         written.append(rel)
