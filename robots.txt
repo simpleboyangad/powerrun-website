@@ -14,5 +14,3 @@ Disallow: /internal-tools/
 Disallow: /sidebar.html
 Disallow: /*?add-to-cart=
 Disallow: /*&add-to-cart=
-
-Sitemap: https://powerrun.in/sitemap.xml

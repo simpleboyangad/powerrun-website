@@ -159,6 +159,8 @@ def write(rel, html, stamp):
 
 
 def main():
+    import site_mode
+    site_mode.refuse_if_closed('blog_build')
     site, org, gsc, default_image = site_context()
     stamp = b.asset_stamp()
     posts = load_posts()

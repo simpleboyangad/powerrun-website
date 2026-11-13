@@ -683,6 +683,8 @@ def versioned(html, stamp):
 
 
 def main():
+    import site_mode
+    site_mode.refuse_if_closed('seo_build')
     _, _, site = config()
     stamp = asset_stamp()
     g = (fetch("global_seo?select=*&id=eq.1") or [{}])[0]

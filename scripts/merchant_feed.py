@@ -44,6 +44,10 @@ def feed_title(p):
 
 
 def build():
+    import site_mode
+    if site_mode.is_closed():
+        print('Website band hai - merchant feed khaali hi rahega.')
+        return
     rows = fetch(
         "products?select=sku,name,slug,brand,short_description,description,price,mrp,stock,meta_title,canonical_url,"
         "categories!products_category_id_fkey(name),product_images(image_url,sort_order)"

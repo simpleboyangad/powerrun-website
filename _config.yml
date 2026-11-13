@@ -12,3 +12,39 @@ exclude:
   - supabase/
   - youtube/
   - x/
+# --- site closed (scripts/site_mode.py) ---
+  - about/
+  - account/
+  - battery-calculator/
+  - battery-chargers/
+  - battery-connectors/
+  - blog/
+  - bms-balancers/
+  - cart/
+  - checkout/
+  - contact/
+  - dealer/
+  - e-rickshaw-batteries/
+  - ev-batteries/
+  - hybrid-inverters/
+  - internal-tools/
+  - lithium-batteries/
+  - order-confirmation/
+  - photos/
+  - pi/
+  - privacy-policy/
+  - product/
+  - products/
+  - quote/
+  - refund-policy/
+  - review/
+  - service/
+  - set-password/
+  - shipping-policy/
+  - sidebar.html
+  - sitemap.xml
+  - solar-calculator/
+  - solar-panels/
+  - terms/
+  - track-order/
+  - warranty/
